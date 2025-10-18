@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Verify Evaluation Button</title>
+    <style>
+        body {
+            background: #2c2c2c;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .controls {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Verification Test</h1>
+    <div class="controls">
+        <p>The evaluation button should appear below with purple background:</p>
+        <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;">📊 显示评估</button>
+
+        <h2>Full button row from server:</h2>
+        <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">🧪 测试ULS++理解</button>
+        <button onclick="nextDay()" id="btn-next" disabled>⏭️ 下一天</button>
+        <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;" disabled>📊 显示评估</button>
+        <button onclick="toggleLanguage()" id="btn-lang">🌐 English</button>
+        <button onclick="clearAll()" id="btn-clear">🗑️ 清空</button>
+    </div>
+
+    <script>
+        function showEvaluation() {
+            alert('Evaluation button clicked!');
+        }
+    </script>
+</body>
+</html>

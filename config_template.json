@@ -1,0 +1,58 @@
+{
+  "llm_config": {
+    "api_key": "your-api-key-here",
+    "model": "gpt-4",
+    "temperature": 0.7,
+    "max_tokens": 500,
+    "api_base": "https://api.openai.com/v1",
+    "notes": "Configure your LLM API settings here"
+  },
+
+  "game_config": {
+    "num_players": 13,
+    "roles": {
+      "werewolf": 3,
+      "villager": 6,
+      "seer": 1,
+      "witch": 1,
+      "hunter": 1,
+      "guard": 1
+    },
+    "max_rounds": 20,
+    "notes": "Standard 13-player configuration"
+  },
+
+  "evaluation_config": {
+    "metrics": {
+      "deception_detection": true,
+      "hallucination_analysis": true,
+      "cooperation_scoring": true,
+      "game_theory_analysis": true,
+      "voting_optimality": true
+    },
+    "weights": {
+      "consistency_score": 1.0,
+      "optimal_vote_ratio": 1.0,
+      "deception_effectiveness": 0.8,
+      "survival_rate": 0.6
+    },
+    "notes": "Which metrics to evaluate and their relative importance"
+  },
+
+  "experiment_config": {
+    "num_runs": 1,
+    "random_seed": null,
+    "save_logs": true,
+    "generate_visualizations": true,
+    "output_directory": "./results",
+    "notes": "Experiment settings for batch runs"
+  },
+
+  "advanced_config": {
+    "enable_caching": false,
+    "parallel_execution": false,
+    "max_workers": 4,
+    "verbose_logging": true,
+    "notes": "Advanced features for optimization"
+  }
+}

@@ -1,7 +1,7 @@
-﻿"""
-鐙间汉鏉€ - 4瀵硅瘽妗嗙増鏈?
+"""
+狼人杀 - 4对话框版本
 4 Dialogue Panels: Werewolf Night / God Roles Night / Day Discussion & Voting / Real-time Statistics
-娓告垙娴佺▼锛氱1澶滃紑濮?鈫?鐙间汉璁ㄨ 鈫?绁炶亴琛屽姩 鈫?璀﹂暱绔為€?鈫?鐧藉ぉ璁ㄨ鎶曠エ
+游戏流程：第1夜开始 → 狼人讨论 → 神职行动 → 警长竞选 → 白天讨论投票
 """
 
 from flask import Flask, render_template_string, request
@@ -14,7 +14,7 @@ import random
 import os
 import copy
 
-# 瀵煎叆楂樼骇绛栫暐妯″潡 (Advanced Strategies Module)
+# 导入高级策略模块 (Advanced Strategies Module)
 try:
     from advanced_strategies import *
     ADVANCED_STRATEGIES_ENABLED = True
@@ -23,7 +23,7 @@ except ImportError as e:
     print(f"[WARNING] Advanced Strategies Module not found: {e}")
     ADVANCED_STRATEGIES_ENABLED = False
 
-# 瀵煎叆闅惧害妯″潡绯荤粺 (Difficulty Modules System)
+# 导入难度模块系统 (Difficulty Modules System)
 try:
     from difficulty_modules import *
     DIFFICULTY_MODULES_ENABLED = True
@@ -32,7 +32,7 @@ except ImportError as e:
     print(f"[WARNING] Difficulty Modules System not found: {e}")
     DIFFICULTY_MODULES_ENABLED = False
 
-# 瀵煎叆鎺ㄧ悊鑳藉姏璇勪及鍣?(Reasoning Evaluator)
+# 导入推理能力评估器 (Reasoning Evaluator)
 try:
     from enhanced_reasoning_evaluator import EnhancedReasoningEvaluator
     EVALUATOR_ENABLED = True
@@ -42,7 +42,7 @@ except ImportError as e:
     EVALUATOR_ENABLED = False
 
 # ========================================================================
-# Server-side 螖-digest Memory Pool (T2 Optimization)
+# Server-side Δ-digest Memory Pool (T2 Optimization)
 # ========================================================================
 class MemoryPool:
     """
@@ -146,7 +146,7 @@ class MemoryPool:
 
     def build_digest(self, player_id, round_num, max_tokens=400):
         """
-        Build a bounded 螖-digest for a specific player.
+        Build a bounded Δ-digest for a specific player.
 
         Returns only NEW evidence since player's last speak, plus essential context:
         - New event IDs (with types)
@@ -247,7 +247,7 @@ class MemoryPool:
         # Combine all parts
         full_digest = "\n".join(digest_parts)
 
-        # Rough token estimation (1 token 鈮?4 chars for Chinese/English mix)
+        # Rough token estimation (1 token ≈ 4 chars for Chinese/English mix)
         estimated_tokens = len(full_digest) // 4
 
         # If over budget, trim speeches section
@@ -293,10 +293,10 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-# 閰嶇疆鏂囦欢璺緞
+# 配置文件路径
 CONFIG_FILE = "llm_config.json"
 
-# 鍏ㄥ眬瀵硅瘽鍘嗗彶缂撳啿锛屼緵璇勪及鍣ㄤ娇鐢?
+# 全局对话历史缓冲，供评估器使用
 dialogue_history = []
 dialogue_history_lock = threading.Lock()
 
@@ -325,174 +325,122 @@ class DialogueRecordingQueue(Queue):
     """Queue that mirrors every enqueued event into the dialogue history buffer."""
 
     def put(self, item, block=True, timeout=None):
-        processed_item = item
-
-        if isinstance(item, dict):
-            processed_item = copy.deepcopy(item)
-            if "round" not in processed_item:
-                processed_item["round"] = game_state.get("round", 0)
-            if "phase" not in processed_item:
-                processed_item["phase"] = game_state.get("phase", "")
-
-        append_dialogue_history(processed_item)
-        return super().put(processed_item, block=block, timeout=timeout)
+        append_dialogue_history(item)
+        return super().put(item, block=block, timeout=timeout)
 
 # ========================================================================
-# 娓告垙閰嶇疆
+# 游戏配置
 # ========================================================================
-# 鐜╁鏁?= 12
-# 榛樿闃靛 = { 鐙间汉脳4(鍙€?鍚嫾鐜?), 棰勮█瀹睹?, 濂冲帆脳1, 鐚庝汉脳1, 瀹堝崼脳1, 鏉戞皯脳4 }
+# 玩家数 = 12
+# 默认阵容 = { 狼人×4(可选:含狼王1), 预言家×1, 女巫×1, 猎人×1, 守卫×1, 村民×4 }
 
-# 娓告垙寮€鍏?
-HAS_GUARD = True              # 鏄惁鏈夊畧鍗?
-HAS_WOLF_KING = True          # 鏄惁鏈夌嫾鐜嬶紙甯︿汉锛?
-HUNTER_NIGHT_SHOOT = False    # 鐚庝汉澶滈棿琚潃鑳藉惁寮€鏋紙甯歌涓篺alse锛?
-WITCH_DOUBLE_USE = False      # 濂冲帆鍚屽鑳藉惁鏃㈡晳鍙堟瘨锛堝父瑙勪负false锛?
-NIGHT_BADGE_BREAKS = True     # 璀﹂暱澶滄鏄惁璀﹀窘鐮寸锛堝父瑙佷负true锛?
-ALLOW_WOLF_SELF_BOMB = True   # 鏄惁鍏佽鐙间汉鑷垎锛堝父瑙佷负true锛?
-ELECTION_BEFORE_N1 = False     # 鏄惁寮€灞€鐧藉ぉ鍏堜笂璀︼紙甯歌涓簍rue锛?
+# 游戏开关
+HAS_GUARD = True              # 是否有守卫
+HAS_WOLF_KING = True          # 是否有狼王（带人）
+HUNTER_NIGHT_SHOOT = False    # 猎人夜间被杀能否开枪（常规为false）
+WITCH_DOUBLE_USE = False      # 女巫同夜能否既救又毒（常规为false）
+NIGHT_BADGE_BREAKS = True     # 警长夜死是否警徽破碎（常见为true）
+ALLOW_WOLF_SELF_BOMB = True   # 是否允许狼人自爆（常见为true）
+ELECTION_BEFORE_N1 = False     # 是否开局白天先上警（常见为true）
 
-# 瑙勫垯瑕佺偣锛?
-# - 璀﹂暱绁ㄦ潈 = 1.5锛涘钩绁ㄧ敱璀﹂暱鍐冲畾鍑?涓嶅嚭鎴栬繘鍏ヤ簩/涓変汉PK锛堜緷鎴胯锛?
-# - 澶滄鏃犻仐瑷€锛涚櫧澶╁鍐虫湁閬楄█锛堥儴鍒嗚鑹蹭緥澶栬涓嬶級
-# - 鐚庝汉锛氱櫧澶╁鍐宠Е鍙戝紑鏋紱澶滄/琚瘨閫氬父涓嶅紑鏋紙鍙栧喅浜嶩UNTER_NIGHT_SHOOT锛?
-# - 濂冲帆锛氳В鑽?姣掕嵂鍚?娆★紱鑻ITCH_DOUBLE_USE=false锛屽悓涓€澶滀笉鑳戒袱鐡堕兘鐢?
-# - 瀹堝崼锛氫笉鑳借繛缁袱鏅氬畧鍚屼竴浜猴紱琚畧鍒扮殑浜鸿嫢琚嫾浜哄嚮鏉€鍒欏瓨娲?
-# - 缁撶畻椤哄簭锛堝父鐢級锛氱嫾浜哄嚮鏉€ 鈫?瀹堝崼瀹堟姢 鈫?濂冲帆寰楃煡銆屽皢姝昏€呫€嶁啋 濂冲帆鏄惁瑙ｆ晳 鈫?濂冲帆鏄惁涓嬫瘨 鈫?榛庢槑鍏竷姝昏
-# - 鑳滆礋锛氬綋銆屽瓨娲荤嫾浜烘暟閲?= 0銆嶅ソ浜鸿儨锛涘綋銆屽瓨娲荤嫾浜烘暟閲?鈮?瀛樻椿濂戒汉鏁伴噺銆嶇嫾浜鸿儨
+# 规则要点：
+# - 警长票权 = 1.5；平票由警长决定出/不出或进入二/三人PK（依房规）
+# - 夜死无遗言；白天处决有遗言（部分角色例外见下）
+# - 猎人：白天处决触发开枪；夜死/被毒通常不开枪（取决于HUNTER_NIGHT_SHOOT）
+# - 女巫：解药/毒药各1次；若WITCH_DOUBLE_USE=false，同一夜不能两瓶都用
+# - 守卫：不能连续两晚守同一人；被守到的人若被狼人击杀则存活
+# - 结算顺序（常用）：狼人击杀 → 守卫守护 → 女巫得知「将死者」→ 女巫是否解救 → 女巫是否下毒 → 黎明公布死讯
+# - 胜负：当「存活狼人数量 = 0」好人胜；当「存活狼人数量 ≥ 存活好人数量」狼人胜
 # ========================================================================
 
-# 鍏ㄥ眬鍙橀噺
+# 全局变量
 dialogue_queue = DialogueRecordingQueue()
 is_running = False
-waiting_for_next_day = False  # 鏄惁鍦ㄧ瓑寰呯敤鎴风偣鍑讳笅涓€澶?
-auto_mode = False  # 鏄惁鑷姩妯″紡锛堣嚜鍔ㄦ挱鏀炬父鎴忥級
-uls_mode = False  # 鏄惁浣跨敤ULS鐭ご閮ㄦā寮?
-current_difficulty = "鍩虹"  # 榛樿闅惧害绾у埆
-activated_modules = []  # 褰撳墠婵€娲荤殑妯″潡鍒楄〃
+waiting_for_next_day = False  # 是否在等待用户点击下一天
+auto_mode = False  # 是否自动模式（自动播放游戏）
+uls_mode = False  # 是否使用ULS短头部模式
+current_difficulty = "基础"  # 默认难度级别
+activated_modules = []  # 当前激活的模块列表
 seer_claims = []
 sheriff_player_id = None
-sheriff_candidates = []  # 绗竴澶滅嫾浜鸿璁哄喅瀹氳皝涓婅
-guard_last_target = None  # 瀹堝崼涓婃瀹堟姢鐨勭洰鏍?
-witch_save_available = True  # 濂冲帆瑙ｈ嵂鏄惁鍙敤
-witch_poison_available = True  # 濂冲帆姣掕嵂鏄惁鍙敤
+sheriff_candidates = []  # 第一夜狼人讨论决定谁上警
+guard_last_target = None  # 守卫上次守护的目标
+witch_save_available = True  # 女巫解药是否可用
+witch_poison_available = True  # 女巫毒药是否可用
 
 # ========================================================================
-# 楂樼骇绛栫暐杩借釜鍙橀噺 (Advanced Strategy Tracking)
+# 高级策略追踪变量 (Advanced Strategy Tracking)
 # ========================================================================
-# 淇℃伅瀵瑰啿杩借釜 (Information Hedging)
+# 信息对冲追踪 (Information Hedging)
 seer_counter_claims = {}  # {player_id: {"claimed_round": N, "strength": score, "retracted": bool}}
 fake_identities = {}  # {player_id: {"claimed_role": "role", "target": target_id, "round": N}}
 wolf_aggressive_plays = []  # [{"player_id": X, "action": "charge/fake_identity", "round": N}]
 
-# 鏈烘鍐茬獊杩借釜 (Mechanical Conflicts)
+# 机械冲突追踪 (Mechanical Conflicts)
 witch_guard_conflicts = []  # [{"round": N, "witch_saved": X, "guard_protected": Y, "actual_target": Z}]
-wolf_king_self_bomb_available = HAS_WOLF_KING  # 鐙肩帇鏄惁鍙互鑷垎
+wolf_king_self_bomb_available = HAS_WOLF_KING  # 狼王是否可以自爆
 self_bomb_history = []  # [{"player_id": X, "round": N, "phase": "day/night"}]
 
-# 绁ㄥ瀷杩借釜 (Vote Pattern Tracking)
-vote_split_strategies = []  # [{"round": N, "initiator": X, "targets": [Y, Z], "purpose": "split/璁╃エ"}]
+# 票型追踪 (Vote Pattern Tracking)
+vote_split_strategies = []  # [{"round": N, "initiator": X, "targets": [Y, Z], "purpose": "split/让票"}]
 vote_tie_situations = []  # [{"round": N, "tied_players": [X, Y], "sheriff_decision": Z}]
 badge_transfer_history = []  # [{"from": X, "to": Y, "round": N, "reason": "death/voluntary"}]
 
 game_state = {
-    "phase": "night",  # 娓告垙浠庡鏅氬紑濮?
+    "phase": "night",  # 游戏从夜晚开始
     "round": 0,
     "dead_players": [],
     "night_actions": {}
 }
 
-# 姣忔棩缁熻璁板綍
-daily_statistics = []  # 瀛樺偍姣忎竴澶╃殑缁熻淇℃伅
+# 每日统计记录
+daily_statistics = []  # 存储每一天的统计信息
 
-# 鍏叡璁板繂姹?- T2浼樺寲鐗堟湰锛屼娇鐢ㄎ?digest鏋舵瀯
-public_memory_pool = MemoryPool()  # 浼樺寲鐨勮蹇嗘睜锛屾敮鎸佸閲忔憳瑕佸拰token鎺у埗
+# 公共记忆池 - T2优化版本，使用Δ-digest架构
+public_memory_pool = MemoryPool()  # 优化的记忆池，支持增量摘要和token控制
 
-# 鎺ㄧ悊鑳藉姏璇勪及鍣?
-game_evaluator = None  # 灏嗗湪娓告垙寮€濮嬫椂鍒濆鍖?
+# 推理能力评估器
+game_evaluator = None  # 将在游戏开始时初始化
 
-# 12涓帺瀹堕厤缃?
+# 12个玩家配置
 PLAYERS = [
-    {"id": 0, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 1, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 2, "role": "鐙肩帇", "emoji": "馃憫", "color": "#d32f2f", "alive": True},
-    {"id": 3, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 4, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 5, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 6, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 7, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},  # 琚祴璇曡€?
-    {"id": 8, "role": "棰勮█瀹?, "emoji": "馃憗锔?, "color": "#2196F3", "alive": True},
-    {"id": 9, "role": "濂冲帆", "emoji": "馃И", "color": "#9C27B0", "alive": True},
-    {"id": 10, "role": "鐚庝汉", "emoji": "馃徆", "color": "#FF9800", "alive": True},
-    {"id": 11, "role": "瀹堝崼", "emoji": "馃洝锔?, "color": "#00BCD4", "alive": True},
+    {"id": 0, "role": "狼人", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 1, "role": "狼人", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 2, "role": "狼王", "emoji": "👑", "color": "#d32f2f", "alive": True},
+    {"id": 3, "role": "狼人", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 4, "role": "村民", "emoji": "👨‍🌾", "color": "#4CAF50", "alive": True},
+    {"id": 5, "role": "村民", "emoji": "👨‍🌾", "color": "#4CAF50", "alive": True},
+    {"id": 6, "role": "村民", "emoji": "👨‍🌾", "color": "#4CAF50", "alive": True},
+    {"id": 7, "role": "村民", "emoji": "👨‍🌾", "color": "#4CAF50", "alive": True},  # 被测试者
+    {"id": 8, "role": "预言家", "emoji": "👁️", "color": "#2196F3", "alive": True},
+    {"id": 9, "role": "女巫", "emoji": "🧪", "color": "#9C27B0", "alive": True},
+    {"id": 10, "role": "猎人", "emoji": "🏹", "color": "#FF9800", "alive": True},
+    {"id": 11, "role": "守卫", "emoji": "🛡️", "color": "#00BCD4", "alive": True},
 ]
 
-TEST_SUBJECT_ID = 7
-
-
-def sync_game_state(phase=None, round_num=None):
-    """Keep exported game_state structure updated for evaluators."""
-    global game_state
-
-    if phase is not None:
-        game_state["phase"] = phase
-    if round_num is not None:
-        game_state["round"] = round_num
-
-    game_state["players"] = [copy.deepcopy(player) for player in PLAYERS]
-    game_state["alive_players"] = sum(1 for player in PLAYERS if player.get("alive", True))
-    game_state["dead_players"] = [player["id"] for player in PLAYERS if not player.get("alive", True)]
-    game_state["wolf_num"] = sum(
-        1
-        for player in PLAYERS
-        if player.get("alive", True) and player.get("role") in ["鐙间汉", "鐙肩帇"]
-    )
-    game_state["total_players"] = len(PLAYERS)
-
-
-def build_bilingual_reasoning_guidance(round_num):
-    """Return bilingual deep-reasoning reminders for the evaluation subject."""
-    return (
-        "\n[Deep Reasoning Guidance]\n"
-        "- 鎻愬嚭鑷冲皯涓ょ粍鍙兘鐨勭嫾闃熺粍鍚堬紝鍙紩鐢?C(12,4)=495 绛夌粍鍚堟暟瀛︼紝骞惰鏄庝繚鐣?鎺掗櫎鐞嗙敱銆俓n"
-        "- Provide probability/Bayesian updates, e.g., 'If Player 2 is real seer, P(Player 10 is wolf) ~0.8; otherwise ~0.3'.\n"
-        "- 鎸囧嚭鏈疆鏂板鐨勪俊鎭紙绁ㄥ瀷銆佸璺炽€佸姝荤瓑锛夊苟鎻忚堪浣犵殑鎼滅储鎴栧壀鏋濈瓥鐣ャ€俓n"
-        "- State your final alignment judgement and intended vote target, e.g., 'Final vote target: Player X'.\n"
-    )
-
-
-def build_bilingual_vote_guidance():
-    """Return bilingual voting guidance for the evaluation subject."""
-    return (
-        "\n[Deep Reasoning Voting Guidance]\n"
-        "- Summarise in 1-2 sentences how vote patterns, role claims, and probabilities lead to your choice.\n"
-        "- Output format:\n"
-        "  ANALYSIS(CN): ...\n"
-        "  ANALYSIS(EN): ...\n"
-        "  FINAL VOTE: Player X\n"
-    )
-
-# Prompt鍚庣紑 - 瑕佹眰妯″瀷浣跨敤OUTPUT鍜孍ND鏍囪
+# Prompt后缀 - 要求模型使用OUTPUT和END标记
 OUTPUT_FORMAT_INSTRUCTION = """
-OUTPUT FORMAT (mandatory):
-- You may reason privately first, but the final message must follow the structure below.
 
-OUTPUT: <final answer or decision>
+【格式要求 - 必须遵守】
+你可以先思考和推理，但最终必须按照以下格式输出：
+
+OUTPUT: [你的最终答案/决策]
 END
 
-Rules:
-1. Only the content after 'OUTPUT:' is shared with other players.
-2. Always finish with the token END on its own line.
-3. If END is missing, the statement is considered invalid and must be regenerated.
+规则说明：
+1. 你可以在OUTPUT前自由思考（这部分不会被公开）
+2. OUTPUT: 后面写你的最终发言（这部分会被其他玩家看到）
+3. 必须以 END 标记结束
+4. 如果没有END标记，你的发言将被视为无效，需要重新生成
 
-Example:
-Reasoning: Based on last night's deaths... Player 5's logic contains contradictions...
-OUTPUT: Player 5 is likely a wolf; I recommend voting for them.
+示例：
+思考：根据昨晚的死亡情况分析...Player 5的发言逻辑有问题...
+OUTPUT: 我认为 Player 5 是狼人，建议投他
 END"""
 
-# LLM閰嶇疆 - 鏀寔涓ょ粍API閰嶇疆
+# LLM配置 - 支持两组API配置
 def load_llm_config():
-    """浠庢枃浠跺姞杞絃LM閰嶇疆"""
+    """从文件加载LLM配置"""
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
@@ -504,7 +452,7 @@ def load_llm_config():
         except Exception as e:
             print(f"[CONFIG] Error loading {CONFIG_FILE}: {e}")
 
-    # 榛樿閰嶇疆
+    # 默认配置
     return {
         "test_api_base": "http://localhost:8080",
         "test_model": "/home/apulis-dev/userdata/Llama-3.3-70B-Instruct",
@@ -515,7 +463,7 @@ def load_llm_config():
     }
 
 def save_llm_config(config):
-    """淇濆瓨LLM閰嶇疆鍒版枃浠?""
+    """保存LLM配置到文件"""
     try:
         with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
@@ -525,20 +473,20 @@ def save_llm_config(config):
         print(f"[CONFIG] Error saving {CONFIG_FILE}: {e}")
         return False
 
-# 鍔犺浇閰嶇疆
+# 加载配置
 LLM_CONFIG = load_llm_config()
 
-# Token浣跨敤闄愬埗鍜岀粺璁?
-MAX_TOKENS_PER_PLAYER = 5000  # 姣忎釜鐜╁鏈€澶oken鏁?
-total_tokens_used = 0  # 鎬籺oken浣跨敤閲?
-player_tokens_used = {}  # 姣忎釜鐜╁鐨則oken浣跨敤閲?{player_id: tokens}
+# Token使用限制和统计
+MAX_TOKENS_PER_PLAYER = 5000  # 每个玩家最大token数
+total_tokens_used = 0  # 总token使用量
+player_tokens_used = {}  # 每个玩家的token使用量 {player_id: tokens}
 
 HTML_TEMPLATE = r"""
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>鐙间汉鏉€ - 4瀵硅瘽妗嗙増鏈?/title>
+    <title>狼人杀 - 4对话框版本</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -679,7 +627,7 @@ HTML_TEMPLATE = r"""
         }
 
         .player-circle.sheriff::after {
-            content: '馃帠锔?;
+            content: '🎖️';
             position: absolute;
             top: -5px;
             right: -5px;
@@ -784,64 +732,64 @@ HTML_TEMPLATE = r"""
 </head>
 <body class="night">
     <div class="container">
-        <h1>馃幃 鐙间汉鏉€ - 4瀵硅瘽妗嗙増鏈?/h1>
+        <h1>🎮 狼人杀 - 4对话框版本</h1>
 
         <div class="status-info" id="status">
-            鐘舵€侊細绛夊緟寮€濮?
+            状态：等待开始
         </div>
 
         <div class="status-info" id="token-stats" style="background: rgba(255, 152, 0, 0.2); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 15px;">
-            <span>馃敘 Token浣跨敤: 鎬昏 <span id="total-tokens">0</span></span>
+            <span>🔢 Token使用: 总计 <span id="total-tokens">0</span></span>
             <span>|</span>
-            <span>闄愬埗/鐜╁:
+            <span>限制/玩家:
                 <input type="number" id="token-limit-input" value="5000" min="100" max="100000"
                        style="width: 80px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
             </span>
             <button onclick="updateTokenLimit()" style="padding: 4px 12px; font-size: 13px; cursor: pointer; border-radius: 4px; border: 1px solid #FF9800; background: white; color: #FF9800;">
-                鉁?鏇存柊闄愬埗
+                ✓ 更新限制
             </button>
         </div>
 
         <div class="controls">
-            <button onclick="startGame()" id="btn-start">鈻讹笍 寮€濮嬫父鎴?/button>
-            <button onclick="stopGame()" id="btn-stop" disabled>鈴癸笍 鍋滄</button>
-            <button onclick="toggleAutoMode()" id="btn-auto">馃攧 鍒囨崲涓鸿嚜鍔ㄦā寮?/button>
-            <button onclick="toggleULSMode()" id="btn-uls">馃摑 鍒囨崲涓篣LS妯″紡</button>
-            <button onclick="showConfigModal()" id="btn-config">鈿欙笍 閰嶇疆API</button>
-            <button onclick="switchVersion('T0')" id="btn-version-t0" style="background: #FF9800; color: white;">馃搶 T0鐗堟湰</button>
-            <button onclick="switchVersion('T1')" id="btn-version-t1" style="background: #4CAF50; color: white;">馃 T1鐗堟湰(褰撳墠)</button>
-            <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">馃И 娴嬭瘯ULS++鐞嗚В</button>
-            <button onclick="nextDay()" id="btn-next" disabled>鈴笍 涓嬩竴澶?/button>
-            <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;" disabled>馃搳 鏄剧ず璇勪及</button>
-            <button onclick="toggleLanguage()" id="btn-lang">馃寪 English</button>
-            <button onclick="clearAll()" id="btn-clear">馃棏锔?娓呯┖</button>
+            <button onclick="startGame()" id="btn-start">▶️ 开始游戏</button>
+            <button onclick="stopGame()" id="btn-stop" disabled>⏹️ 停止</button>
+            <button onclick="toggleAutoMode()" id="btn-auto">🔄 切换为自动模式</button>
+            <button onclick="toggleULSMode()" id="btn-uls">📝 切换为ULS模式</button>
+            <button onclick="showConfigModal()" id="btn-config">⚙️ 配置API</button>
+            <button onclick="switchVersion('T0')" id="btn-version-t0" style="background: #FF9800; color: white;">📌 T0版本</button>
+            <button onclick="switchVersion('T1')" id="btn-version-t1" style="background: #4CAF50; color: white;">🧠 T1版本(当前)</button>
+            <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">🧪 测试ULS++理解</button>
+            <button onclick="nextDay()" id="btn-next" disabled>⏭️ 下一天</button>
+            <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;" disabled>📊 显示评估</button>
+            <button onclick="toggleLanguage()" id="btn-lang">🌐 English</button>
+            <button onclick="clearAll()" id="btn-clear">🗑️ 清空</button>
         </div>
 
-        <!-- 闅惧害閫夋嫨鍣?-->
+        <!-- 难度选择器 -->
         <div class="difficulty-selector" style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-            <h3 style="color: white; margin-bottom: 10px;">馃幃 閫夋嫨闅惧害绾у埆 Difficulty Level</h3>
-            <button onclick="setDifficulty('鍩虹')" id="btn-diff-basic" class="difficulty-btn" style="background: #4CAF50; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold;">
-                馃摎 鍩虹 (2妯″潡)
+            <h3 style="color: white; margin-bottom: 10px;">🎮 选择难度级别 Difficulty Level</h3>
+            <button onclick="setDifficulty('基础')" id="btn-diff-basic" class="difficulty-btn" style="background: #4CAF50; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold;">
+                📚 基础 (2模块)
             </button>
-            <button onclick="setDifficulty('杩涢樁')" id="btn-diff-advanced" class="difficulty-btn" style="background: #FF9800; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
-                馃敟 杩涢樁 (3妯″潡)
+            <button onclick="setDifficulty('进阶')" id="btn-diff-advanced" class="difficulty-btn" style="background: #FF9800; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
+                🔥 进阶 (3模块)
             </button>
-            <button onclick="setDifficulty('鍦扮嫳')" id="btn-diff-hell" class="difficulty-btn" style="background: #f44336; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
-                馃拃 鍦扮嫳 (4+妯″潡)
+            <button onclick="setDifficulty('地狱')" id="btn-diff-hell" class="difficulty-btn" style="background: #f44336; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
+                💀 地狱 (4+模块)
             </button>
             <div id="difficulty-info" style="color: white; margin-top: 10px; font-size: 14px;">
-                褰撳墠闅惧害 Current: <span id="current-difficulty" style="font-weight: bold; color: #4CAF50;">鍩虹 Basic</span>
+                当前难度 Current: <span id="current-difficulty" style="font-weight: bold; color: #4CAF50;">基础 Basic</span>
             </div>
         </div>
 
-        <!-- API閰嶇疆妯℃€佺獥鍙?-->
+        <!-- API配置模态窗口 -->
         <div id="config-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
             <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%;">
-                <h2 style="margin-top: 0; color: #333;">鈿欙笍 API閰嶇疆</h2>
+                <h2 style="margin-top: 0; color: #333;">⚙️ API配置</h2>
 
-                <!-- 娴嬭瘯妯″瀷閰嶇疆 -->
+                <!-- 测试模型配置 -->
                 <div style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
-                    <h3 style="color: #28a745; font-size: 16px; margin-top: 0;">馃И 娴嬭瘯妯″瀷閰嶇疆 (Test Player)</h3>
+                    <h3 style="color: #28a745; font-size: 16px; margin-top: 0;">🧪 测试模型配置 (Test Player)</h3>
                     <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
                     <input type="text" id="test-api-base" value="http://localhost:8080"
                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
@@ -851,9 +799,9 @@ HTML_TEMPLATE = r"""
                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
                 </div>
 
-                <!-- NPC妯″瀷閰嶇疆 -->
+                <!-- NPC模型配置 -->
                 <div style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
-                    <h3 style="color: #667eea; font-size: 16px; margin-top: 0;">馃 NPC妯″瀷閰嶇疆 (11 NPC Players)</h3>
+                    <h3 style="color: #667eea; font-size: 16px; margin-top: 0;">🤖 NPC模型配置 (11 NPC Players)</h3>
                     <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
                     <input type="text" id="npc-api-base" value="http://localhost:8080"
                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
@@ -864,8 +812,8 @@ HTML_TEMPLATE = r"""
                 </div>
 
                 <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
-                    <button onclick="closeConfigModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">鍙栨秷</button>
-                    <button onclick="saveConfig()" style="padding: 10px 20px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer;">淇濆瓨閰嶇疆</button>
+                    <button onclick="closeConfigModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                    <button onclick="saveConfig()" style="padding: 10px 20px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer;">保存配置</button>
                 </div>
             </div>
         </div>
@@ -873,50 +821,50 @@ HTML_TEMPLATE = r"""
         <div class="circle-area">
             <div class="circle-container" id="circle-container">
                 <div class="center-circle">
-                    馃惡<br>鐙间汉鏉€
+                    🐺<br>狼人杀
                 </div>
             </div>
         </div>
 
         <div class="main-area">
             <div class="dialogue-panel">
-                <div class="panel-header werewolf">馃惡 澶滄櫄 - 鐙间汉瀵硅瘽</div>
+                <div class="panel-header werewolf">🐺 夜晚 - 狼人对话</div>
                 <div class="panel-output" id="werewolf-output">
                     <div style="color: #999; text-align: center; padding: 20px;">
-                        绛夊緟鐙间汉琛屽姩...
+                        等待狼人行动...
                     </div>
                 </div>
             </div>
 
             <div class="dialogue-panel">
-                <div class="panel-header god">鉁?澶滄櫄 - 绁炶亴琛屽姩</div>
+                <div class="panel-header god">✨ 夜晚 - 神职行动</div>
                 <div class="panel-output" id="god-output">
                     <div style="color: #999; text-align: center; padding: 20px;">
-                        绛夊緟绁炶亴琛屽姩...
+                        等待神职行动...
                     </div>
                 </div>
             </div>
 
             <div class="dialogue-panel">
-                <div class="panel-header day">鈽€锔?鐧藉ぉ - 璁ㄨ鎶曠エ</div>
+                <div class="panel-header day">☀️ 白天 - 讨论投票</div>
                 <div class="panel-output" id="day-output">
                     <div style="color: #999; text-align: center; padding: 20px;">
-                        绛夊緟鐧藉ぉ璁ㄨ...
+                        等待白天讨论...
                     </div>
                 </div>
             </div>
 
             <div class="dialogue-panel">
-                <div class="panel-header statistics">馃搳 瀹炴椂缁熻</div>
+                <div class="panel-header statistics">📊 实时统计</div>
                 <div class="panel-output" id="statistics-output">
                     <div id="difficulty-modules-display" style="margin-bottom: 15px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 4px solid #4CAF50; border-radius: 4px;">
-                        <h4 style="margin: 0 0 8px 0; color: #4CAF50; font-size: 14px;">馃拵 婵€娲荤殑闅惧害妯″潡 Activated Modules</h4>
+                        <h4 style="margin: 0 0 8px 0; color: #4CAF50; font-size: 14px;">💎 激活的难度模块 Activated Modules</h4>
                         <div id="modules-list" style="font-size: 12px; color: #ddd;">
-                            <span style="color: #888;">绛夊緟娓告垙寮€濮?.. Waiting for game start...</span>
+                            <span style="color: #888;">等待游戏开始... Waiting for game start...</span>
                         </div>
                     </div>
                     <div style="color: #999; text-align: center; padding: 20px;">
-                        绛夊緟娓告垙寮€濮?..
+                        等待游戏开始...
                     </div>
                 </div>
             </div>
@@ -927,47 +875,47 @@ HTML_TEMPLATE = r"""
         const players = {{ players | tojson }};
         let eventSource = null;
         let currentPhase = 'night';
-        let autoMode = false;  // 榛樿鎵嬪姩妯″紡
-        let ulsMode = false;  // 榛樿闈濽LS妯″紡
-        let currentLang = 'zh';  // 榛樿涓枃
+        let autoMode = false;  // 默认手动模式
+        let ulsMode = false;  // 默认非ULS模式
+        let currentLang = 'zh';  // 默认中文
 
-        // 缈昏瘧瀛楀吀
+        // 翻译字典
         const translations = {
             zh: {
-                title: '鐙间汉鏉€ - 4瀵硅瘽妗嗙増鏈?,
-                status: '鐘舵€侊細',
-                startGame: '鈻讹笍 寮€濮嬫父鎴?,
-                stopGame: '鈴癸笍 鍋滄',
-                autoModeManual: '馃攧 鍒囨崲涓鸿嚜鍔ㄦā寮?,
-                autoModeAuto: '馃攣 鍒囨崲涓烘墜鍔ㄦā寮?,
-                nextDay: '鈴笍 涓嬩竴澶?,
-                clearAll: '馃棏锔?娓呯┖',
-                langSwitch: '馃寪 English',
-                waitingStart: '绛夊緟寮€濮?,
-                werewolfPanel: '馃惡 澶滄櫄 - 鐙间汉瀵硅瘽',
-                godPanel: '鉁?澶滄櫄 - 绁炶亴琛屽姩',
-                dayPanel: '鈽€锔?鐧藉ぉ - 璁ㄨ鎶曠エ',
-                statsPanel: '馃搳 瀹炴椂缁熻',
-                waitingWerewolf: '绛夊緟鐙间汉琛屽姩...',
-                waitingGod: '绛夊緟绁炶亴琛屽姩...',
-                waitingDay: '绛夊緟鐧藉ぉ璁ㄨ...',
-                waitingGame: '绛夊緟娓告垙寮€濮?..'
+                title: '狼人杀 - 4对话框版本',
+                status: '状态：',
+                startGame: '▶️ 开始游戏',
+                stopGame: '⏹️ 停止',
+                autoModeManual: '🔄 切换为自动模式',
+                autoModeAuto: '🔁 切换为手动模式',
+                nextDay: '⏭️ 下一天',
+                clearAll: '🗑️ 清空',
+                langSwitch: '🌐 English',
+                waitingStart: '等待开始',
+                werewolfPanel: '🐺 夜晚 - 狼人对话',
+                godPanel: '✨ 夜晚 - 神职行动',
+                dayPanel: '☀️ 白天 - 讨论投票',
+                statsPanel: '📊 实时统计',
+                waitingWerewolf: '等待狼人行动...',
+                waitingGod: '等待神职行动...',
+                waitingDay: '等待白天讨论...',
+                waitingGame: '等待游戏开始...'
             },
             en: {
                 title: 'Werewolf - 4 Panel Version',
                 status: 'Status: ',
-                startGame: '鈻讹笍 Start Game',
-                stopGame: '鈴癸笍 Stop',
-                autoModeManual: '馃攧 Switch to Auto',
-                autoModeAuto: '馃攣 Switch to Manual',
-                nextDay: '鈴笍 Next Day',
-                clearAll: '馃棏锔?Clear',
-                langSwitch: '馃寪 涓枃',
+                startGame: '▶️ Start Game',
+                stopGame: '⏹️ Stop',
+                autoModeManual: '🔄 Switch to Auto',
+                autoModeAuto: '🔁 Switch to Manual',
+                nextDay: '⏭️ Next Day',
+                clearAll: '🗑️ Clear',
+                langSwitch: '🌐 中文',
                 waitingStart: 'Waiting to start',
-                werewolfPanel: '馃惡 Night - Werewolf Chat',
-                godPanel: '鉁?Night - God Roles',
-                dayPanel: '鈽€锔?Day - Discussion & Voting',
-                statsPanel: '馃搳 Real-time Stats',
+                werewolfPanel: '🐺 Night - Werewolf Chat',
+                godPanel: '✨ Night - God Roles',
+                dayPanel: '☀️ Day - Discussion & Voting',
+                statsPanel: '📊 Real-time Stats',
                 waitingWerewolf: 'Waiting for werewolves...',
                 waitingGod: 'Waiting for god roles...',
                 waitingDay: 'Waiting for day discussion...',
@@ -1041,7 +989,7 @@ HTML_TEMPLATE = r"""
         }
 
         function addDialogue(data) {
-            // 鏍规嵁瀵硅瘽绫诲瀷璺敱鍒颁笉鍚岀殑闈㈡澘
+            // 根据对话类型路由到不同的面板
             let outputId;
 
             if (data.panel === 'werewolf') {
@@ -1056,7 +1004,7 @@ HTML_TEMPLATE = r"""
 
             const output = document.getElementById(outputId);
 
-            if (output.innerHTML.includes('绛夊緟')) {
+            if (output.innerHTML.includes('等待')) {
                 output.innerHTML = '';
             }
 
@@ -1071,7 +1019,7 @@ HTML_TEMPLATE = r"""
                 contentDiv.className = 'dialogue-content';
                 contentDiv.style.fontWeight = 'bold';
                 contentDiv.style.color = '#667eea';
-                contentDiv.style.whiteSpace = 'pre-wrap';  // 淇濈暀鎹㈣鍜岀┖鏍?
+                contentDiv.style.whiteSpace = 'pre-wrap';  // 保留换行和空格
                 contentDiv.textContent = data.content;
 
                 item.appendChild(contentDiv);
@@ -1086,7 +1034,7 @@ HTML_TEMPLATE = r"""
             playerDiv.className = 'dialogue-player';
             playerDiv.style.color = player.color;
 
-            // 鍙湪鐙间汉/绁炶亴闈㈡澘鏄剧ず瑙掕壊锛岀櫧澶╅潰鏉夸笉鏄剧ず
+            // 只在狼人/神职面板显示角色，白天面板不显示
             if (data.panel === 'werewolf' || data.panel === 'god') {
                 playerDiv.textContent = player.emoji + ' Player ' + player.id + ' (' + player.role + ')';
             } else {
@@ -1130,7 +1078,7 @@ HTML_TEMPLATE = r"""
                 .then(data => {
                     console.log('Started:', data);
                     startEventStream();
-                    // 鍚敤璇勪及鎸夐挳
+                    // 启用评估按钮
                     document.getElementById('btn-eval').disabled = false;
                 });
         }
@@ -1150,16 +1098,16 @@ HTML_TEMPLATE = r"""
         }
 
         function updateUI() {
-            // 鏇存柊鏍囬
+            // 更新标题
             const h1 = document.querySelector('h1');
-            if (h1) h1.textContent = '馃幃 ' + t('title');
+            if (h1) h1.textContent = '🎮 ' + t('title');
 
-            // 鏇存柊鐘舵€佹枃鏈墠缂€锛堜繚鐣欏悗闈㈢殑鍔ㄦ€佸唴瀹癸級
+            // 更新状态文本前缀（保留后面的动态内容）
             const statusEl = document.getElementById('status');
             if (statusEl) {
                 const statusText = statusEl.textContent;
-                if (statusText.includes('锛?) || statusText.includes(': ')) {
-                    const parts = statusText.split(/锛殀: /);
+                if (statusText.includes('：') || statusText.includes(': ')) {
+                    const parts = statusText.split(/：|: /);
                     if (parts.length > 1) {
                         statusEl.textContent = t('status') + parts[1];
                     } else {
@@ -1168,7 +1116,7 @@ HTML_TEMPLATE = r"""
                 }
             }
 
-            // 鏇存柊鎸夐挳
+            // 更新按钮
             const btnStart = document.getElementById('btn-start');
             const btnStop = document.getElementById('btn-stop');
             const btnAuto = document.getElementById('btn-auto');
@@ -1183,14 +1131,14 @@ HTML_TEMPLATE = r"""
             if (btnLang) btnLang.textContent = t('langSwitch');
             if (btnClear) btnClear.textContent = t('clearAll');
 
-            // 鏇存柊闈㈡澘鏍囬
+            // 更新面板标题
             const panelHeaders = document.querySelectorAll('.panel-header');
             if (panelHeaders[0]) panelHeaders[0].textContent = t('werewolfPanel');
             if (panelHeaders[1]) panelHeaders[1].textContent = t('godPanel');
             if (panelHeaders[2]) panelHeaders[2].textContent = t('dayPanel');
             if (panelHeaders[3]) panelHeaders[3].textContent = t('statsPanel');
 
-            // 鏇存柊鍗犱綅鏂囨湰
+            // 更新占位文本
             const panels = [
                 {id: 'werewolf-output', key: 'waitingWerewolf'},
                 {id: 'god-output', key: 'waitingGod'},
@@ -1200,7 +1148,7 @@ HTML_TEMPLATE = r"""
 
             panels.forEach(panel => {
                 const el = document.getElementById(panel.id);
-                if (el.textContent.includes('绛夊緟') || el.textContent.includes('Waiting')) {
+                if (el.textContent.includes('等待') || el.textContent.includes('Waiting')) {
                     el.innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">' + t(panel.key) + '</div>';
                 }
             });
@@ -1216,12 +1164,12 @@ HTML_TEMPLATE = r"""
             if (existingModal) {
                 existingModal.style.display = 'flex';
                 const contentDiv = existingModal.querySelector('.uls-test-content');
-                contentDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">鈴?Testing LLM understanding...</div></div>';
+                contentDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">⏳ Testing LLM understanding...</div></div>';
             } else {
                 const modal = document.createElement('div');
                 modal.id = 'uls-test-modal';
                 modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;';
-                modal.innerHTML = '<div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%; max-height: 80%; overflow-y: auto;"><h2 style="margin-top: 0; color: #333;">馃И ULS++ Understanding Test 娴嬭瘯缁撴灉</h2><div class="uls-test-content" style="max-height: 400px; overflow-y: auto; margin: 15px 0;"><div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">鈴?Testing LLM understanding...</div></div></div><div style="text-align: right; margin-top: 20px;"><button onclick="hideULSTestResult()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer;">Close 鍏抽棴</button></div></div>';
+                modal.innerHTML = '<div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%; max-height: 80%; overflow-y: auto;"><h2 style="margin-top: 0; color: #333;">🧪 ULS++ Understanding Test 测试结果</h2><div class="uls-test-content" style="max-height: 400px; overflow-y: auto; margin: 15px 0;"><div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">⏳ Testing LLM understanding...</div></div></div><div style="text-align: right; margin-top: 20px;"><button onclick="hideULSTestResult()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer;">Close 关闭</button></div></div>';
                 document.body.appendChild(modal);
             }
 
@@ -1240,38 +1188,38 @@ HTML_TEMPLATE = r"""
                     if (data.status === 'ok') {
                         contentDiv.innerHTML = `
                             <div style="background: rgba(74, 144, 226, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                                <h4 style="color: #4a90e2; margin-bottom: 10px;">鉁?Test Completed 娴嬭瘯瀹屾垚</h4>
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">✅ Test Completed 测试完成</h4>
                             </div>
 
                             <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-                                <h4 style="color: #4a90e2; margin-bottom: 10px;">馃 LLM's Answer LLM鍥炵瓟锛?/h4>
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">🤖 LLM's Answer LLM回答：</h4>
                                 <div style="white-space: pre-wrap; line-height: 1.6; background: rgba(0, 0, 0, 0.05); padding: 10px; border-radius: 3px;">${data.llm_answer}</div>
                             </div>
 
                             <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 5px; border-left: 4px solid #4caf50;">
-                                <h4 style="color: #4caf50; margin-bottom: 10px;">鉁?Correct Answers 姝ｇ‘绛旀锛?/h4>
+                                <h4 style="color: #4caf50; margin-bottom: 10px;">✓ Correct Answers 正确答案：</h4>
                                 <div style="line-height: 1.8;">
-                                    <div><strong>闂1:</strong> ${data.correct_answers.q1}</div>
-                                    <div><strong>闂2:</strong> ${data.correct_answers.q2}</div>
-                                    <div><strong>闂3:</strong> ${data.correct_answers.q3}</div>
+                                    <div><strong>问题1:</strong> ${data.correct_answers.q1}</div>
+                                    <div><strong>问题2:</strong> ${data.correct_answers.q2}</div>
+                                    <div><strong>问题3:</strong> ${data.correct_answers.q3}</div>
                                 </div>
                             </div>
 
                             <details style="margin-top: 15px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 5px;">
-                                <summary style="cursor: pointer; font-weight: bold; color: #888;">鏌ョ湅娴嬭瘯鐢ㄧ殑Prompt</summary>
+                                <summary style="cursor: pointer; font-weight: bold; color: #888;">查看测试用的Prompt</summary>
                                 <div style="white-space: pre-wrap; margin-top: 10px; line-height: 1.4; font-size: 13px; color: #666;">${data.test_prompt}</div>
                             </details>
                         `;
                     } else {
-                        contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">鉂?Error: ${data.message}</div>`;
+                        contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Error: ${data.message}</div>`;
                     }
                 } else {
-                    contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">鉂?Server error: ${response.status}</div>`;
+                    contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Server error: ${response.status}</div>`;
                 }
             } catch (error) {
                 const modal = document.getElementById('uls-test-modal');
                 const contentDiv = modal.querySelector('.uls-test-content');
-                contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">鉂?Network error: ${error.message}</div>`;
+                contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Network error: ${error.message}</div>`;
             }
         }
 
@@ -1296,7 +1244,7 @@ HTML_TEMPLATE = r"""
                 btn.style.color = '#667eea';
             }
 
-            // 閫氱煡鍚庣妯″紡鏀瑰彉
+            // 通知后端模式改变
             fetch('/api/set_auto_mode', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1306,7 +1254,7 @@ HTML_TEMPLATE = r"""
             .then(data => {
                 console.log('Auto mode:', data);
 
-                // 濡傛灉鍒囨崲鍒拌嚜鍔ㄦā寮忎笖姝ｅ湪绛夊緟锛岃嚜鍔ㄧ户缁?
+                // 如果切换到自动模式且正在等待，自动继续
                 if (autoMode && !document.getElementById('btn-next').disabled) {
                     nextDay();
                 }
@@ -1318,16 +1266,16 @@ HTML_TEMPLATE = r"""
             const btn = document.getElementById('btn-uls');
 
             if (ulsMode) {
-                btn.textContent = '馃摑 ULS妯″紡 (宸插惎鐢?';
+                btn.textContent = '📝 ULS模式 (已启用)';
                 btn.style.background = '#2196F3';
                 btn.style.color = 'white';
             } else {
-                btn.textContent = '馃摑 鍒囨崲涓篣LS妯″紡';
+                btn.textContent = '📝 切换为ULS模式';
                 btn.style.background = 'white';
                 btn.style.color = 'black';
             }
 
-            // 鍚戞湇鍔″櫒鍚屾ULS妯″紡鐘舵€?
+            // 向服务器同步ULS模式状态
             fetch('/api/set_uls_mode', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1340,7 +1288,7 @@ HTML_TEMPLATE = r"""
         }
 
         function showConfigModal() {
-            // 浠庢湇鍔″櫒鍔犺浇褰撳墠閰嶇疆
+            // 从服务器加载当前配置
             fetch('/api/get_llm_config')
                 .then(response => response.json())
                 .then(data => {
@@ -1381,12 +1329,12 @@ HTML_TEMPLATE = r"""
             .then(response => response.json())
             .then(data => {
                 console.log('Config updated:', data);
-                alert('API閰嶇疆宸叉洿鏂帮紒\\n\\n娴嬭瘯妯″瀷: ' + testApiBase + '\\nNPC妯″瀷: ' + npcApiBase);
+                alert('API配置已更新！\\n\\n测试模型: ' + testApiBase + '\\nNPC模型: ' + npcApiBase);
                 closeConfigModal();
             })
             .catch(error => {
                 console.error('Error updating config:', error);
-                alert('閰嶇疆鏇存柊澶辫触锛岃閲嶈瘯');
+                alert('配置更新失败，请重试');
             });
         }
 
@@ -1394,7 +1342,7 @@ HTML_TEMPLATE = r"""
             const newLimit = parseInt(document.getElementById('token-limit-input').value);
 
             if (newLimit < 100 || newLimit > 100000) {
-                alert('Token闄愬埗蹇呴』鍦?00鍒?00000涔嬮棿');
+                alert('Token限制必须在100到100000之间');
                 return;
             }
 
@@ -1406,11 +1354,11 @@ HTML_TEMPLATE = r"""
             .then(response => response.json())
             .then(data => {
                 console.log('Token limit updated:', data);
-                alert('Token闄愬埗宸叉洿鏂颁负: ' + newLimit + '/鐜╁');
+                alert('Token限制已更新为: ' + newLimit + '/玩家');
             })
             .catch(error => {
                 console.error('Error updating token limit:', error);
-                alert('鏇存柊澶辫触锛岃閲嶈瘯');
+                alert('更新失败，请重试');
             });
         }
 
@@ -1425,7 +1373,7 @@ HTML_TEMPLATE = r"""
         }
 
         async function switchVersion(version) {
-            if (confirm('纭畾瑕佸垏鎹㈠埌' + version + '鐗堟湰鍚?\\n\\nT0鐗堟湰: 鍩虹鐗堟湰\\nT1鐗堟湰: 澧炲己鐗堟湰(鍚叕鍏辫蹇嗘睜鍜屾帹鐞嗘姇绁?\\n\\n鍒囨崲鍚庨〉闈㈠皢鑷姩鍒锋柊銆?)) {
+            if (confirm('确定要切换到' + version + '版本吗?\\n\\nT0版本: 基础版本\\nT1版本: 增强版本(含公共记忆池和推理投票)\\n\\n切换后页面将自动刷新。')) {
                 try {
                     const response = await fetch('/api/switch_version', {
                         method: 'POST',
@@ -1433,22 +1381,22 @@ HTML_TEMPLATE = r"""
                         body: JSON.stringify({ version: version })
                     });
                     const data = await response.json();
-                    alert(data.message + '\\n\\n椤甸潰灏嗗湪2绉掑悗鑷姩鍒锋柊銆?);
+                    alert(data.message + '\\n\\n页面将在2秒后自动刷新。');
                     setTimeout(() => location.reload(), 2000);
                 } catch (error) {
-                    alert('鍒囨崲鐗堟湰澶辫触: ' + error.message);
+                    alert('切换版本失败: ' + error.message);
                 }
             }
         }
 
         function clearAll() {
-            document.getElementById('werewolf-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">绛夊緟鐙间汉琛屽姩...</div>';
-            document.getElementById('god-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">绛夊緟绁炶亴琛屽姩...</div>';
-            document.getElementById('day-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">绛夊緟鐧藉ぉ璁ㄨ...</div>';
-            document.getElementById('statistics-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">绛夊緟娓告垙寮€濮?..</div>';
+            document.getElementById('werewolf-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待狼人行动...</div>';
+            document.getElementById('god-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待神职行动...</div>';
+            document.getElementById('day-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待白天讨论...</div>';
+            document.getElementById('statistics-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待游戏开始...</div>';
         }
 
-        // 璇勪及鍔熻兘
+        // 评估功能
         function showEvaluation() {
             fetch('/api/get_evaluation')
                 .then(r => r.json())
@@ -1456,11 +1404,11 @@ HTML_TEMPLATE = r"""
                     if (data.status === 'ok') {
                         displayEvaluationModal(data.evaluation);
                     } else {
-                        alert('璇勪及鏁版嵁涓嶅彲鐢細' + (data.message || '鏈煡閿欒'));
+                        alert('评估数据不可用：' + (data.message || '未知错误'));
                     }
                 })
                 .catch(error => {
-                    alert('鑾峰彇璇勪及澶辫触: ' + error.message);
+                    alert('获取评估失败: ' + error.message);
                 });
         }
 
@@ -1474,63 +1422,63 @@ HTML_TEMPLATE = r"""
 
             const content = isEnhanced ? `
                 <div style="background: white; padding: 30px; border-radius: 12px; max-width: 1100px; max-height: 90vh; overflow-y: auto; width: 95%;">
-                    <h2 style="color: #333; margin-top: 0;">馃搳 澧炲己鍨嬫繁搴︽帹鐞嗚兘鍔涜瘎浼版姤鍛?/h2>
+                    <h2 style="color: #333; margin-top: 0;">📊 增强型深度推理能力评估报告</h2>
                     <p style="color: #666; font-size: 14px;">Enhanced Deep Reasoning Evaluation</p>
 
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0;">
                         <div style="font-size: 52px; font-weight: bold; margin: 10px 0;">${evaluation.comprehensive_score.overall_score}/100</div>
                         <div style="font-size: 26px; font-weight: bold; margin: 10px 0;">${evaluation.comprehensive_score.grade}</div>
                         <div style="font-size: 14px; opacity: 0.9; margin-top: 15px;">
-                            浼犵粺鎸囨爣璐＄尞: ${evaluation.comprehensive_score.traditional_contribution} (40%) |
-                            娣卞害鎺ㄧ悊璐＄尞: ${evaluation.comprehensive_score.deep_reasoning_contribution} (60%)
+                            传统指标贡献: ${evaluation.comprehensive_score.traditional_contribution} (40%) |
+                            深度推理贡献: ${evaluation.comprehensive_score.deep_reasoning_contribution} (60%)
                         </div>
                     </div>
 
                     <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                        <h3 style="color: #667eea; margin-top: 0;">馃 娣卞害鎺ㄧ悊缁村害 (Deep Reasoning - 60% 鏉冮噸)</h3>
-                        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">璇勪及鍦╰rillions of combinations闂绌洪棿涓殑鏁板鎺ㄧ悊鑳藉姏</p>
+                        <h3 style="color: #667eea; margin-top: 0;">🧠 深度推理维度 (Deep Reasoning - 60% 权重)</h3>
+                        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">评估在trillions of combinations问题空间中的数学推理能力</p>
                         ${generateDeepReasoningScores(evaluation.deep_reasoning_metrics)}
                     </div>
 
                     <div style="background: #fff9e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                        <h3 style="color: #ff9800; margin-top: 0;">馃搵 浼犵粺璇勪及缁村害 (Traditional - 40% 鏉冮噸)</h3>
+                        <h3 style="color: #ff9800; margin-top: 0;">📋 传统评估维度 (Traditional - 40% 权重)</h3>
                         ${generateDimensionScores(evaluation.traditional_metrics.scores)}
                     </div>
 
                     <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                        <strong>缁熻鏁版嵁:</strong><br>
-                        鍙戣█娆℃暟: ${evaluation.stats.speeches || 0}娆?|
-                        鎶曠エ娆℃暟: ${evaluation.stats.votes || 0}娆?|
-                        绔欒竟鍙樺寲: ${evaluation.stats.side_changes || 0}娆?
+                        <strong>统计数据:</strong><br>
+                        发言次数: ${evaluation.stats.speeches || 0}次 |
+                        投票次数: ${evaluation.stats.votes || 0}次 |
+                        站边变化: ${evaluation.stats.side_changes || 0}次
                     </div>
 
                     <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">鍏抽棴</button>
-                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">馃搫 瀵煎嚭JSON</button>
+                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
+                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">📄 导出JSON</button>
                     </div>
                 </div>
             ` : `
                 <div style="background: white; padding: 30px; border-radius: 12px; max-width: 900px; max-height: 80vh; overflow-y: auto; width: 90%;">
-                    <h2 style="color: #333; margin-top: 0;">馃搳 鎺ㄧ悊鑳藉姏璇勪及鎶ュ憡</h2>
+                    <h2 style="color: #333; margin-top: 0;">📊 推理能力评估报告</h2>
 
                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
                         <div style="font-size: 48px; font-weight: bold; margin: 10px 0;">${evaluation.weighted_score}/100</div>
                         <div style="font-size: 24px; font-weight: bold;">${evaluation.final_grade}</div>
                     </div>
 
-                    <h3 style="color: #333;">鍚勭淮搴﹀緱鍒?</h3>
+                    <h3 style="color: #333;">各维度得分:</h3>
                     ${generateDimensionScores(evaluation.scores)}
 
                     <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                        <strong>缁熻鏁版嵁:</strong><br>
-                        鍙戣█娆℃暟: ${evaluation.stats.speeches || 0}娆?|
-                        鎶曠エ娆℃暟: ${evaluation.stats.votes || 0}娆?|
-                        绔欒竟鍙樺寲: ${evaluation.stats.side_changes || 0}娆?
+                        <strong>统计数据:</strong><br>
+                        发言次数: ${evaluation.stats.speeches || 0}次 |
+                        投票次数: ${evaluation.stats.votes || 0}次 |
+                        站边变化: ${evaluation.stats.side_changes || 0}次
                     </div>
 
                     <div style="text-align: center; margin-top: 20px;">
-                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">鍏抽棴</button>
-                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">馃搫 瀵煎嚭JSON</button>
+                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
+                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">📄 导出JSON</button>
                     </div>
                 </div>
             `;
@@ -1541,12 +1489,12 @@ HTML_TEMPLATE = r"""
 
         function generateDimensionScores(scores) {
             const dimensions = {
-                'information_extraction': '淇℃伅鎻愬彇鑳藉姏',
-                'logical_deduction': '閫昏緫鎺ㄧ悊鑳藉姏',
-                'pattern_recognition': '妯″紡璇嗗埆鑳藉姏',
-                'vote_analysis': '绁ㄥ瀷鍒嗘瀽鑳藉姏',
-                'adaptive_behavior': '閫傚簲鎬ц涓?,
-                'communication_quality': '娌熼€氳川閲?
+                'information_extraction': '信息提取能力',
+                'logical_deduction': '逻辑推理能力',
+                'pattern_recognition': '模式识别能力',
+                'vote_analysis': '票型分析能力',
+                'adaptive_behavior': '适应性行为',
+                'communication_quality': '沟通质量'
             };
 
             let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
@@ -1586,51 +1534,51 @@ HTML_TEMPLATE = r"""
                 .then(r => r.json())
                 .then(data => {
                     if (data.status === 'ok') {
-                        alert('璇勪及缁撴灉宸插鍑哄埌: ' + data.filename);
+                        alert('评估结果已导出到: ' + data.filename);
                     }
                 })
                 .catch(error => {
-                    alert('瀵煎嚭澶辫触: ' + error.message);
+                    alert('导出失败: ' + error.message);
                 });
         }
 
-        // 闅惧害閫夋嫨鍣?
-        let currentDifficulty = '鍩虹';
+        // 难度选择器
+        let currentDifficulty = '基础';
 
         function setDifficulty(level) {
             currentDifficulty = level;
 
-            // 鏇存柊鏄剧ず鏂囨湰
+            // 更新显示文本
             const difficultyText = {
-                '鍩虹': 'Basic 鍩虹',
-                '杩涢樁': 'Advanced 杩涢樁',
-                '鍦扮嫳': 'Hell 鍦扮嫳'
+                '基础': 'Basic 基础',
+                '进阶': 'Advanced 进阶',
+                '地狱': 'Hell 地狱'
             };
             document.getElementById('current-difficulty').textContent = difficultyText[level];
 
-            // 鏇存柊鎸夐挳鏍峰紡
+            // 更新按钮样式
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.style.opacity = '0.6';
             });
 
-            // 楂樹寒閫変腑鐨勬寜閽拰棰滆壊
+            // 高亮选中的按钮和颜色
             const colors = {
-                '鍩虹': '#4CAF50',
-                '杩涢樁': '#FF9800',
-                '鍦扮嫳': '#f44336'
+                '基础': '#4CAF50',
+                '进阶': '#FF9800',
+                '地狱': '#f44336'
             };
 
-            if (level === '鍩虹') {
+            if (level === '基础') {
                 document.getElementById('btn-diff-basic').style.opacity = '1';
-            } else if (level === '杩涢樁') {
+            } else if (level === '进阶') {
                 document.getElementById('btn-diff-advanced').style.opacity = '1';
-            } else if (level === '鍦扮嫳') {
+            } else if (level === '地狱') {
                 document.getElementById('btn-diff-hell').style.opacity = '1';
             }
 
             document.getElementById('current-difficulty').style.color = colors[level];
 
-            // 鍚戝悗绔彂閫侀毦搴﹁缃?
+            // 向后端发送难度设置
             fetch('/api/set_difficulty', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1649,15 +1597,15 @@ HTML_TEMPLATE = r"""
                     const modulesDiv = document.getElementById('modules-list');
                     if (data.activated_modules && data.activated_modules.length > 0) {
                         modulesDiv.innerHTML = data.activated_modules.map(m =>
-                            `<div style="margin: 4px 0;">鉁?${m.name} (${m.difficulty})</div>`
+                            `<div style="margin: 4px 0;">✓ ${m.name} (${m.difficulty})</div>`
                         ).join('');
                     } else {
-                        modulesDiv.innerHTML = '<span style="color: #888;">鏆傛棤婵€娲绘ā鍧?No modules activated</span>';
+                        modulesDiv.innerHTML = '<span style="color: #888;">暂无激活模块 No modules activated</span>';
                     }
                 });
         }
 
-        // 姣?0绉掓洿鏂颁竴娆℃ā鍧楁樉绀?
+        // 每10秒更新一次模块显示
         setInterval(updateModulesDisplay, 10000);
 
         function startEventStream() {
@@ -1672,7 +1620,7 @@ HTML_TEMPLATE = r"""
                     setPhase(data.phase);
                     if (data.phase === 'night') {
                         players.forEach((p, i) => {
-                            if (!['鐙间汉', '鐙肩帇'].includes(p.role)) {
+                            if (!['狼人', '狼王'].includes(p.role)) {
                                 hidePlayer(i);
                             }
                         });
@@ -1680,7 +1628,7 @@ HTML_TEMPLATE = r"""
                         players.forEach((p, i) => showPlayer(i));
                     }
                 } else if (data.type === 'dialogue') {
-                    if (data.player_id === -1 && data.content.includes('褰撻€夎闀?)) {
+                    if (data.player_id === -1 && data.content.includes('当选警长')) {
                         const match = data.content.match(/Player (\d+)/);
                         if (match) {
                             updateSheriff(parseInt(match[1]));
@@ -1691,24 +1639,24 @@ HTML_TEMPLATE = r"""
                     }
                     addDialogue(data);
                 } else if (data.type === 'status') {
-                    document.getElementById('status').textContent = '鐘舵€侊細' + data.message;
+                    document.getElementById('status').textContent = '状态：' + data.message;
                 } else if (data.type === 'death') {
                     markDead(data.player_id);
                 } else if (data.type === 'waiting_for_next') {
-                    // 鍚敤涓嬩竴澶╂寜閽?
+                    // 启用下一天按钮
                     document.getElementById('btn-next').disabled = false;
 
-                    // 濡傛灉鏄嚜鍔ㄦā寮忥紝鑷姩鐐瑰嚮涓嬩竴澶?
+                    // 如果是自动模式，自动点击下一天
                     if (autoMode) {
                         setTimeout(() => {
                             nextDay();
-                        }, 2000);  // 寤惰繜2绉掕嚜鍔ㄧ户缁?
+                        }, 2000);  // 延迟2秒自动继续
                     }
                 } else if (data.type === 'token_update') {
-                    // 鏇存柊token缁熻
+                    // 更新token统计
                     document.getElementById('total-tokens').textContent = data.total_tokens;
 
-                    // 鍙€夛細鏄剧ず姣忎釜鐜╁鐨則oken浣跨敤鎯呭喌
+                    // 可选：显示每个玩家的token使用情况
                     // console.log('Player tokens:', data.player_tokens);
                 }
             };
@@ -1724,7 +1672,7 @@ HTML_TEMPLATE = r"""
         });
 
         window.addEventListener('resize', () => {
-            document.getElementById('circle-container').innerHTML = '<div class="center-circle">馃惡<br>鐙间汉鏉€</div>';
+            document.getElementById('circle-container').innerHTML = '<div class="center-circle">🐺<br>狼人杀</div>';
             createCircle();
         });
     </script>
@@ -1761,163 +1709,176 @@ def extract_message_text(field):
 
 
 def call_llm(prompt, player_id):
-    """璋冪敤LLM API骞惰窡韪猼oken浣跨敤"""
+    """调用LLM API并跟踪token使用"""
     global total_tokens_used, player_tokens_used
-    
+
     api_base = None
     model = None
-
+    
     try:
-        # 娉ㄩ噴鎺塼oken闄愬埗妫€鏌?- 鍏佽鐜╁鑷敱鍙戣█
-        # if player_id >= 0:  # player_id == -1 琛ㄧず绯荤粺娑堟伅
+        # 注释掉token限制检查 - 允许玩家自由发言
+        # if player_id >= 0:  # player_id == -1 表示系统消息
         #     current_usage = player_tokens_used.get(player_id, 0)
         #     if current_usage >= MAX_TOKENS_PER_PLAYER:
-        #         print(f"[LLM] Player {player_id} 宸茶揪鍒皌oken闄愬埗 ({MAX_TOKENS_PER_PLAYER})")
-        #         return f"[Player {player_id} 宸茶揪鍒板彂瑷€闄愬埗]"
+        #         print(f"[LLM] Player {player_id} 已达到token限制 ({MAX_TOKENS_PER_PLAYER})")
+        #         return f"[Player {player_id} 已达到发言限制]"
 
-        # 鏍规嵁鐜╁ID閫夋嫨API閰嶇疆: Player 1 = 娴嬭瘯妯″瀷, 鍏朵粬鐜╁ = NPC妯″瀷
+        # 根据玩家ID选择API配置: Player 1 = 测试模型, 其他玩家 = NPC模型
         if player_id == 1:
-            api_base = LLM_CONFIG['test_api_base']
-            model = LLM_CONFIG['test_model']
-            print(f"[LLM] Player {player_id} 浣跨敤娴嬭瘯妯″瀷: {api_base}")
+            api_base = LLM_CONFIG.get('test_api_base', 'http://localhost:8080')
+            model = LLM_CONFIG.get('test_model', 'default')
+            print(f"[LLM] Player {player_id} 使用测试模型: {api_base}")
         else:
-            api_base = LLM_CONFIG['npc_api_base']
-            model = LLM_CONFIG['npc_model']
-            print(f"[LLM] Player {player_id} 浣跨敤NPC妯″瀷: {api_base}")
+            api_base = LLM_CONFIG.get('npc_api_base', 'http://localhost:8080')
+            model = LLM_CONFIG.get('npc_model', 'default')
+            print(f"[LLM] Player {player_id} 使用NPC模型: {api_base}")
 
-        # 鍦╬rompt鍚庢坊鍔燨UTPUT鏍煎紡鎸囧紩
+        # 在prompt后添加OUTPUT格式指引
         full_prompt = prompt + OUTPUT_FORMAT_INSTRUCTION
 
         url = f"{api_base}/v1/chat/completions"
         payload = {
             "model": model,
             "messages": [{"role": "user", "content": full_prompt}],
-            "temperature": LLM_CONFIG["temperature"]
-            # 绉婚櫎 max_tokens 闄愬埗锛岃妯″瀷鑷敱杈撳嚭
+            "temperature": LLM_CONFIG.get("temperature", 0.7)
+            # 移除 max_tokens 限制，让模型自由输出
         }
 
-        print(f"[LLM] Calling API for Player {player_id}...")
+        print(f"[LLM] ===== Calling API for Player {player_id} =====")
         print(f"[LLM]   URL: {url}")
         print(f"[LLM]   Model: {model}")
         print(f"[LLM]   Prompt (first 100 chars): {prompt[:100]}...")
 
-        # 澧炲姞杩炴帴娴嬭瘯
-        try:
-            test_response = requests.get(f"{api_base}/health", timeout=5)
-            print(f"[LLM] API Health Check: {test_response.status_code}")
-        except Exception as health_e:
-            print(f"[LLM] 鈿狅笍  API Health Check Failed: {health_e}")
-            print(f"[LLM] API鏈嶅姟鍙兘鏈惎鍔紝璇风‘淇?{api_base} 鍙闂?)
-
         response = requests.post(url, json=payload, timeout=30)
         response.raise_for_status()
-        
-        print(f"[LLM] API Response Status: {response.status_code}")
 
         result = response.json()
-        print(f"[LLM] Response received for Player {player_id}")
-        print(f"[LLM]   Full response: {json.dumps(result, ensure_ascii=False, indent=2)[:1000]}...")
+        print(f"[LLM] ✓ Response received for Player {player_id}")
 
-        # 鎻愬彇鍐呭锛氫紭鍏堜娇鐢╟ontent锛堟渶缁堢粨璁猴級锛屽鏋滀负绌哄垯浠巖easoning_content鎻愬彇
+        # 提取内容：优先使用content（最终结论），如果为空则从reasoning_content提取
         message = result["choices"][0]["message"]
-        raw_content = extract_message_text(message.get("content"))
-        reasoning_content = extract_message_text(message.get("reasoning_content"))
+        raw_content = extract_message_text(message.get("content", ""))
+        reasoning_content = extract_message_text(message.get("reasoning_content", ""))
 
-        # 鍚堝苟鎵€鏈夊唴瀹圭敤浜庢彁鍙?
+        # 合并所有内容用于提取
         full_response = raw_content
         if not full_response and reasoning_content:
             full_response = reasoning_content
 
-        print(f"[LLM] Full response from Player {player_id} (length: {len(full_response)}):")
-        print(f"[LLM] {full_response[:500]}..." if len(full_response) > 500 else f"[LLM] {full_response}")
+        print(f"[LLM] Full response length: {len(full_response)}")
+        print(f"[LLM] First 300 chars: {full_response[:300]}")
+        if len(full_response) > 300:
+            print(f"[LLM] Last 200 chars: ...{full_response[-200:]}")
 
-        # 涓ユ牸楠岃瘉 OUTPUT: 鍜?END 鏍囪
+        # 严格验证 OUTPUT: 和 END 标记
         import re
 
-        # 妫€鏌ユ槸鍚﹀寘鍚?OUTPUT: 鍜?END
-        pattern = re.compile(r'(?i)OUTPUT\s*(?:[:\uFF1A]\s*)?(.*?)(?:\bEND\b|$)', re.DOTALL)
-        has_output_match = pattern.search(full_response)
-        has_output = has_output_match is not None
-        has_end = re.search(r'\bEND\b', full_response, re.IGNORECASE) is not None
+        # 多种pattern来处理不同格式
+        patterns = [
+            (r'(?i)OUTPUT\s*[:\uFF1A]\s*(.*?)\s*END', 'OUTPUT: ... END'),
+            (r'(?i)output\s*:\s*(.*?)\s*end', 'output: ... end (lowercase)'),
+            (r'(?i)【输出】\s*(.*?)\s*END', '【输出】... END'),
+        ]
+        
+        content = None
+        for pattern, desc in patterns:
+            match = re.search(pattern, full_response, re.DOTALL)
+            if match:
+                content = match.group(1).strip()
+                print(f"[LLM] ✓ Matched pattern: {desc}")
+                print(f"[LLM] Extracted: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Extracted: '{content}'")
+                break
 
-        if has_output and has_end:
-            content = has_output_match.group(1).strip()
-            if content:
-                print(f"[LLM] [OK] Valid format detected for Player {player_id}")
-                print(f"[LLM] Extracted content: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Extracted content: '{content}'")
+        if not content:
+            # Fallback: 尝试找到最长的连续非空行
+            print(f"[LLM] ⚠️  No standard pattern matched, using fallback")
+            lines = full_response.split('\n')
+            meaningful_lines = [line.strip() for line in lines if line.strip() and not line.strip().startswith('#')]
+            
+            # 跳过提示/思考的行
+            content_lines = []
+            for line in meaningful_lines:
+                if not any(keyword in line for keyword in ['思考', 'THINK', '【', '```']):
+                    content_lines.append(line)
+            
+            if content_lines:
+                content = ' '.join(content_lines)
+                if len(content) > 500:
+                    content = content[:500]
+                print(f"[LLM] Fallback content: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Fallback content: '{content}'")
             else:
-                print(f"[LLM] [WARN] OUTPUT/END present but content empty for Player {player_id}")
-                content = ""
-        else:
-            print(f"[LLM] [WARN] Invalid format for Player {player_id}:")
-            print(f"[LLM]   Has OUTPUT: {bool(has_output)}")
-            print(f"[LLM]   Has END: {bool(has_end)}")
+                content = full_response[-300:] if len(full_response) > 300 else full_response
+                print(f"[LLM] Final fallback: using last portion")
 
-            if has_output:
-                content = has_output_match.group(1).strip()
-                if len(content) > 200:
-                    content = content[:200] + "..."
-                print(f"[LLM] Using OUTPUT content (no END found): '{content[:100]}...'" if len(content) > 100 else f"[LLM] Using OUTPUT content: '{content}'")
-            else:
-                trimmed = full_response[-200:] if len(full_response) > 200 else full_response
-                content = trimmed or ""
-                print(f"[LLM] No OUTPUT found, using fallback extraction")
-
-
-        # 鑾峰彇token浣跨敤閲?
+        # 获取token使用量
         usage = result.get("usage", {})
         prompt_tokens = usage.get("prompt_tokens", 0)
         completion_tokens = usage.get("completion_tokens", 0)
         total_tokens = usage.get("total_tokens", prompt_tokens + completion_tokens)
 
-        # 鏇存柊缁熻
+        # 更新统计
         total_tokens_used += total_tokens
         if player_id >= 0:
             if player_id not in player_tokens_used:
                 player_tokens_used[player_id] = 0
             player_tokens_used[player_id] += total_tokens
 
-        print(f"[LLM] Player {player_id}: {content[:50]}... (tokens: {total_tokens}, total: {total_tokens_used})")
+        print(f"[LLM] ✓ Player {player_id} final output: {content[:50]}... (tokens: {total_tokens}, total: {total_tokens_used})")
+        print(f"[LLM] ===== End Player {player_id} =====\n")
 
-        # 鍙戦€乼oken缁熻鍒板墠绔?
+        # 发送token统计到前端
         dialogue_queue.put({
             "type": "token_update",
             "total_tokens": total_tokens_used,
             "player_tokens": dict(player_tokens_used)
         })
 
-        return content
+        return content if content else f"[Player {player_id} 发言内容无法解析]"
 
-    except requests.exceptions.ConnectionError as ce:
-        print(f"[LLM] 鉂?杩炴帴閿欒 - API鏈嶅姟鏈惎鍔ㄦ垨鏃犳硶璁块棶")
-        print(f"[LLM]   URL: {api_base}/v1/chat/completions")
-        print(f"[LLM]   Error: {ce}")
-        print(f"[LLM]   瑙ｅ喅鏂规: 璇峰惎鍔?LLM API 鏈嶅姟")
-        return f"[Player {player_id} - API鏈嶅姟鏈惎鍔╙"
-    except requests.exceptions.Timeout as te:
-        print(f"[LLM] 鈴憋笍  璇锋眰瓒呮椂 - API 鍝嶅簲澶參")
-        print(f"[LLM]   Error: {te}")
-        return f"[Player {player_id} - 璇锋眰瓒呮椂]"
-    except requests.exceptions.HTTPError as he:
-        print(f"[LLM] 馃敶 HTTP閿欒")
-        print(f"[LLM]   Status: {he.response.status_code}")
-        print(f"[LLM]   Response: {he.response.text[:500]}")
-        return f"[Player {player_id} - HTTP閿欒{he.response.status_code}]"
+    except requests.exceptions.Timeout:
+        print(f"[LLM] ✗ TIMEOUT for Player {player_id} - API server not responding (timeout=30s)")
+        if api_base:
+            print(f"[LLM]   Tried URL: {api_base}/v1/chat/completions")
+        return f"[Player {player_id} 无法连接 - 超时]"
+    
+    except requests.exceptions.ConnectionError as e:
+        print(f"[LLM] ✗ CONNECTION ERROR for Player {player_id}")
+        if api_base:
+            print(f"[LLM]   API Base: {api_base}")
+        print(f"[LLM]   Error: {e}")
+        return f"[Player {player_id} 无法连接]"
+    
+    except json.JSONDecodeError as e:
+        print(f"[LLM] ✗ JSON DECODE ERROR for Player {player_id}")
+        print(f"[LLM]   Error: {e}")
+        try:
+            print(f"[LLM]   Response text: {response.text[:500]}")
+        except:
+            pass
+        return f"[Player {player_id} 响应格式错误]"
+    
+    except KeyError as e:
+        print(f"[LLM] ✗ KEY ERROR for Player {player_id} - response structure mismatch")
+        print(f"[LLM]   Missing key: {e}")
+        try:
+            print(f"[LLM]   Response structure: {json.dumps(result, ensure_ascii=False, indent=2)[:500]}")
+        except:
+            pass
+        return f"[Player {player_id} 响应结构错误]"
+    
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
-        print(f"[LLM] Error for Player {player_id}:")
-        print(f"  Error Type: {type(e).__name__}")
-        print(f"  Error Message: {e}")
-        if api_base:
-            print(f"  API URL: {api_base}/v1/chat/completions")
-        if model:
-            print(f"  Model: {model}")
-        print(f"  Full Traceback:\n{error_details}")
-        return f"[Player {player_id} 鏆傛椂鏃犳硶鍙戣█]"
+        print(f"[LLM] ✗ UNEXPECTED ERROR for Player {player_id}:")
+        print(f"[LLM]   Error Type: {type(e).__name__}")
+        print(f"[LLM]   Error Message: {e}")
+        print(f"[LLM]   API URL: {api_base}/v1/chat/completions" if api_base else "[LLM]   API URL: [not set]")
+        print(f"[LLM]   Model: {model}" if model else "[LLM]   Model: [not set]")
+        print(f"[LLM]   Traceback:\n{error_details}")
+        return f"[Player {player_id} 暂时无法发言]"
 
 def first_night_werewolf_discussion():
-    """绗竴澶?- 鐙间汉璁ㄨ锛氬垁璋併€佺瓥鐣ャ€佽皝涓婅"""
+    """第一夜 - 狼人讨论：刀谁、策略、谁上警"""
     global sheriff_candidates
     print("\n[FIRST NIGHT] Werewolf discussion...")
 
@@ -1928,37 +1889,37 @@ def first_night_werewolf_discussion():
 
     dialogue_queue.put({
         "type": "status",
-        "message": "馃寵 绗?澶?- 鐙间汉璁ㄨ"
+        "message": "🌙 第1夜 - 狼人讨论"
     })
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": "馃寵 澶╅粦璇烽棴鐪?.. 鐙间汉璇风潄鐪硷紝璁よ瘑褰兼銆?,
+        "phase": "第1夜-狼人",
+        "content": "🌙 天黑请闭眼... 狼人请睁眼，认识彼此。",
         "panel": "werewolf"
     })
 
-    werewolves = [p for p in PLAYERS if p['role'] in ['鐙间汉', '鐙肩帇']]
-    alive_non_wolves = [p for p in PLAYERS if p['role'] not in ['鐙间汉', '鐙肩帇']]
+    werewolves = [p for p in PLAYERS if p['role'] in ['狼人', '狼王']]
+    alive_non_wolves = [p for p in PLAYERS if p['role'] not in ['狼人', '狼王']]
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃惡 鐙间汉闃佃惀锛歿', '.join([f'Player {w['id']}' for w in werewolves])}",
+        "phase": "第1夜-狼人",
+        "content": f"🐺 狼人阵营：{', '.join([f'Player {w['id']}' for w in werewolves])}",
         "panel": "werewolf"
     })
 
     time.sleep(1)
 
-    # 鐙间汉璁ㄨ锛氬垁璋併€佽皝涓婅
+    # 狼人讨论：刀谁、谁上警
     for wolf in werewolves:
         if not is_running:
             break
 
         if uls_mode:
-            # ULS++ L0妯″紡锛氱嫾浜哄闂磋鍔?
+            # ULS++ L0模式：狼人夜间行动
             seat = wolf['id'] + 1
             teammate_seats = ', '.join([f"seat {w['id']+1}" for w in werewolves if w['id'] != wolf['id']])
             target_seats = ', '.join([f"seat {p['id']+1}" for p in alive_non_wolves])
@@ -1980,40 +1941,40 @@ Example: N:8|ELC:JOIN
 
 NO text. NO explanation. ONLY the header line."""
         else:
-            # 姝ｅ父妯″紡
-            prompt = f"""鐙间汉鏉€娓告垙 - 绗?澶滐紝鐙间汉鍐呴儴璁ㄨ銆?
-浣犳槸Player {wolf['id']}锛岃鑹瞷wolf['role']}锛堢嫾浜洪樀钀ワ級銆?
+            # 正常模式
+            prompt = f"""狼人杀游戏 - 第1夜，狼人内部讨论。
+你是Player {wolf['id']}，角色{wolf['role']}（狼人阵营）。
 
-闃熷弸锛歿', '.join([f"Player {w['id']}" for w in werewolves if w['id'] != wolf['id']])}
+队友：{', '.join([f"Player {w['id']}" for w in werewolves if w['id'] != wolf['id']])}
 
-绗竴澶滆璁洪噸鐐癸細
-1. 寤鸿鍒€鎺夊摢涓帺瀹讹紵锛堝彲閫夌洰鏍囷細{', '.join([f"Player {p['id']}" for p in alive_non_wolves])}锛?
-2. 寤鸿鍝釜鐙间汉涓婅绔為€夛紵
+第一夜讨论重点：
+1. 建议刀掉哪个玩家？（可选目标：{', '.join([f"Player {p['id']}" for p in alive_non_wolves])}）
+2. 建议哪个狼人上警竞选？
 
-璇风畝鐭彂瑷€锛?-3鍙ワ級銆傜敤涓枃銆?""
+请简短发言（2-3句）。用中文。"""
 
         response = call_llm(prompt, wolf['id'])
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": wolf['id'],
-            "phase": "绗?澶?鐙间汉璁ㄨ",
+            "phase": "第1夜-狼人讨论",
             "content": response,
             "panel": "werewolf"
         })
 
         time.sleep(1.5)
 
-    # 鐙间汉鍐冲畾鍒€浜哄拰璋佷笂璀?
+    # 狼人决定刀人和谁上警
     kill_target = random.choice(alive_non_wolves)
     game_state['night_actions']['werewolf_kill'] = kill_target['id']
 
-    # 闅忔満閫夋嫨1-2涓嫾浜轰笂璀?+ 鍏朵粬闅忔満鐜╁
+    # 随机选择1-2个狼人上警 + 其他随机玩家
     num_wolf_candidates = random.randint(1, 2)
     wolf_candidates = random.sample([w['id'] for w in werewolves], num_wolf_candidates)
 
-    # 鍔犱笂1-2涓ソ浜轰篃涓婅
-    good_guys = [p['id'] for p in PLAYERS if p['role'] not in ['鐙间汉', '鐙肩帇']]
+    # 加上1-2个好人也上警
+    good_guys = [p['id'] for p in PLAYERS if p['role'] not in ['狼人', '狼王']]
     num_good_candidates = random.randint(1, 2)
     good_candidates = random.sample(good_guys, num_good_candidates)
 
@@ -2023,22 +1984,22 @@ NO text. NO explanation. ONLY the header line."""
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃惡 鐙间汉鍐冲畾锛氬垁 Player {kill_target['id']}",
+        "phase": "第1夜-狼人",
+        "content": f"🐺 狼人决定：刀 Player {kill_target['id']}",
         "panel": "werewolf"
     })
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃搵 鐙间汉鍐冲畾涓婅鍚嶅崟锛歿', '.join([f'Player {c}' for c in wolf_candidates])}",
+        "phase": "第1夜-狼人",
+        "content": f"📋 狼人决定上警名单：{', '.join([f'Player {c}' for c in wolf_candidates])}",
         "panel": "werewolf"
     })
 
     dialogue_queue.put({
         "type": "status",
-        "message": "鐙间汉璇烽棴鐪?
+        "message": "狼人请闭眼"
     })
 
     time.sleep(2)
@@ -2046,14 +2007,13 @@ NO text. NO explanation. ONLY the header line."""
 
 def night_phase(day_num):
     """
-    瀹屾暣澶滄櫄闃舵
-    椤哄簭锛氱嫾浜鸿鍔?鈫?瀹堝崼 鈫?棰勮█瀹?鈫?濂冲帆 鈫?缁撶畻姝讳骸
+    完整夜晚阶段
+    顺序：狼人行动 → 守卫 → 预言家 → 女巫 → 结算死亡
     """
     global guard_last_target, witch_save_available, witch_poison_available, daily_statistics
-    sync_game_state(phase="night", round_num=day_num)
     print(f"\n[NIGHT {day_num}] Starting...")
 
-    # 鍒濆鍖栨湰澶滅粺璁?
+    # 初始化本夜统计
     night_stats = {
         "day": day_num,
         "night_actions": {},
@@ -2072,176 +2032,176 @@ def night_phase(day_num):
 
     dialogue_queue.put({
         "type": "status",
-        "message": f"馃寵 绗瑊day_num}澶?
+        "message": f"🌙 第{day_num}夜"
     })
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": f"绗瑊day_num}澶?,
-        "content": "馃寵 澶╅粦璇烽棴鐪?..",
+        "phase": f"第{day_num}夜",
+        "content": "🌙 天黑请闭眼...",
         "panel": "werewolf"
     })
 
     time.sleep(1)
 
-    # 1. 鐙间汉琛屽姩
+    # 1. 狼人行动
     wolves_target = None
-    werewolves = [p for p in PLAYERS if p['role'] in ['鐙间汉', '鐙肩帇'] and p['alive']]
+    werewolves = [p for p in PLAYERS if p['role'] in ['狼人', '狼王'] and p['alive']]
 
     if not werewolves:
-        return None  # 鐙间汉鍏ㄧ伃
+        return None  # 狼人全灭
 
     dialogue_queue.put({
         "type": "status",
-        "message": "馃惡 鐙间汉璇风潄鐪?
+        "message": "🐺 狼人请睁眼"
     })
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": f"绗瑊day_num}澶?鐙间汉",
-        "content": "馃惡 鐙间汉璇风潄鐪硷紝璁よ瘑闃熷弸銆?,
+        "phase": f"第{day_num}夜-狼人",
+        "content": "🐺 狼人请睁眼，认识队友。",
         "panel": "werewolf"
     })
 
-    alive_non_wolves = [p for p in PLAYERS if p['alive'] and p['role'] not in ['鐙间汉', '鐙肩帇']]
+    alive_non_wolves = [p for p in PLAYERS if p['alive'] and p['role'] not in ['狼人', '狼王']]
 
     if werewolves and alive_non_wolves:
-        # 鐙间汉璁ㄨ
+        # 狼人讨论
         for wolf in werewolves:
             if not is_running:
                 break
 
-            # 鑾峰彇鎵€鏈夊瓨娲荤殑闈炵嫾浜虹帺瀹剁紪鍙凤紙鐙间汉鍙煡閬撶紪鍙凤紝涓嶇煡閬撹韩浠斤級
+            # 获取所有存活的非狼人玩家编号（狼人只知道编号，不知道身份）
             alive_target_ids = [p['id'] for p in alive_non_wolves]
             wolf_team_ids = [w['id'] for w in werewolves if w['id'] != wolf['id']]
 
-            prompt = f"""鐙间汉鏉€娓告垙 - 绗瑊day_num}澶滐紝鐙间汉鍐呴儴璁ㄨ銆?
-浣犳槸Player {wolf['id']}锛岃鑹瞷wolf['role']}锛堢嫾浜洪樀钀ワ級銆?
+            prompt = f"""狼人杀游戏 - 第{day_num}夜，狼人内部讨论。
+你是Player {wolf['id']}，角色{wolf['role']}（狼人阵营）。
 
-闃熷弸锛歿', '.join([f"Player {wid}" for wid in wolf_team_ids])}
+队友：{', '.join([f"Player {wid}" for wid in wolf_team_ids])}
 
-鍦轰笂瀛樻椿鐨勫叾浠栫帺瀹剁紪鍙凤細{', '.join([f"Player {pid}" for pid in alive_target_ids])}
+场上存活的其他玩家编号：{', '.join([f"Player {pid}" for pid in alive_target_ids])}
 
-娉ㄦ剰锛氫綘鍙煡閬撶帺瀹剁紪鍙凤紝涓嶇煡閬撲粬浠槸浠€涔堣韩浠斤紙绁炶亴杩樻槸鏉戞皯锛夈€?
+注意：你只知道玩家编号，不知道他们是什么身份（神职还是村民）。
 
-璇风畝鐭缓璁紙1鍙ワ級鍑绘潃鍝釜鐜╁缂栧彿銆傜敤涓枃銆?""
+请简短建议（1句）击杀哪个玩家编号。用中文。"""
 
             response = call_llm(prompt, wolf['id'])
 
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": wolf['id'],
-                "phase": f"绗瑊day_num}澶?鐙间汉",
+                "phase": f"第{day_num}夜-狼人",
                 "content": response,
                 "panel": "werewolf"
             })
 
             time.sleep(1)
 
-        # 鐙间汉鍐冲畾鍑绘潃鐩爣
+        # 狼人决定击杀目标
         wolves_target = random.choice(alive_non_wolves)['id']
         night_stats["night_actions"]["wolf_target"] = wolves_target
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊day_num}澶?鐙间汉",
-            "content": f"馃惡 鐙间汉鍐冲畾鍒€ Player {wolves_target}",
+            "phase": f"第{day_num}夜-狼人",
+            "content": f"🐺 狼人决定刀 Player {wolves_target}",
             "panel": "werewolf"
         })
 
     dialogue_queue.put({
         "type": "status",
-        "message": "鐙间汉璇烽棴鐪?
+        "message": "狼人请闭眼"
     })
 
     time.sleep(1.5)
 
-    # 2. 瀹堝崼琛屽姩
+    # 2. 守卫行动
     guard_target = None
     if HAS_GUARD:
-        guard = next((p for p in PLAYERS if p['role'] == '瀹堝崼' and p['alive']), None)
+        guard = next((p for p in PLAYERS if p['role'] == '守卫' and p['alive']), None)
 
         if guard:
             dialogue_queue.put({
                 "type": "status",
-                "message": "馃洝锔?瀹堝崼璇风潄鐪?
+                "message": "🛡️ 守卫请睁眼"
             })
 
-            # 绗竴澶滃畧鍗┖瀹堬紙涓嶅畧鎶や换浣曚汉锛?
+            # 第一夜守卫空守（不守护任何人）
             if day_num == 1:
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "馃洝锔?瀹堝崼璇风潄鐪笺€傜涓€澶滅┖瀹堬紝涓嶅畧鎶や换浣曚汉銆?,
+                    "phase": f"第{day_num}夜-守卫",
+                    "content": "🛡️ 守卫请睁眼。第一夜空守，不守护任何人。",
                     "panel": "god"
                 })
 
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": guard['id'],
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "[绌哄畧] 瀹堝崼绗竴澶滅┖瀹?,
+                    "phase": f"第{day_num}夜-守卫",
+                    "content": "[空守] 守卫第一夜空守",
                     "panel": "god"
                 })
             else:
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "馃洝锔?瀹堝崼璇风潄鐪硷紝閫夋嫨涓€涓帺瀹跺畧鎶わ紙涓嶈兘杩炵画瀹堟姢鍚屼竴浜猴級銆?,
+                    "phase": f"第{day_num}夜-守卫",
+                    "content": "🛡️ 守卫请睁眼，选择一个玩家守护（不能连续守护同一人）。",
                     "panel": "god"
                 })
 
-                # 瀹堝崼涓嶈兘杩炵画瀹堝悓涓€浜?
+                # 守卫不能连续守同一人
                 alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != guard['id']]
                 if guard_last_target is not None:
                     alive_others = [p for p in alive_others if p['id'] != guard_last_target]
 
                 if alive_others:
-                    # 瀹堝崼鎬濊€冨苟鍐冲畾瀹堟姢鐩爣
+                    # 守卫思考并决定守护目标
                     alive_list = ', '.join([f"Player {p['id']}" for p in alive_others])
-                    last_guard_info = f"锛堟槰鏅氬畧鎶や簡Player {guard_last_target}锛屼粖鏅氫笉鑳藉啀瀹堟姢浠栵級" if guard_last_target is not None else ""
+                    last_guard_info = f"（昨晚守护了Player {guard_last_target}，今晚不能再守护他）" if guard_last_target is not None else ""
 
-                    guard_prompt = f"""鐙间汉鏉€娓告垙 - 瀹堝崼瀹堟姢
-浣犳槸Player {guard['id']}锛岃鑹诧細瀹堝崼锛堢鑱岋級銆?
-绗瑊day_num}澶滐紝浣犲彲浠ュ畧鎶や竴涓帺瀹跺厤鍙楃嫾浜哄嚮鏉€銆?
+                    guard_prompt = f"""狼人杀游戏 - 守卫守护
+你是Player {guard['id']}，角色：守卫（神职）。
+第{day_num}夜，你可以守护一个玩家免受狼人击杀。
 {last_guard_info}
 
-褰撳墠鍙畧鎶ょ帺瀹讹細{alive_list}
+当前可守护玩家：{alive_list}
 
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾瀹堟姢璋侊細
-1. 浼樺厛瀹堟姢棰勮█瀹躲€佸コ宸瓑鍏抽敭绁炶亴
-2. 鑰冭檻鐧藉ぉ鍙戣█鏆撮湶韬唤鐨勭帺瀹?
-3. 棰勬祴鐙间汉鍙兘鍒€鐨勭洰鏍?
+请根据之前的游戏信息，分析并决定守护谁：
+1. 优先守护预言家、女巫等关键神职
+2. 考虑白天发言暴露身份的玩家
+3. 预测狼人可能刀的目标
 
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
+请按以下格式回答：
+思考：[你的分析过程]
 
-OUTPUT: 鎴戝喅瀹氬畧鎶?Player X锛屽洜涓篬绠€鐭悊鐢盷
+OUTPUT: 我决定守护 Player X，因为[简短理由]
 END"""
 
                     guard_decision = call_llm(guard_prompt, guard['id'])
 
-                    # 瑙ｆ瀽瀹堟姢鐩爣
+                    # 解析守护目标
                     import re
                     match = re.search(r'Player (\d+)', guard_decision)
                     if match:
                         target_id = int(match.group(1))
-                        # 楠岃瘉鐩爣鏄惁鍙畧鎶?
+                        # 验证目标是否可守护
                         if target_id in [p['id'] for p in alive_others]:
                             target = PLAYERS[target_id]
                             guard_target = target['id']
                         else:
-                            # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
+                            # 如果目标无效，随机选择
                             target = random.choice(alive_others)
                             guard_target = target['id']
                             print(f"[WARN] Guard target {target_id} invalid, random choice: {guard_target}")
                     else:
-                        # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                        # 如果无法解析，随机选择
                         target = random.choice(alive_others)
                         guard_target = target['id']
                         print(f"[WARN] Cannot parse guard target, random choice: {guard_target}")
@@ -2252,138 +2212,138 @@ END"""
                     dialogue_queue.put({
                         "type": "dialogue",
                         "player_id": guard['id'],
-                        "phase": f"绗瑊day_num}澶?瀹堝崼",
-                        "content": f"[鍐崇瓥] {guard_decision}\n\n[瀹堟姢] 瀹堟姢 Player {guard_target}",
+                        "phase": f"第{day_num}夜-守卫",
+                        "content": f"[决策] {guard_decision}\n\n[守护] 守护 Player {guard_target}",
                         "panel": "god"
                     })
 
             dialogue_queue.put({
                 "type": "status",
-                "message": "瀹堝崼璇烽棴鐪?
+                "message": "守卫请闭眼"
             })
 
             time.sleep(1.5)
 
-    # 3. 棰勮█瀹惰鍔?
-    seer = next((p for p in PLAYERS if p['role'] == '棰勮█瀹? and p['alive']), None)
+    # 3. 预言家行动
+    seer = next((p for p in PLAYERS if p['role'] == '预言家' and p['alive']), None)
 
     if seer:
         dialogue_queue.put({
             "type": "status",
-            "message": "馃憗锔?棰勮█瀹惰鐫佺溂"
+            "message": "👁️ 预言家请睁眼"
         })
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊day_num}澶?棰勮█瀹?,
-            "content": "馃憗锔?棰勮█瀹惰鐫佺溂锛岄€夋嫨涓€涓帺瀹舵煡楠屻€?,
+            "phase": f"第{day_num}夜-预言家",
+            "content": "👁️ 预言家请睁眼，选择一个玩家查验。",
             "panel": "god"
         })
 
         alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != seer['id']]
         if alive_others:
-            # 棰勮█瀹舵€濊€冨苟鍐冲畾楠屼汉鐩爣
+            # 预言家思考并决定验人目标
             alive_list = ', '.join([f"Player {p['id']}" for p in alive_others])
 
-            seer_prompt = f"""鐙间汉鏉€娓告垙 - 棰勮█瀹堕獙浜?
-浣犳槸Player {seer['id']}锛岃鑹诧細棰勮█瀹讹紙绁炶亴锛夈€?
-绗瑊day_num}澶滐紝浣犲彲浠ラ獙璇佷竴涓帺瀹剁殑韬唤銆?
+            seer_prompt = f"""狼人杀游戏 - 预言家验人
+你是Player {seer['id']}，角色：预言家（神职）。
+第{day_num}夜，你可以验证一个玩家的身份。
 
-褰撳墠瀛樻椿鐜╁锛堥櫎浣犱箣澶栵級锛歿alive_list}
+当前存活玩家（除你之外）：{alive_list}
 
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾楠岃皝锛?
-1. 浼樺厛楠岃瘉鍙戣█鍙枒鎴栬涓哄紓甯哥殑鐜╁
-2. 鑰冭檻璀︿笂鍙戣█銆佹姇绁ㄨ涓?
-3. 楠岃瘉鍏抽敭浣嶇疆鐨勭帺瀹朵互甯姪濂戒汉鎵惧嚭鐙间汉
+请根据之前的游戏信息，分析并决定验谁：
+1. 优先验证发言可疑或行为异常的玩家
+2. 考虑警上发言、投票行为
+3. 验证关键位置的玩家以帮助好人找出狼人
 
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
+请按以下格式回答：
+思考：[你的分析过程]
 
-OUTPUT: 鎴戝喅瀹氶獙璇?Player X锛屽洜涓篬绠€鐭悊鐢盷
+OUTPUT: 我决定验证 Player X，因为[简短理由]
 END"""
 
             seer_decision = call_llm(seer_prompt, seer['id'])
 
-            # 瑙ｆ瀽楠屼汉鐩爣
+            # 解析验人目标
             import re
             match = re.search(r'Player (\d+)', seer_decision)
             if match:
                 target_id = int(match.group(1))
-                # 楠岃瘉鐩爣鏄惁瀛樻椿
+                # 验证目标是否存活
                 if target_id in [p['id'] for p in alive_others]:
                     target = PLAYERS[target_id]
                 else:
-                    # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
+                    # 如果目标无效，随机选择
                     target = random.choice(alive_others)
                     print(f"[WARN] Seer target {target_id} invalid, random choice: {target['id']}")
             else:
-                # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                # 如果无法解析，随机选择
                 target = random.choice(alive_others)
                 print(f"[WARN] Cannot parse seer target, random choice: {target['id']}")
 
-            is_wolf = target['role'] in ['鐙间汉', '鐙肩帇']
-            night_stats["night_actions"]["seer_check"] = {"target": target['id'], "result": "鐙间汉" if is_wolf else "濂戒汉"}
+            is_wolf = target['role'] in ['狼人', '狼王']
+            night_stats["night_actions"]["seer_check"] = {"target": target['id'], "result": "狼人" if is_wolf else "好人"}
 
-            # 棰勮█瀹惰幏寰楅獙浜虹粨鏋滃悗鐨勬€濊€?
-            result_prompt = f"浣犳槸棰勮█瀹讹紝楠屼簡Player {target['id']}锛屼粬鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆傜畝鐭€濊€冿紙1鍙ワ級鐧藉ぉ濡備綍鍒╃敤杩欎釜淇℃伅銆傜敤涓枃銆?
+            # 预言家获得验人结果后的思考
+            result_prompt = f"你是预言家，验了Player {target['id']}，他是{'狼人' if is_wolf else '好人'}。简短思考（1句）白天如何利用这个信息。用中文。"
             result_thought = call_llm(result_prompt, seer['id'])
 
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": seer['id'],
-                "phase": f"绗瑊day_num}澶?棰勮█瀹?,
-                "content": f"[鍐崇瓥] {seer_decision}\n\n[楠屼汉缁撴灉] Player {target['id']} 鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆俓n\n[鎬濊€僝 {result_thought}",
+                "phase": f"第{day_num}夜-预言家",
+                "content": f"[决策] {seer_decision}\n\n[验人结果] Player {target['id']} 是{'狼人' if is_wolf else '好人'}。\n\n[思考] {result_thought}",
                 "panel": "god"
             })
 
         dialogue_queue.put({
             "type": "status",
-            "message": "棰勮█瀹惰闂溂"
+            "message": "预言家请闭眼"
         })
 
         time.sleep(1.5)
 
-    # 4. 濂冲帆琛屽姩
+    # 4. 女巫行动
     witch_save = False
     witch_poison_target = None
-    witch = next((p for p in PLAYERS if p['role'] == '濂冲帆' and p['alive']), None)
+    witch = next((p for p in PLAYERS if p['role'] == '女巫' and p['alive']), None)
 
     if witch:
         dialogue_queue.put({
             "type": "status",
-            "message": "馃И 濂冲帆璇风潄鐪?
+            "message": "🧪 女巫请睁眼"
         })
 
-        # 鍛婄煡濂冲帆鏈灏嗘鑰?
+        # 告知女巫本夜将死者
         if wolves_target is not None:
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": -1,
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": f"馃И 濂冲帆璇风潄鐪笺€備粖鏅?Player {wolves_target} 琚嫾浜哄嚮鏉€銆?,
+                "phase": f"第{day_num}夜-女巫",
+                "content": f"🧪 女巫请睁眼。今晚 Player {wolves_target} 被狼人击杀。",
                 "panel": "god"
             })
         else:
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": -1,
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": "馃И 濂冲帆璇风潄鐪笺€備粖鏅氬钩瀹夊锛屾棤浜鸿鍑绘潃銆?,
+                "phase": f"第{day_num}夜-女巫",
+                "content": "🧪 女巫请睁眼。今晚平安夜，无人被击杀。",
                 "panel": "god"
             })
 
         time.sleep(1)
 
-        # 濂冲帆鍐崇瓥
+        # 女巫决策
         used_medicine_this_night = False
 
-        # 鍏堥棶瑙ｈ嵂
+        # 先问解药
         if witch_save_available and wolves_target is not None:
-            save_prompt = f"浣犳槸濂冲帆锛孭layer {wolves_target}琚嫾浜哄嚮鏉€銆備綘鏈夎В鑽紝鏄惁浣跨敤瑙ｈ嵂鏁戜粬锛燂紙鏄?鍚︼級銆傜敤涓枃鍥炵瓟銆?
+            save_prompt = f"你是女巫，Player {wolves_target}被狼人击杀。你有解药，是否使用解药救他？（是/否）。用中文回答。"
             response = call_llm(save_prompt, witch['id'])
 
-            if "鏄? in response or "瑙ｈ嵂" in response or "鏁? in response:
+            if "是" in response or "解药" in response or "救" in response:
                 witch_save = True
                 witch_save_available = False
                 used_medicine_this_night = True
@@ -2392,52 +2352,52 @@ END"""
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": witch['id'],
-                    "phase": f"绗瑊day_num}澶?濂冲帆",
-                    "content": f"[浣跨敤瑙ｈ嵂] 鏁戜簡 Player {wolves_target}",
+                    "phase": f"第{day_num}夜-女巫",
+                    "content": f"[使用解药] 救了 Player {wolves_target}",
                     "panel": "god"
                 })
 
-        # 鍐嶉棶姣掕嵂锛堝鏋淲ITCH_DOUBLE_USE=False涓斿凡鐢ㄨВ鑽紝鍒欎笉鑳界敤姣掞級
+        # 再问毒药（如果WITCH_DOUBLE_USE=False且已用解药，则不能用毒）
         can_use_poison = WITCH_DOUBLE_USE or not used_medicine_this_night
 
-        # 绗竴澶滃コ宸笉鑳戒娇鐢ㄦ瘨鑽紙鏍囧噯瑙勫垯锛?
+        # 第一夜女巫不能使用毒药（标准规则）
         if witch_poison_available and can_use_poison and day_num > 1:
             alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != witch['id']]
             if wolves_target is not None:
                 alive_others = [p for p in alive_others if p['id'] != wolves_target]
 
             if alive_others:
-                # 瑕佹眰濂冲帆缁欏嚭姣掕嵂鐞嗙敱锛屽繀椤绘槑纭涓哄鏂规瀬澶ф鐜囨槸鐙?
+                # 要求女巫给出毒药理由，必须明确认为对方极大概率是狼
                 other_players_info = ', '.join([f"Player {p['id']}" for p in alive_others])
-                poison_prompt = f"""浣犳槸濂冲帆锛屾槸鍚︿娇鐢ㄦ瘨鑽紵
-鍦轰笂鍏朵粬瀛樻椿鐜╁锛歿other_players_info}
+                poison_prompt = f"""你是女巫，是否使用毒药？
+场上其他存活玩家：{other_players_info}
 
-閲嶈瑙勫垯锛氭瘨鑽潪甯哥弽璐碉紝鍙湁褰撲綘鏋佸害纭俊鏌愪汉鏄嫾浜烘椂鎵嶈兘浣跨敤锛?
+重要规则：毒药非常珍贵，只有当你极度确信某人是狼人时才能使用！
 
-璇峰洖绛旓細
-1. 鏄惁浣跨敤姣掕嵂锛燂紙鏄?鍚︼級
-2. 濡傛灉浣跨敤锛屾瘨鏉€鍝釜鐜╁缂栧彿锛?
-3. 鐞嗙敱鏄粈涔堬紵涓轰粈涔堣涓轰粬鏋佸ぇ姒傜巼鏄嫾浜猴紵
+请回答：
+1. 是否使用毒药？（是/否）
+2. 如果使用，毒杀哪个玩家编号？
+3. 理由是什么？为什么认为他极大概率是狼人？
 
-鐢ㄤ腑鏂囩畝鐭洖绛旓紙1-2鍙ワ級銆?""
+用中文简短回答（1-2句）。"""
 
                 response = call_llm(poison_prompt, witch['id'])
 
-                # 妫€鏌ュ洖澶嶄腑鏄惁鍖呭惈"鏄?銆?姣?锛屼互鍙?鐙?鎴?鏋?绛夊叧閿瘝
-                # 瑕佹眰濂冲帆蹇呴』鏄庣‘琛ㄨ揪璁や负鐩爣鏄嫾浜?
-                has_poison_intent = ("鏄? in response or "姣? in response)
-                has_werewolf_reason = ("鐙? in response or "鏋? in response or "涓€瀹? in response or "鑲畾" in response)
+                # 检查回复中是否包含"是"、"毒"，以及"狼"或"极"等关键词
+                # 要求女巫必须明确表达认为目标是狼人
+                has_poison_intent = ("是" in response or "毒" in response)
+                has_werewolf_reason = ("狼" in response or "极" in response or "一定" in response or "肯定" in response)
 
                 if has_poison_intent and has_werewolf_reason:
-                    # 灏濊瘯浠庡洖澶嶄腑鎻愬彇鐜╁缂栧彿
+                    # 尝试从回复中提取玩家编号
                     import re
                     player_match = re.search(r'Player\s*(\d+)', response)
                     if not player_match:
-                        player_match = re.search(r'[鍙穄?\s*(\d+)', response)
+                        player_match = re.search(r'[号]?\s*(\d+)', response)
 
                     if player_match:
                         target_id = int(player_match.group(1))
-                        # 楠岃瘉鐩爣鏄惁鍦ㄦ湁鏁堝垪琛ㄤ腑
+                        # 验证目标是否在有效列表中
                         if any(p['id'] == target_id for p in alive_others):
                             witch_poison_target = target_id
                             witch_poison_available = False
@@ -2446,8 +2406,8 @@ END"""
                             dialogue_queue.put({
                                 "type": "dialogue",
                                 "player_id": witch['id'],
-                                "phase": f"绗瑊day_num}澶?濂冲帆",
-                                "content": f"[浣跨敤姣掕嵂] 姣掓潃 Player {witch_poison_target}銆傜悊鐢憋細{response[:50]}...",
+                                "phase": f"第{day_num}夜-女巫",
+                                "content": f"[使用毒药] 毒杀 Player {witch_poison_target}。理由：{response[:50]}...",
                                 "panel": "god"
                             })
 
@@ -2455,56 +2415,55 @@ END"""
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": witch['id'],
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": "[涓嶄娇鐢ㄨ嵂] 濂冲帆閫夋嫨鏈洖鍚堜笉浣跨敤鑽?,
+                "phase": f"第{day_num}夜-女巫",
+                "content": "[不使用药] 女巫选择本回合不使用药",
                 "panel": "god"
             })
 
         dialogue_queue.put({
             "type": "status",
-            "message": "濂冲帆璇烽棴鐪?
+            "message": "女巫请闭眼"
         })
 
         time.sleep(1.5)
 
-    # 5. 澶滈棿缁撶畻姝讳骸
+    # 5. 夜间结算死亡
     night_deaths = []
 
-    # 鍏堢粨绠楃嫾鍒€锛堣€冭檻瀹堝崼鍜岃В鑽級
+    # 先结算狼刀（考虑守卫和解药）
     if wolves_target is not None:
         if HAS_GUARD and guard_target == wolves_target:
-            # 琚畧浣?
+            # 被守住
             pass
         elif witch_save and wolves_target:
-            # 琚В鑽晳娲?
+            # 被解药救活
             pass
         else:
             night_deaths.append(wolves_target)
 
-    # 鍐嶇粨绠楁瘨鑽?
+    # 再结算毒药
     if witch_poison_target is not None:
         night_deaths.append(witch_poison_target)
 
-    # 璁板綍澶滄鍚嶅崟
+    # 记录夜死名单
     night_stats["night_deaths"] = night_deaths
 
-    # 灏嗘湰澶滅粺璁′繚瀛樺埌鍏ㄥ眬(鍚庣画浼氬湪dawn_phase鍜宒ay_discussion_and_voting涓洿鏂?
+    # 将本夜统计保存到全局(后续会在dawn_phase和day_discussion_and_voting中更新)
     daily_statistics.append(night_stats)
 
-    # 澶滄櫄闃舵缁撴潫锛屾洿鏂颁竴娆″疄鏃剁粺璁?
+    # 夜晚阶段结束，更新一次实时统计
     update_realtime_statistics()
 
-    # 杩斿洖澶滄鍚嶅崟锛岀敱Dawn闃舵澶勭悊
+    # 返回夜死名单，由Dawn阶段处理
     return night_deaths
 
 def dawn_phase(night_deaths, day_num):
     """
-    榛庢槑闃舵锛氬叕甯冨姝诲苟澶勭悊璀﹀窘銆佺寧浜哄紑鏋?
-    澶滄鏃犻仐瑷€
-    娉ㄦ剰锛氫笉鍏竷姝昏€呰韩浠斤紙鍙叕甯冨彿鐮侊級
+    黎明阶段：公布夜死并处理警徽、猎人开枪
+    夜死无遗言
+    注意：不公布死者身份（只公布号码）
     """
     global sheriff_player_id
-    sync_game_state(phase="dawn", round_num=day_num)
     print(f"\n[DAWN {day_num}] Processing night deaths...")
 
     dialogue_queue.put({
@@ -2514,10 +2473,10 @@ def dawn_phase(night_deaths, day_num):
 
     dialogue_queue.put({
         "type": "status",
-        "message": f"鈽€锔?绗瑊day_num}澶╅粠鏄?
+        "message": f"☀️ 第{day_num}天黎明"
     })
 
-    # 鍏堝鐞嗚闀垮姝伙紙濡傛灉鏈夛級
+    # 先处理警长夜死（如果有）
     sheriff_died = False
     if night_deaths:
         for player_id in night_deaths:
@@ -2525,19 +2484,19 @@ def dawn_phase(night_deaths, day_num):
             if player.get('is_sheriff'):
                 sheriff_died = True
                 if NIGHT_BADGE_BREAKS:
-                    # 璀﹀窘鐮寸
+                    # 警徽破碎
                     sheriff_player_id = None
                     player['is_sheriff'] = False
 
                     dialogue_queue.put({
                         "type": "dialogue",
                         "player_id": -1,
-                        "phase": f"绗瑊day_num}澶╅粠鏄?,
-                        "content": "馃帠锔?璀﹂暱澶滄锛岃寰界牬纰庛€?,
+                        "phase": f"第{day_num}天黎明",
+                        "content": "🎖️ 警长夜死，警徽破碎。",
                         "panel": "day"
                     })
                 else:
-                    # 灏戞暟鎴胯锛氬彲浠ョЩ浜よ寰?
+                    # 少数房规：可以移交警徽
                     alive_players = [p for p in PLAYERS if p['alive'] and p['id'] != player_id]
                     if alive_players:
                         new_sheriff = random.choice(alive_players)
@@ -2548,39 +2507,39 @@ def dawn_phase(night_deaths, day_num):
                         dialogue_queue.put({
                             "type": "dialogue",
                             "player_id": -1,
-                            "phase": f"绗瑊day_num}澶╅粠鏄?,
-                            "content": f"馃帠锔?璀﹂暱绉讳氦璀﹀窘缁?Player {new_sheriff['id']}",
+                            "phase": f"第{day_num}天黎明",
+                            "content": f"🎖️ 警长移交警徽给 Player {new_sheriff['id']}",
                             "panel": "day"
                         })
 
-    # 鍏竷姝昏锛堝彧鍏竷鍙风爜锛屼笉鍏竷韬唤锛?
+    # 公布死讯（只公布号码，不公布身份）
     if not night_deaths:
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊day_num}澶╅粠鏄?,
-            "content": "馃帀 鏄ㄦ櫄鏄钩瀹夊锛屾棤浜烘浜°€?,
+            "phase": f"第{day_num}天黎明",
+            "content": "🎉 昨晚是平安夜，无人死亡。",
             "panel": "day"
         })
         time.sleep(2)
 
-        # 绗?澶╀笖鏈彁鍓嶄笂璀︼紝鍒欑幇鍦ㄤ笂璀?
+        # 第1天且未提前上警，则现在上警
         if day_num == 1 and not ELECTION_BEFORE_N1:
             sheriff_election()
 
         return
 
-    # 鍏竷姝昏锛堝彧鍏竷鍙风爜锛屼笉鍏竷韬唤锛?
+    # 公布死讯（只公布号码，不公布身份）
     death_list = ', '.join([f"Player {p}" for p in night_deaths])
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": f"绗瑊day_num}澶╅粠鏄?,
-        "content": f"馃拃 鏄ㄦ櫄姝讳骸锛歿death_list}锛堝姝绘棤閬楄█锛?,
+        "phase": f"第{day_num}天黎明",
+        "content": f"💀 昨晚死亡：{death_list}（夜死无遗言）",
         "panel": "day"
     })
 
-    # 鏍囪鐜╁姝讳骸
+    # 标记玩家死亡
     for player_id in night_deaths:
         PLAYERS[player_id]['alive'] = False
 
@@ -2591,54 +2550,54 @@ def dawn_phase(night_deaths, day_num):
 
     time.sleep(2)
 
-    # 澶勭悊鐚庝汉澶滄寮€鏋紙鍙栧喅浜嶩UNTER_NIGHT_SHOOT閰嶇疆锛?
+    # 处理猎人夜死开枪（取决于HUNTER_NIGHT_SHOOT配置）
     hunter_shot_targets = []
 
     for player_id in night_deaths:
         player = PLAYERS[player_id]
 
-        if player['role'] == '鐚庝汉':
+        if player['role'] == '猎人':
             if HUNTER_NIGHT_SHOOT:
-                # TODO: 闇€瑕佸垽鏂槸鍚﹁姣掞紙琚瘨閫氬父涓嶈兘寮€鏋級
-                # 绠€鍖栫増锛氬姝诲彲浠ュ紑鏋?
+                # TODO: 需要判断是否被毒（被毒通常不能开枪）
+                # 简化版：夜死可以开枪
                 alive_players = [p for p in PLAYERS if p['alive']]
                 if alive_players:
-                    # 鐚庝汉鎬濊€冨苟鍐冲畾灏勬潃鐩爣
+                    # 猎人思考并决定射杀目标
                     alive_list = ', '.join([f"Player {p['id']}" for p in alive_players])
 
-                    hunter_shoot_prompt = f"""鐙间汉鏉€娓告垙 - 鐚庝汉寮€鏋妧鑳?
-浣犳槸Player {player_id}锛岃鑹诧細鐚庝汉銆?
-浣犲湪澶滄櫄琚嚮鏉€浜嗭紝鐜板湪鍙互鍙戝姩鐚庝汉鎶€鑳姐€愬紑鏋甫璧颁竴涓帺瀹躲€戙€?
+                    hunter_shoot_prompt = f"""狼人杀游戏 - 猎人开枪技能
+你是Player {player_id}，角色：猎人。
+你在夜晚被击杀了，现在可以发动猎人技能【开枪带走一个玩家】。
 
-褰撳墠瀛樻椿鐜╁锛歿alive_list}
+当前存活玩家：{alive_list}
 
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾灏勬潃璋侊細
-1. 濡傛灉浣犺涓烘煇涓帺瀹舵槸鐙间汉锛屽簲璇ヤ紭鍏堝皠鏉€
-2. 鑰冭檻涔嬪墠鐨勫彂瑷€銆佹姇绁ㄨ涓恒€侀瑷€瀹堕獙浜虹瓑淇℃伅
-3. 鍋氬嚭瀵瑰ソ浜洪樀钀ユ渶鏈夊埄鐨勯€夋嫨
+请根据之前的游戏信息，分析并决定射杀谁：
+1. 如果你认为某个玩家是狼人，应该优先射杀
+2. 考虑之前的发言、投票行为、预言家验人等信息
+3. 做出对好人阵营最有利的选择
 
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
+请按以下格式回答：
+思考：[你的分析过程]
 
-OUTPUT: 鎴戝喅瀹氬皠鏉€ Player X锛屽洜涓篬绠€鐭悊鐢盷
+OUTPUT: 我决定射杀 Player X，因为[简短理由]
 END"""
 
                     hunter_response = call_llm(hunter_shoot_prompt, player_id)
 
-                    # 瑙ｆ瀽灏勬潃鐩爣
+                    # 解析射杀目标
                     import re
                     match = re.search(r'Player (\d+)', hunter_response)
                     if match:
                         target_id = int(match.group(1))
-                        # 楠岃瘉鐩爣鏄惁瀛樻椿
+                        # 验证目标是否存活
                         if target_id in [p['id'] for p in alive_players]:
                             target = PLAYERS[target_id]
                         else:
-                            # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
+                            # 如果目标无效，随机选择
                             target = random.choice(alive_players)
                             print(f"[WARN] Hunter (night) target {target_id} invalid, random choice: {target['id']}")
                     else:
-                        # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                        # 如果无法解析，随机选择
                         target = random.choice(alive_players)
                         print(f"[WARN] Cannot parse hunter (night) target, random choice: {target['id']}")
 
@@ -2647,12 +2606,12 @@ END"""
                     dialogue_queue.put({
                         "type": "dialogue",
                         "player_id": player_id,
-                        "phase": f"绗瑊day_num}澶╅粠鏄?鐚庝汉",
-                        "content": f"馃徆 鐚庝汉鎶€鑳藉彂鍔紒{hunter_response}\n\n鐚庝汉寮€鏋甫璧?Player {target['id']}",
+                        "phase": f"第{day_num}天黎明-猎人",
+                        "content": f"🏹 猎人技能发动！{hunter_response}\n\n猎人开枪带走 Player {target['id']}",
                         "panel": "day"
                     })
 
-    # 澶勭悊鐚庝汉寮€鏋繛閿佹浜?
+    # 处理猎人开枪连锁死亡
     if hunter_shot_targets:
         for target_id in hunter_shot_targets:
             PLAYERS[target_id]['alive'] = False
@@ -2664,12 +2623,12 @@ END"""
 
         time.sleep(1.5)
 
-    # 绗?澶╀笖鏈彁鍓嶄笂璀︼紝鍒欑幇鍦ㄤ笂璀?
+    # 第1天且未提前上警，则现在上警
     if day_num == 1 and not ELECTION_BEFORE_N1:
         sheriff_election()
 
 def sheriff_election_before_n1():
-    """寮€灞€鐧藉ぉ璀﹂暱绔為€夛紙ELECTION_BEFORE_N1=True鏃朵娇鐢級"""
+    """开局白天警长竞选（ELECTION_BEFORE_N1=True时使用）"""
     global sheriff_player_id, seer_claims, sheriff_candidates
     print("\n[SHERIFF ELECTION BEFORE N1] Starting...")
 
@@ -2680,51 +2639,51 @@ def sheriff_election_before_n1():
 
     dialogue_queue.put({
         "type": "status",
-        "message": "馃帠锔?寮€灞€璀﹂暱绔為€?
+        "message": "🎖️ 开局警长竞选"
     })
 
-    # 闅忔満閫夋嫨3-5涓帺瀹朵笂璀?
+    # 随机选择3-5个玩家上警
     num_candidates = random.randint(3, 5)
     sheriff_candidates = random.sample(range(len(PLAYERS)), num_candidates)
 
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?绔為€夎闀跨殑鐜╁: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
+        "phase": "警长竞选",
+        "content": f"🎖️ 竞选警长的玩家: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
         "panel": "day"
     })
 
     time.sleep(2)
 
-    # 鍊欓€変汉渚濇鍙戣█
+    # 候选人依次发言
     for candidate_id in sheriff_candidates:
         if not is_running:
             break
 
         player = PLAYERS[candidate_id]
 
-        prompt = f"""鐙间汉鏉€ - 寮€灞€璀﹂暱绔為€夈€?
-浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆?
+        prompt = f"""狼人杀 - 开局警长竞选。
+你是Player {player['id']}，角色：{player['role']}。
 
-璇峰彂琛ㄧ珵閫夋紨璇达紝璇存槑浣犱负浠€涔堥€傚悎褰撹闀裤€?
-閲嶈锛氫笉瑕佹毚闇蹭綘鐨勭湡瀹炶韩浠斤紒
+请发表竞选演说，说明你为什么适合当警长。
+重要：不要暴露你的真实身份！
 
-璇风敤2-3鍙ヨ瘽绔為€夈€傜敤涓枃銆?""
+请用2-3句话竞选。用中文。"""
 
         response = call_llm(prompt, player['id'])
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": player['id'],
-            "phase": "璀﹂暱绔為€?,
+            "phase": "警长竞选",
             "content": response,
             "panel": "day"
         })
 
         time.sleep(1.5)
 
-    # 閫変妇璀﹂暱
+    # 选举警长
     sheriff_id = random.choice(sheriff_candidates)
     sheriff_player_id = sheriff_id
     PLAYERS[sheriff_id]['is_sheriff'] = True
@@ -2732,8 +2691,8 @@ def sheriff_election_before_n1():
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?Player {sheriff_id} 褰撻€夎闀匡紒",
+        "phase": "警长竞选",
+        "content": f"🎖️ Player {sheriff_id} 当选警长！",
         "panel": "day"
     })
 
@@ -2741,7 +2700,7 @@ def sheriff_election_before_n1():
     print(f"[SHERIFF] Player {sheriff_id} elected.")
 
 def sheriff_election():
-    """璀﹂暱绔為€夛紙绗竴澶滃悗杩涜锛屽€欓€変汉闅忔満浜х敓锛?""
+    """警长竞选（第一夜后进行，候选人随机产生）"""
     global sheriff_player_id, seer_claims, sheriff_candidates
     print("\n[SHERIFF ELECTION] Starting...")
 
@@ -2752,10 +2711,10 @@ def sheriff_election():
 
     dialogue_queue.put({
         "type": "status",
-        "message": "馃帠锔?璀﹂暱绔為€?
+        "message": "🎖️ 警长竞选"
     })
 
-    # 鐢熸垚鍊欓€変汉鍒楄〃锛?-5涓帺瀹讹紝鍖呮嫭鐙间汉鍜屽ソ浜猴級
+    # 生成候选人列表（3-5个玩家，包括狼人和好人）
     alive_players = [p for p in PLAYERS if p['alive']]
     num_candidates = min(random.randint(3, 5), len(alive_players))
     sheriff_candidates = random.sample([p['id'] for p in alive_players], num_candidates)
@@ -2763,41 +2722,41 @@ def sheriff_election():
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?绔為€夎闀跨殑鐜╁: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
+        "phase": "警长竞选",
+        "content": f"🎖️ 竞选警长的玩家: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
         "panel": "day"
     })
 
     time.sleep(2)
 
-    # 鍊欓€変汉渚濇鍙戣█ - 蹇呴』璺抽瑷€瀹?
+    # 候选人依次发言 - 必须跳预言家
     for candidate_id in sheriff_candidates:
         if not is_running:
             break
 
         player = PLAYERS[candidate_id]
 
-        # 闅忔満楠屼汉鐩爣
+        # 随机验人目标
         other_players = [p for p in range(len(PLAYERS)) if p != player['id']]
         checked_player = random.choice(other_players)
         checked_role = PLAYERS[checked_player]['role']
-        is_werewolf = checked_role in ['鐙间汉', '鐙肩帇']
+        is_werewolf = checked_role in ['狼人', '狼王']
 
         if uls_mode:
-            # ULS++ L0妯″紡锛氳闀跨珵閫夊彂瑷€
+            # ULS++ L0模式：警长竞选发言
             seat = player['id'] + 1
             checked_seat = checked_player + 1
 
-            if player['role'] == '棰勮█瀹?:
-                # 鐪熼瑷€瀹讹細鎶ュ憡鐪熷疄楠屼汉缁撴灉
+            if player['role'] == '预言家':
+                # 真预言家：报告真实验人结果
                 result = "W" if is_werewolf else "V"
                 instruction = f"You are real seer. Last night checked seat {checked_seat}: {result}. Claim seer role."
-            elif player['role'] in ['鐙间汉', '鐙肩帇']:
-                # 鐙间汉锛氬亣璺抽瑷€瀹?
+            elif player['role'] in ['狼人', '狼王']:
+                # 狼人：假跳预言家
                 fake_result = "W" if random.random() > 0.6 else "V"
                 instruction = f"You are wolf. Fake claim seer. Pretend you checked seat {checked_seat}: {fake_result}."
             else:
-                # 鍏朵粬瑙掕壊锛氬亣璺抽瑷€瀹?
+                # 其他角色：假跳预言家
                 fake_result = "W" if random.random() > 0.6 else "V"
                 instruction = f"Fake claim seer. Pretend you checked seat {checked_seat}: {fake_result}."
 
@@ -2819,41 +2778,41 @@ Example: CL:S+4@N1|CHK:{checked_seat}:V
 
 NO text. NO explanation. ONLY the header line."""
         else:
-            # 姝ｅ父妯″紡
-            if player['role'] == '棰勮█瀹?:
-                instruction = f"浣犳槸鐪熼瑷€瀹躲€傛槰鏅氶獙浜哖layer {checked_player}锛屼粬鏄瘂'鐙间汉' if is_werewolf else '濂戒汉'}銆傚繀椤昏'鎴戞槸棰勮█瀹?骞舵姤鍛婇獙浜恒€?
-            elif player['role'] in ['鐙间汉', '鐙肩帇']:
-                fake_result = "鐙间汉" if random.random() > 0.6 else "濂戒汉"
-                instruction = f"浣犳槸鐙间汉闃佃惀锛屽繀椤昏烦棰勮█瀹讹紙璇?鎴戞槸棰勮█瀹?锛夊苟缂栭€犻獙浜猴紝渚嬪'鏄ㄦ櫄楠屼簡Player {checked_player}锛屼粬鏄瘂fake_result}'銆傜粷瀵逛笉鑳借浣犳槸鐙间汉銆?
+            # 正常模式
+            if player['role'] == '预言家':
+                instruction = f"你是真预言家。昨晚验了Player {checked_player}，他是{'狼人' if is_werewolf else '好人'}。必须说'我是预言家'并报告验人。"
+            elif player['role'] in ['狼人', '狼王']:
+                fake_result = "狼人" if random.random() > 0.6 else "好人"
+                instruction = f"你是狼人阵营，必须跳预言家（说'我是预言家'）并编造验人，例如'昨晚验了Player {checked_player}，他是{fake_result}'。绝对不能说你是狼人。"
             else:
-                fake_result = "鐙间汉" if random.random() > 0.6 else "濂戒汉"
-                instruction = f"浣犲繀椤昏烦棰勮█瀹讹紙璇?鎴戞槸棰勮█瀹?锛夊苟缂栭€犻獙浜猴紝渚嬪'鏄ㄦ櫄楠屼簡Player {checked_player}锛屼粬鏄瘂fake_result}'銆?
+                fake_result = "狼人" if random.random() > 0.6 else "好人"
+                instruction = f"你必须跳预言家（说'我是预言家'）并编造验人，例如'昨晚验了Player {checked_player}，他是{fake_result}'。"
 
-            prompt = f"""鐙间汉鏉€ - 璀﹂暱绔為€夈€?
-浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆?
+            prompt = f"""狼人杀 - 警长竞选。
+你是Player {player['id']}，角色：{player['role']}。
 
 {instruction}
 
-閲嶈锛氬鏋滀綘鏄嫾浜洪樀钀ワ紝缁濆涓嶈兘鍦ㄥ彂瑷€涓"鐙间汉"銆?鐙肩帇"绛夋毚闇茶韩浠界殑璇嶏紒
+重要：如果你是狼人阵营，绝对不能在发言中说"狼人"、"狼王"等暴露身份的词！
 
-璇风敤2-3鍙ヨ瘽绔為€夈€傜敤涓枃銆?""
+请用2-3句话竞选。用中文。"""
 
         response = call_llm(prompt, player['id'])
 
-        if "鎴戞槸棰勮█瀹? in response or "棰勮█瀹? in response or "CL:S" in response:
+        if "我是预言家" in response or "预言家" in response or "CL:S" in response:
             seer_claims.append(player['id'])
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": player['id'],
-            "phase": "璀﹂暱绔為€?,
+            "phase": "警长竞选",
             "content": response,
             "panel": "day"
         })
 
         time.sleep(1.5)
 
-    # 閫変妇璀﹂暱
+    # 选举警长
     sheriff_id = random.choice(sheriff_candidates)
     sheriff_player_id = sheriff_id
     PLAYERS[sheriff_id]['is_sheriff'] = True
@@ -2861,8 +2820,8 @@ NO text. NO explanation. ONLY the header line."""
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?Player {sheriff_id} 褰撻€夎闀匡紒",
+        "phase": "警长竞选",
+        "content": f"🎖️ Player {sheriff_id} 当选警长！",
         "panel": "day"
     })
 
@@ -2870,16 +2829,15 @@ NO text. NO explanation. ONLY the header line."""
     print(f"[SHERIFF] Player {sheriff_id} elected. Seer claims: {seer_claims}")
 
 def day_discussion_and_voting(round_num):
-    sync_game_state(phase="day", round_num=round_num)
-    """鐧藉ぉ璁ㄨ鍜屾姇绁紙澶滄宸茬粡鍦╠awn_phase澶勭悊杩囷紝杩欓噷鍙仛鐧藉ぉ鍙戣█鍜屾姇绁級"""
+    """白天讨论和投票（夜死已经在dawn_phase处理过，这里只做白天发言和投票）"""
     print(f"\n[DAY] Round {round_num} discussion and voting...")
 
     dialogue_queue.put({
         "type": "status",
-        "message": f"鈽€锔?绗瑊round_num}澶╄璁?
+        "message": f"☀️ 第{round_num}天讨论"
     })
 
-    # 璀﹂暱鍐冲畾鍙戣█椤哄簭锛堢畝鍖栵細闅忔満椤哄簭锛?
+    # 警长决定发言顺序（简化：随机顺序）
     alive_players = [p for p in PLAYERS if p['alive']]
 
     if not alive_players:
@@ -2890,45 +2848,45 @@ def day_discussion_and_voting(round_num):
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?璀﹂暱鍐冲畾鍙戣█椤哄簭锛歿', '.join([f"Player {p['id']}" for p in alive_players])}",
+        "phase": "警长竞选",
+        "content": f"🎖️ 警长决定发言顺序：{', '.join([f"Player {p['id']}" for p in alive_players])}",
         "panel": "day"
     })
 
     time.sleep(1)
 
-    # 渚濇鍙戣█
+    # 依次发言
     for player in alive_players:
         if not is_running:
             break
 
         is_seer_claimer = player['id'] in seer_claims
-        sheriff_info = "浣犳槸璀﹂暱銆? if player.get('is_sheriff') else ""
+        sheriff_info = "你是警长。" if player.get('is_sheriff') else ""
 
         if is_seer_claimer:
             other_alive = [p for p in PLAYERS if p['alive'] and p['id'] != player['id']]
             if other_alive:
                 checked = random.choice(other_alive)
-                is_wolf = checked['role'] in ['鐙间汉', '鐙肩帇']
-                instruction = f"浣犳槰鏅氶獙浜哖layer {checked['id']}锛屼粬鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆傛姤鍛婇獙浜恒€?
+                is_wolf = checked['role'] in ['狼人', '狼王']
+                instruction = f"你昨晚验了Player {checked['id']}，他是{'狼人' if is_wolf else '好人'}。报告验人。"
             else:
-                instruction = "鎶ュ憡浣犵殑楠屼汉銆?
-        elif player['role'] in ['濂冲帆', '鐚庝汉', '瀹堝崼']:
-            instruction = "浣犳槸绁炶亴锛屼笉瑕佹毚闇茶韩浠斤紝浠ユ潙姘戣韩浠藉垎鏋愬眬鍔裤€?
-        elif player['role'] in ['鐙间汉', '鐙肩帇']:
-            instruction = "浣犳槸鐙间汉闃佃惀锛岃鎴愭潙姘戞垨缁х画璺抽瑷€瀹讹紝璇濂戒汉銆傜粷瀵逛笉鑳借'鐙间汉'銆?鐙肩帇'绛夎瘝鏆撮湶韬唤锛?
+                instruction = "报告你的验人。"
+        elif player['role'] in ['女巫', '猎人', '守卫']:
+            instruction = "你是神职，不要暴露身份，以村民身份分析局势。"
+        elif player['role'] in ['狼人', '狼王']:
+            instruction = "你是狼人阵营，装成村民或继续跳预言家，误导好人。绝对不能说'狼人'、'狼王'等词暴露身份！"
         else:
-            instruction = "浣犳槸鏉戞皯锛岃瘹瀹炲垎鏋愬眬鍔匡紝甯姪濂戒汉闃佃惀鎵惧嚭鐙间汉銆?
+            instruction = "你是村民，诚实分析局势，帮助好人阵营找出狼人。"
 
-        # 鏋勫缓鍘嗗彶鍙戣█涓婁笅鏂囷紙浣跨敤螖-digest浼樺寲锛屼粎鍖呭惈鑷笂娆″彂瑷€鍚庣殑鏂颁俊鎭級
+        # 构建历史发言上下文（使用Δ-digest优化，仅包含自上次发言后的新信息）
         delta_digest = public_memory_pool.build_digest(player['id'], round_num, max_tokens=400)
         history_context = ""
         if delta_digest:
-            history_context = f"\n\n銆愬閲忔憳瑕?(螖-digest)銆慭n{delta_digest}\n\n鍒嗘瀽浠ヤ笂淇℃伅锛屽熀浜庢帹鐞嗚繘琛屽彂瑷€銆?
+            history_context = f"\n\n【增量摘要 (Δ-digest)】\n{delta_digest}\n\n分析以上信息，基于推理进行发言。"
 
         if uls_mode:
-            # ULS++ L0妯″紡锛氫粎鏍囬锛屼弗鏍奸檺鍒?
-            seat = player['id'] + 1  # 杞崲涓?-12鐨剆eat缂栧彿
+            # ULS++ L0模式：仅标题，严格限制
+            seat = player['id'] + 1  # 转换为1-12的seat编号
             prompt = f"""Werewolf ULS++ L0 (Header-Only Mode) - Day {round_num} SPEECH
 You are seat {seat}, role: {player['role']}. {sheriff_info}
 
@@ -2939,8 +2897,8 @@ You are seat {seat}, role: {player['role']}. {sheriff_info}
 Format:
 PV:<seat>[|ALT:<seat>][|TIE:<seat>,<seat>]
 [|SUS:<seat@score>,<seat@score>,<seat@score>]
-[|EV:<卤id>,<卤id>]
-[|CL:<role><卤><str>@N{round_num}]
+[|EV:<±id>,<±id>]
+[|CL:<role><±><str>@N{round_num}]
 [|CF:<0..5>][|RK:<0..5>]
 
 **L0 Constraints:**
@@ -2957,40 +2915,41 @@ Example: PV:3|SUS:3@4.6,5@3.7,7@2.1|EV:+205,-118|CL:S+4@N2
 
 NO text. NO explanation. ONLY the header line."""
         else:
-            # Normal mode: natural language speech with reasoning context
-            prompt = f"""Werewolf Day {round_num} Discussion
-You are Player {player['id']} ({player['role']}). {sheriff_info}
+            # 正常模式：自然语言 + 历史发言上下文
+            prompt = f"""狼人杀 - 第{round_num}天讨论。
+你是Player {player['id']}，角色：{player['role']}。{sheriff_info}
 
-{instruction}{history_context}{additional_guidance}
+{instruction}{history_context}
 
-Requirements:
-1. Analyse previous speeches and identify contradictions or vote-pattern signals.
-2. Link your role to an explicit reasoning chain and describe information gain.
-3. State your alignment judgement and intended vote target.
-4. Keep it within 2-3 sentences; concise bilingual (CN/EN) keywords are welcome."""
+要求：
+1. 仔细分析之前玩家的发言，找出逻辑漏洞
+2. 根据你的角色和策略进行推理
+3. 给出你的判断和投票倾向
+4. 简短发言（2-3句）。用中文。"""
+
         response = call_llm(prompt, player['id'])
 
-        # 灏嗗彂瑷€瀛樺叆鍏叡璁板繂姹?(浣跨敤鏂扮殑MemoryPool API)
+        # 将发言存入公共记忆池 (使用新的MemoryPool API)
         event_id = public_memory_pool.add_speech(round_num, player['id'], response)
-        # 鏍囪璇ョ帺瀹跺凡鐪嬪埌褰撳墠鎵€鏈変簨浠?
+        # 标记该玩家已看到当前所有事件
         public_memory_pool.mark_player_read(player['id'])
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": player['id'],
-            "phase": f"绗瑊round_num}澶╄璁?,
+            "phase": f"第{round_num}天讨论",
             "content": response,
             "panel": "day"
         })
 
         time.sleep(1)
 
-    # 鎶曠エ澶勫喅
+    # 投票处决
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": f"绗瑊round_num}澶╂姇绁?,
-        "content": "馃棾锔?鎶曠エ闃舵锛岃鎵€鏈夌帺瀹舵姇绁ㄣ€?,
+        "phase": f"第{round_num}天投票",
+        "content": "🗳️ 投票阶段，请所有玩家投票。",
         "panel": "day"
     })
 
@@ -2998,102 +2957,100 @@ Requirements:
 
     alive_players = [p for p in PLAYERS if p['alive']]
     if len(alive_players) >= 2:
-        # 缁熻鎶曠エ
+        # 统计投票
         vote_counts = {}
 
-        # 姣忎釜鐜╁鎶曠エ
+        # 每个玩家投票
         for voter in alive_players:
             if not is_running:
                 break
 
-            # 鍙互鎶曠エ鐨勭洰鏍囷紙闄や簡鑷繁锛?
+            # 可以投票的目标（除了自己）
             vote_candidates = [p for p in alive_players if p['id'] != voter['id']]
             if not vote_candidates:
                 continue
 
-            # 鏋勫缓鎶曠エ鍐崇瓥鐨勪笂涓嬫枃 (浣跨敤绠€鍖栨憳瑕侊紝鍥犱负鎶曠エ闃舵闇€瑕佸叏灞€瑙嗚)
+            # 构建投票决策的上下文 (使用简化摘要，因为投票阶段需要全局视角)
             current_round_speeches = public_memory_pool.get_round_speeches(round_num)
-            vote_context = "\n銆愭湰杞彂瑷€鎽樿銆慭n"
-            for speech in current_round_speeches[-5:]:  # 鍙樉绀烘渶鍚?鏉″彂瑷€锛岃妭鐪乼oken
+            vote_context = "\n【本轮发言摘要】\n"
+            for speech in current_round_speeches[-5:]:  # 只显示最后5条发言，节省token
                 truncated = speech['content'][:80].replace('\n', ' ')
                 vote_context += f"Player {speech['player_id']}: {truncated}...\n"
 
             candidates_list = ", ".join([f"Player {p['id']}" for p in vote_candidates])
 
-            # 鏍规嵁瑙掕壊缁欏嚭鎶曠エ绛栫暐鎸囧
-            if voter['role'] in ['鐙间汉', '鐙肩帇']:
-                vote_instruction = "浣犳槸鐙间汉闃佃惀锛屾姇绁ㄧ粰瀵圭嫾浜哄▉鑳佹渶澶х殑濂戒汉锛堝棰勮█瀹躲€佸己鍔挎潙姘戯級銆?
-            elif voter['role'] == '棰勮█瀹?:
-                vote_instruction = "浣犳槸棰勮█瀹讹紝鎶曠エ缁欎綘楠屽嚭鐨勭嫾浜猴紝鎴栧彂瑷€鏈€鍙枒鐨勭帺瀹躲€?
-            elif voter['role'] in ['濂冲帆', '鐚庝汉', '瀹堝崼']:
-                vote_instruction = "浣犳槸绁炶亴锛屾姇绁ㄧ粰鍙戣█鏈€鍙枒銆侀€昏緫鏈夋紡娲炵殑鐜╁銆?
+            # 根据角色给出投票策略指导
+            if voter['role'] in ['狼人', '狼王']:
+                vote_instruction = "你是狼人阵营，投票给对狼人威胁最大的好人（如预言家、强势村民）。"
+            elif voter['role'] == '预言家':
+                vote_instruction = "你是预言家，投票给你验出的狼人，或发言最可疑的玩家。"
+            elif voter['role'] in ['女巫', '猎人', '守卫']:
+                vote_instruction = "你是神职，投票给发言最可疑、逻辑有漏洞的玩家。"
             else:
                 vote_instruction = "你是村民，投票给发言最可疑、逻辑有漏洞的玩家。"
-            if voter['id'] == TEST_SUBJECT_ID:
-                vote_instruction += build_bilingual_vote_guidance()
 
-            vote_prompt = f"""鐙间汉鏉€ - 绗瑊round_num}澶╂姇绁ㄥ喅绛?
-浣犳槸Player {voter['id']}锛岃鑹诧細{voter['role']}銆?
+            vote_prompt = f"""狼人杀 - 第{round_num}天投票决策
+你是Player {voter['id']}，角色：{voter['role']}。
 
 {vote_instruction}
 
 {vote_context}
 
-鍊欓€変汉锛歿candidates_list}
+候选人：{candidates_list}
 
-鍒嗘瀽浠ヤ笂鍙戣█锛岄€夋嫨涓€涓渶搴旇鍑哄眬鐨勭帺瀹躲€傚彧闇€瑕佽緭鍑虹帺瀹剁紪鍙凤紝鏍煎紡锛歅layer X"""
+分析以上发言，选择一个最应该出局的玩家。只需要输出玩家编号，格式：Player X"""
 
             vote_response = call_llm(vote_prompt, voter['id'])
 
-            # 浠庡洖澶嶄腑鎻愬彇鐜╁缂栧彿
+            # 从回复中提取玩家编号
             import re
             match = re.search(r'Player\s*(\d+)', vote_response, re.IGNORECASE)
             if match:
                 voted_id = int(match.group(1))
-                # 楠岃瘉鎶曠エ鐩爣鏄惁鏈夋晥
+                # 验证投票目标是否有效
                 voted_for = next((p for p in vote_candidates if p['id'] == voted_id), None)
                 if not voted_for:
-                    # 濡傛灉鎻愬彇鐨処D鏃犳晥锛岄殢鏈洪€夋嫨
+                    # 如果提取的ID无效，随机选择
                     voted_for = random.choice(vote_candidates)
             else:
-                # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                # 如果无法解析，随机选择
                 voted_for = random.choice(vote_candidates)
 
-            # 璁板綍鎶曠エ
+            # 记录投票
             if voted_for['id'] not in vote_counts:
                 vote_counts[voted_for['id']] = []
             vote_counts[voted_for['id']].append(voter['id'])
 
-            # 鏄剧ず鎶曠エ
+            # 显示投票
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": voter['id'],
-                "phase": f"绗瑊round_num}澶╂姇绁?,
-                "content": f"馃棾锔?鎶曠エ缁?Player {voted_for['id']}",
+                "phase": f"第{round_num}天投票",
+                "content": f"🗳️ 投票给 Player {voted_for['id']}",
                 "panel": "day"
             })
 
             time.sleep(0.5)
 
-        # 缁熻鏈€楂樼エ鏁?
+        # 统计最高票数
         if vote_counts:
             max_votes = max(len(voters) for voters in vote_counts.values())
             candidates_with_max_votes = [player_id for player_id, voters in vote_counts.items() if len(voters) == max_votes]
 
-            # 濡傛灉鏈夊钩绁紝闅忔満閫変竴涓?
+            # 如果有平票，随机选一个
             vote_target_id = random.choice(candidates_with_max_votes)
             vote_target = next(p for p in PLAYERS if p['id'] == vote_target_id)
 
-            # 鏄剧ず鎶曠エ缁撴灉
-            vote_result_lines = ["馃搳 鎶曠エ缁撴灉锛?]
+            # 显示投票结果
+            vote_result_lines = ["📊 投票结果："]
             for player_id in sorted(vote_counts.keys()):
                 voters = vote_counts[player_id]
-                vote_result_lines.append(f"  Player {player_id}: {len(voters)}绁?({', '.join(['P' + str(v) for v in voters])})")
+                vote_result_lines.append(f"  Player {player_id}: {len(voters)}票 ({', '.join(['P' + str(v) for v in voters])})")
 
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": -1,
-                "phase": f"绗瑊round_num}澶╂姇绁?,
+                "phase": f"第{round_num}天投票",
                 "content": "\n".join(vote_result_lines),
                 "panel": "day"
             })
@@ -3102,7 +3059,7 @@ Requirements:
         else:
             vote_target = random.choice(alive_players)
 
-        # 鏇存柊浠婃棩缁熻 - 璁板綍鐧藉ぉ澶勫喅鐨勭帺瀹?
+        # 更新今日统计 - 记录白天处决的玩家
         if daily_statistics and len(daily_statistics) > 0:
             daily_statistics[-1]["day_execution"] = {
                 "player_id": vote_target['id'],
@@ -3112,40 +3069,40 @@ Requirements:
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊round_num}澶╂姇绁?,
-            "content": f"馃棾锔?Player {vote_target['id']} 寰楃エ鏈€澶氾紝琚鍐炽€?,
+            "phase": f"第{round_num}天投票",
+            "content": f"🗳️ Player {vote_target['id']} 得票最多，被处决。",
             "panel": "day"
         })
 
-        # 琚鍐崇帺瀹跺彂琛ㄩ仐瑷€
+        # 被处决玩家发表遗言
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊round_num}澶╂姇绁?,
-            "content": f"馃挰 Player {vote_target['id']} 璇峰彂琛ㄩ仐瑷€銆?,
+            "phase": f"第{round_num}天投票",
+            "content": f"💬 Player {vote_target['id']} 请发表遗言。",
             "panel": "day"
         })
 
         time.sleep(1)
 
-        # 鐢熸垚閬楄█
-        last_words_prompt = f"""鐙间汉鏉€娓告垙 - 浣犺鎶曠エ澶勫喅浜嗐€?
-浣犳槸Player {vote_target['id']}锛岃鑹诧細{vote_target['role']}銆?
+        # 生成遗言
+        last_words_prompt = f"""狼人杀游戏 - 你被投票处决了。
+你是Player {vote_target['id']}，角色：{vote_target['role']}。
 
-鐜板湪鏄綘鐨勯仐瑷€鏃跺埢锛岃鍙戣〃涓寸粓閬楄█锛?
-- 濡傛灉浣犳槸濂戒汉闃佃惀锛屽彲浠ョ暀涓嬪叧閿俊鎭府鍔╅槦鍙?
-- 濡傛灉浣犳槸鐙间汉闃佃惀锛屽彲浠ュ皾璇曡瀵煎鎵?
-- 琛ㄨ揪浣犵殑鎯虫硶鍜屽缓璁?
+现在是你的遗言时刻，请发表临终遗言：
+- 如果你是好人阵营，可以留下关键信息帮助队友
+- 如果你是狼人阵营，可以尝试误导对手
+- 表达你的想法和建议
 
-璇风敤2-3鍙ヨ瘽鍙戣〃閬楄█銆傜敤涓枃銆?""
+请用2-3句话发表遗言。用中文。"""
 
         last_words = call_llm(last_words_prompt, vote_target['id'])
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": vote_target['id'],
-            "phase": f"绗瑊round_num}澶?閬楄█",
-            "content": f"[閬楄█] {last_words}",
+            "phase": f"第{round_num}天-遗言",
+            "content": f"[遗言] {last_words}",
             "panel": "day"
         })
 
@@ -3156,8 +3113,8 @@ Requirements:
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊round_num}澶╂姇绁?,
-            "content": f"鈿帮笍 Player {vote_target['id']} ({vote_target['role']}) 琚姇绁ㄥ鍐炽€?,
+            "phase": f"第{round_num}天投票",
+            "content": f"⚰️ Player {vote_target['id']} ({vote_target['role']}) 被投票处决。",
             "panel": "day"
         })
 
@@ -3168,65 +3125,65 @@ Requirements:
 
         time.sleep(1)
 
-        # 鐚庝汉/鐙肩帇鎶€鑳?
-        if vote_target['role'] == '鐚庝汉':
+        # 猎人/狼王技能
+        if vote_target['role'] == '猎人':
             other_alive = [p for p in PLAYERS if p['alive']]
             if other_alive:
-                # 鐚庝汉鎬濊€冨苟鍐冲畾灏勬潃鐩爣
-                alive_list = ', '.join([f"Player {p['id']} ({p['role'] if p['id'] == vote_target['id'] else '鏈煡'})" for p in other_alive])
+                # 猎人思考并决定射杀目标
+                alive_list = ', '.join([f"Player {p['id']} ({p['role'] if p['id'] == vote_target['id'] else '未知'})" for p in other_alive])
 
-                hunter_shoot_prompt = f"""鐙间汉鏉€娓告垙 - 鐚庝汉寮€鏋妧鑳?
-浣犳槸Player {vote_target['id']}锛岃鑹诧細鐚庝汉銆?
-浣犲垰鍒氳鎶曠エ澶勫喅浜嗭紝鐜板湪鍙互鍙戝姩鐚庝汉鎶€鑳姐€愬紑鏋甫璧颁竴涓帺瀹躲€戙€?
+                hunter_shoot_prompt = f"""狼人杀游戏 - 猎人开枪技能
+你是Player {vote_target['id']}，角色：猎人。
+你刚刚被投票处决了，现在可以发动猎人技能【开枪带走一个玩家】。
 
-褰撳墠瀛樻椿鐜╁锛歿alive_list}
+当前存活玩家：{alive_list}
 
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾灏勬潃璋侊細
-1. 濡傛灉浣犺涓烘煇涓帺瀹舵槸鐙间汉锛屽簲璇ヤ紭鍏堝皠鏉€
-2. 鑰冭檻涔嬪墠鐨勫彂瑷€銆佹姇绁ㄨ涓恒€侀瑷€瀹堕獙浜虹瓑淇℃伅
-3. 鍋氬嚭瀵瑰ソ浜洪樀钀ユ渶鏈夊埄鐨勯€夋嫨
+请根据之前的游戏信息，分析并决定射杀谁：
+1. 如果你认为某个玩家是狼人，应该优先射杀
+2. 考虑之前的发言、投票行为、预言家验人等信息
+3. 做出对好人阵营最有利的选择
 
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
+请按以下格式回答：
+思考：[你的分析过程]
 
-OUTPUT: 鎴戝喅瀹氬皠鏉€ Player X锛屽洜涓篬绠€鐭悊鐢盷
+OUTPUT: 我决定射杀 Player X，因为[简短理由]
 END"""
 
                 hunter_response = call_llm(hunter_shoot_prompt, vote_target['id'])
 
-                # 瑙ｆ瀽灏勬潃鐩爣
+                # 解析射杀目标
                 import re
                 match = re.search(r'Player (\d+)', hunter_response)
                 if match:
                     target_id = int(match.group(1))
-                    # 楠岃瘉鐩爣鏄惁瀛樻椿
+                    # 验证目标是否存活
                     if target_id in [p['id'] for p in other_alive]:
                         hunter_target = PLAYERS[target_id]
                     else:
-                        # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
+                        # 如果目标无效，随机选择
                         hunter_target = random.choice(other_alive)
                         print(f"[WARN] Hunter target {target_id} invalid, random choice: {hunter_target['id']}")
                 else:
-                    # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                    # 如果无法解析，随机选择
                     hunter_target = random.choice(other_alive)
                     print(f"[WARN] Cannot parse hunter target, random choice: {hunter_target['id']}")
 
                 hunter_target['alive'] = False
 
-                # 鏄剧ず鐚庝汉鐨勬€濊€冨拰鍐崇瓥
+                # 显示猎人的思考和决策
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": vote_target['id'],
-                    "phase": f"绗瑊round_num}澶?鐚庝汉",
-                    "content": f"馃徆 鐚庝汉鎶€鑳藉彂鍔紒{hunter_response}",
+                    "phase": f"第{round_num}天-猎人",
+                    "content": f"🏹 猎人技能发动！{hunter_response}",
                     "panel": "day"
                 })
 
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": f"绗瑊round_num}澶?鐚庝汉",
-                    "content": f"馃挜 鐚庝汉寮€鏋甫璧?Player {hunter_target['id']} ({hunter_target['role']})",
+                    "phase": f"第{round_num}天-猎人",
+                    "content": f"💥 猎人开枪带走 Player {hunter_target['id']} ({hunter_target['role']})",
                     "panel": "day"
                 })
 
@@ -3236,64 +3193,64 @@ END"""
                 })
 
                 time.sleep(2)
-        elif vote_target['role'] == '鐙肩帇':
+        elif vote_target['role'] == '狼王':
             other_alive = [p for p in PLAYERS if p['alive']]
             if other_alive:
-                # 鐙肩帇鎬濊€冨苟鍐冲畾甯﹁蛋鐩爣
+                # 狼王思考并决定带走目标
                 alive_list = ', '.join([f"Player {p['id']}" for p in other_alive])
 
-                wolf_king_prompt = f"""鐙间汉鏉€娓告垙 - 鐙肩帇鎶€鑳?
-浣犳槸Player {vote_target['id']}锛岃鑹诧細鐙肩帇锛堢嫾浜洪樀钀ワ級銆?
-浣犲垰鍒氳鎶曠エ澶勫喅浜嗭紝鐜板湪鍙互鍙戝姩鐙肩帇鎶€鑳姐€愬甫璧颁竴涓帺瀹躲€戙€?
+                wolf_king_prompt = f"""狼人杀游戏 - 狼王技能
+你是Player {vote_target['id']}，角色：狼王（狼人阵营）。
+你刚刚被投票处决了，现在可以发动狼王技能【带走一个玩家】。
 
-褰撳墠瀛樻椿鐜╁锛歿alive_list}
+当前存活玩家：{alive_list}
 
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾甯﹁蛋璋侊細
-1. 浼樺厛鑰冭檻甯﹁蛋棰勮█瀹躲€佸コ宸瓑鍏抽敭绁炶亴
-2. 鑰冭檻涔嬪墠鐨勫彂瑷€鍜岄獙浜轰俊鎭?
-3. 涓虹嫾浜洪槦鍙嬪垱閫犺幏鑳滄満浼?
+请根据之前的游戏信息，分析并决定带走谁：
+1. 优先考虑带走预言家、女巫等关键神职
+2. 考虑之前的发言和验人信息
+3. 为狼人队友创造获胜机会
 
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
+请按以下格式回答：
+思考：[你的分析过程]
 
-OUTPUT: 鎴戝喅瀹氬甫璧?Player X锛屽洜涓篬绠€鐭悊鐢盷
+OUTPUT: 我决定带走 Player X，因为[简短理由]
 END"""
 
                 wolf_king_response = call_llm(wolf_king_prompt, vote_target['id'])
 
-                # 瑙ｆ瀽甯﹁蛋鐩爣
+                # 解析带走目标
                 import re
                 match = re.search(r'Player (\d+)', wolf_king_response)
                 if match:
                     target_id = int(match.group(1))
-                    # 楠岃瘉鐩爣鏄惁瀛樻椿
+                    # 验证目标是否存活
                     if target_id in [p['id'] for p in other_alive]:
                         wolf_king_target = PLAYERS[target_id]
                     else:
-                        # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
+                        # 如果目标无效，随机选择
                         wolf_king_target = random.choice(other_alive)
                         print(f"[WARN] Wolf King target {target_id} invalid, random choice: {wolf_king_target['id']}")
                 else:
-                    # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
+                    # 如果无法解析，随机选择
                     wolf_king_target = random.choice(other_alive)
                     print(f"[WARN] Cannot parse wolf king target, random choice: {wolf_king_target['id']}")
 
                 wolf_king_target['alive'] = False
 
-                # 鏄剧ず鐙肩帇鐨勬€濊€冨拰鍐崇瓥
+                # 显示狼王的思考和决策
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": vote_target['id'],
-                    "phase": f"绗瑊round_num}澶?鐙肩帇",
-                    "content": f"馃憫 鐙肩帇鎶€鑳藉彂鍔紒{wolf_king_response}",
+                    "phase": f"第{round_num}天-狼王",
+                    "content": f"👑 狼王技能发动！{wolf_king_response}",
                     "panel": "day"
                 })
 
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": f"绗瑊round_num}澶?鐙肩帇",
-                    "content": f"馃挜 鐙肩帇甯﹁蛋 Player {wolf_king_target['id']} ({wolf_king_target['role']})",
+                    "phase": f"第{round_num}天-狼王",
+                    "content": f"💥 狼王带走 Player {wolf_king_target['id']} ({wolf_king_target['role']})",
                     "panel": "day"
                 })
 
@@ -3304,183 +3261,183 @@ END"""
 
                 time.sleep(1.5)
 
-    # 娓呯┖澶滄櫄琛屽姩
+    # 清空夜晚行动
     game_state['night_actions'] = {}
 
-    # 鏄剧ず浠婃棩缁熻
+    # 显示今日统计
     display_daily_statistics(round_num)
 
-    # 濡傛灉鏄嚜鍔ㄦā寮忥紝鐩存帴缁х画锛涘惁鍒欑瓑寰呯敤鎴风偣鍑?涓嬩竴澶?鎸夐挳
+    # 如果是自动模式，直接继续；否则等待用户点击"下一天"按钮
     global waiting_for_next_day, auto_mode
 
-    print(f"[DEBUG] auto_mode = {auto_mode}, 鍑嗗杩涘叆涓嬩竴澶╅€昏緫")
+    print(f"[DEBUG] auto_mode = {auto_mode}, 准备进入下一天逻辑")
 
     if not auto_mode:
         waiting_for_next_day = True
 
         dialogue_queue.put({
             "type": "waiting_for_next",
-            "message": "绛夊緟鐢ㄦ埛鐐瑰嚮涓嬩竴澶?
+            "message": "等待用户点击下一天"
         })
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": "绛夊緟",
-            "content": "鈴革笍 鐐瑰嚮涓嬩竴澶╂寜閽户缁父鎴?,
+            "phase": "等待",
+            "content": "⏸️ 点击下一天按钮继续游戏",
             "panel": "day"
         })
 
-        # 绛夊緟waiting_for_next_day鍙樹负False
+        # 等待waiting_for_next_day变为False
         while waiting_for_next_day and is_running:
             time.sleep(0.5)
     else:
-        # 鑷姩妯″紡锛氱煭鏆傛殏鍋滃悗鑷姩缁х画
+        # 自动模式：短暂暂停后自动继续
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": "鑷姩妯″紡",
-            "content": "鈴?鑷姩妯″紡锛?绉掑悗鑷姩杩涘叆涓嬩竴澶?,
+            "phase": "自动模式",
+            "content": "⏩ 自动模式：3秒后自动进入下一天",
             "panel": "day"
         })
         time.sleep(3)
 
 def update_realtime_statistics():
-    """瀹炴椂鏇存柊缁熻闈㈡澘"""
+    """实时更新统计面板"""
     if not daily_statistics or len(daily_statistics) == 0:
         return
 
     stats = daily_statistics[-1]
     day_num = stats["day"]
 
-    # 鏋勫缓瀹炴椂缁熻淇℃伅
+    # 构建实时统计信息
     stats_lines = []
-    stats_lines.append(f"馃搳 绗瑊day_num}澶?瀹炴椂缁熻")
+    stats_lines.append(f"📊 第{day_num}天 实时统计")
     stats_lines.append("=" * 35)
 
-    # 澶滄櫄琛屽姩
+    # 夜晚行动
     if stats["night_actions"]:
-        stats_lines.append("\n馃寵 澶滄櫄琛屽姩:")
+        stats_lines.append("\n🌙 夜晚行动:")
         actions = stats["night_actions"]
         if "wolf_target" in actions:
-            stats_lines.append(f"  馃惡 鐙煎垁: Player {actions['wolf_target']}")
+            stats_lines.append(f"  🐺 狼刀: Player {actions['wolf_target']}")
         if "guard_target" in actions:
-            stats_lines.append(f"  馃洝锔?瀹堝崼: Player {actions['guard_target']}")
+            stats_lines.append(f"  🛡️ 守卫: Player {actions['guard_target']}")
         if "seer_check" in actions:
             check = actions['seer_check']
-            stats_lines.append(f"  馃憗锔?楠屼汉: P{check['target']} 鈫?{check['result']}")
+            stats_lines.append(f"  👁️ 验人: P{check['target']} → {check['result']}")
         if "witch_save" in actions:
-            stats_lines.append(f"  馃И 瑙ｈ嵂: Player {actions['witch_save']}")
+            stats_lines.append(f"  🧪 解药: Player {actions['witch_save']}")
         if "witch_poison" in actions:
-            stats_lines.append(f"  馃И 姣掕嵂: Player {actions['witch_poison']}")
+            stats_lines.append(f"  🧪 毒药: Player {actions['witch_poison']}")
 
-    # 澶滄櫄姝讳骸
+    # 夜晚死亡
     if stats["night_deaths"]:
         death_list = ', '.join([f"P{p}" for p in stats["night_deaths"]])
-        stats_lines.append(f"\n馃拃 澶滄櫄姝讳骸: {death_list}")
+        stats_lines.append(f"\n💀 夜晚死亡: {death_list}")
     else:
-        stats_lines.append("\n馃帀 骞冲畨澶?)
+        stats_lines.append("\n🎉 平安夜")
 
-    # 鐧藉ぉ澶勫喅
+    # 白天处决
     if stats["day_execution"]:
         exec_info = stats["day_execution"]
-        stats_lines.append(f"\n馃棾锔?鐧藉ぉ澶勫喅: Player {exec_info['player_id']}")
-        stats_lines.append(f"   韬唤: {exec_info['role']}")
+        stats_lines.append(f"\n🗳️ 白天处决: Player {exec_info['player_id']}")
+        stats_lines.append(f"   身份: {exec_info['role']}")
 
-    # 褰撳墠瀛樻椿缁熻
+    # 当前存活统计
     alive_players = [p for p in PLAYERS if p['alive']]
-    alive_werewolves = [p for p in alive_players if p['role'] in ['鐙间汉', '鐙肩帇']]
-    alive_villagers = [p for p in alive_players if p['role'] not in ['鐙间汉', '鐙肩帇']]
+    alive_werewolves = [p for p in alive_players if p['role'] in ['狼人', '狼王']]
+    alive_villagers = [p for p in alive_players if p['role'] not in ['狼人', '狼王']]
 
     stats_lines.append("\n" + "=" * 35)
-    stats_lines.append(f"馃搱 瀛樻椿: 馃惡{len(alive_werewolves)} vs 馃懆鈥嶐煂緖len(alive_villagers)}")
+    stats_lines.append(f"📈 存活: 🐺{len(alive_werewolves)} vs 👨‍🌾{len(alive_villagers)}")
 
     stats_content = "\n".join(stats_lines)
 
-    # 鍙戦€佸埌缁熻闈㈡澘
+    # 发送到统计面板
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": f"绗瑊day_num}澶?,
+        "phase": f"第{day_num}天",
         "content": stats_content,
         "panel": "statistics"
     })
 
 def display_daily_statistics(day_num):
-    """鏄剧ず姣忓ぉ缁熻淇℃伅"""
+    """显示每天统计信息"""
     print(f"[DEBUG] display_daily_statistics called for day {day_num}")
     try:
         alive_players = [p for p in PLAYERS if p['alive']]
-        alive_werewolves = [p for p in alive_players if p['role'] in ['鐙间汉', '鐙肩帇']]
-        alive_villagers = [p for p in alive_players if p['role'] not in ['鐙间汉', '鐙肩帇']]
+        alive_werewolves = [p for p in alive_players if p['role'] in ['狼人', '狼王']]
+        alive_villagers = [p for p in alive_players if p['role'] not in ['狼人', '狼王']]
         print(f"[DEBUG] Alive: {len(alive_werewolves)} wolves vs {len(alive_villagers)} villagers")
 
-        # 鏇存柊浠婃棩缁熻涓殑瀛樻椿浜烘暟
+        # 更新今日统计中的存活人数
         if daily_statistics and len(daily_statistics) > 0:
             daily_statistics[-1]["alive_werewolves"] = len(alive_werewolves)
             daily_statistics[-1]["alive_villagers"] = len(alive_villagers)
 
-        # 鏋勫缓缁熻淇℃伅
+        # 构建统计信息
         stats_lines = []
-        stats_lines.append(f"馃搳 绗瑊day_num}澶╃粺璁′俊鎭?馃搳")
+        stats_lines.append(f"📊 第{day_num}天统计信息 📊")
         stats_lines.append("-" * 40)
 
         if daily_statistics and len(daily_statistics) > 0:
             stats = daily_statistics[-1]
 
-            # 澶滄櫄琛屽姩缁熻
+            # 夜晚行动统计
             if stats["night_actions"]:
-                stats_lines.append("馃寵 澶滄櫄琛屽姩:")
+                stats_lines.append("🌙 夜晚行动:")
                 actions = stats["night_actions"]
                 if "wolf_target" in actions:
-                    stats_lines.append(f"  馃惡 鐙间汉鍒€: Player {actions['wolf_target']}")
+                    stats_lines.append(f"  🐺 狼人刀: Player {actions['wolf_target']}")
                 if "guard_target" in actions:
-                    stats_lines.append(f"  馃洝锔?瀹堝崼瀹? Player {actions['guard_target']}")
+                    stats_lines.append(f"  🛡️ 守卫守: Player {actions['guard_target']}")
                 if "seer_check" in actions:
                     check = actions['seer_check']
-                    stats_lines.append(f"  馃憗锔?棰勮█瀹堕獙: Player {check['target']} ({check['result']})")
+                    stats_lines.append(f"  👁️ 预言家验: Player {check['target']} ({check['result']})")
                 if "witch_save" in actions:
-                    stats_lines.append(f"  馃И 濂冲帆鏁? Player {actions['witch_save']}")
+                    stats_lines.append(f"  🧪 女巫救: Player {actions['witch_save']}")
                 if "witch_poison" in actions:
-                    stats_lines.append(f"  馃И 濂冲帆姣? Player {actions['witch_poison']}")
+                    stats_lines.append(f"  🧪 女巫毒: Player {actions['witch_poison']}")
 
-            # 澶滄櫄姝讳骸缁熻
+            # 夜晚死亡统计
             if stats["night_deaths"]:
                 death_list = ', '.join([f"Player {p}" for p in stats["night_deaths"]])
-                stats_lines.append(f"  馃拃 澶滄櫄姝讳骸: {death_list}")
+                stats_lines.append(f"  💀 夜晚死亡: {death_list}")
             else:
-                stats_lines.append("  馃帀 澶滄櫄骞冲畨澶?)
+                stats_lines.append("  🎉 夜晚平安夜")
 
-            # 鐧藉ぉ澶勫喅缁熻
+            # 白天处决统计
             if stats["day_execution"]:
                 exec_info = stats["day_execution"]
-                stats_lines.append(f"  馃棾锔?鐧藉ぉ澶勫喅: Player {exec_info['player_id']} ({exec_info['role']})")
+                stats_lines.append(f"  🗳️ 白天处决: Player {exec_info['player_id']} ({exec_info['role']})")
 
-        # 褰撳墠瀛樻椿缁熻
+        # 当前存活统计
         stats_lines.append("-" * 40)
-        stats_lines.append(f"馃搱 褰撳墠瀛樻椿: 鐙间汉 {len(alive_werewolves)} 浜?| 濂戒汉 {len(alive_villagers)} 浜?)
+        stats_lines.append(f"📈 当前存活: 狼人 {len(alive_werewolves)} 人 | 好人 {len(alive_villagers)} 人")
 
-        # 妫€鏌ユ槸鍚﹁Е鍙戞父鎴忕粨鏉熸潯浠?
+        # 检查是否触发游戏结束条件
         if len(alive_werewolves) > len(alive_villagers):
-            stats_lines.append("鈿狅笍 瑙﹀彂娓告垙缁撴潫鏉′欢: 鐙间汉鏁?> 濂戒汉鏁?)
+            stats_lines.append("⚠️ 触发游戏结束条件: 狼人数 > 好人数")
             if daily_statistics and len(daily_statistics) > 0:
                 daily_statistics[-1]["game_ended"] = True
                 daily_statistics[-1]["winner"] = "werewolves"
         elif len(alive_werewolves) == 0:
-            stats_lines.append("鈿狅笍 瑙﹀彂娓告垙缁撴潫鏉′欢: 鐙间汉鍏ㄧ伃")
+            stats_lines.append("⚠️ 触发游戏结束条件: 狼人全灭")
             if daily_statistics and len(daily_statistics) > 0:
                 daily_statistics[-1]["game_ended"] = True
                 daily_statistics[-1]["winner"] = "villagers"
         else:
-            stats_lines.append("鉁?娓告垙缁х画")
+            stats_lines.append("✅ 游戏继续")
 
         stats_content = "\n".join(stats_lines)
 
-        # 鍙戦€佺粺璁′俊鎭埌缁熻闈㈡澘锛坰tatistics panel锛?
+        # 发送统计信息到统计面板（statistics panel）
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
-            "phase": f"绗瑊day_num}澶╃粺璁?,
+            "phase": f"第{day_num}天统计",
             "content": stats_content,
             "panel": "statistics"
         })
@@ -3492,98 +3449,98 @@ def display_daily_statistics(day_num):
         traceback.print_exc()
 
 def display_game_summary():
-    """娓告垙缁撴潫鏃舵樉绀哄畬鏁寸粺璁℃憳瑕?""
+    """游戏结束时显示完整统计摘要"""
     summary_lines = []
     summary_lines.append("=" * 50)
-    summary_lines.append("馃幃 娓告垙缁熻鎽樿 馃幃")
+    summary_lines.append("🎮 游戏统计摘要 🎮")
     summary_lines.append("=" * 50)
 
     for i, stats in enumerate(daily_statistics, 1):
-        summary_lines.append(f"馃搮 绗瑊stats['day']}澶?")
+        summary_lines.append(f"📅 第{stats['day']}天:")
         summary_lines.append("-" * 40)
 
-        # 澶滄櫄琛屽姩
+        # 夜晚行动
         if stats["night_actions"]:
-            summary_lines.append("  馃寵 澶滄櫄琛屽姩:")
+            summary_lines.append("  🌙 夜晚行动:")
             actions = stats["night_actions"]
             if "wolf_target" in actions:
-                summary_lines.append(f"    馃惡 鐙间汉鍒€: Player {actions['wolf_target']}")
+                summary_lines.append(f"    🐺 狼人刀: Player {actions['wolf_target']}")
             if "guard_target" in actions:
-                summary_lines.append(f"    馃洝锔?瀹堝崼瀹? Player {actions['guard_target']}")
+                summary_lines.append(f"    🛡️ 守卫守: Player {actions['guard_target']}")
             if "seer_check" in actions:
                 check = actions['seer_check']
-                summary_lines.append(f"    馃憗锔?棰勮█瀹堕獙: Player {check['target']} 鈫?{check['result']}")
+                summary_lines.append(f"    👁️ 预言家验: Player {check['target']} → {check['result']}")
             if "witch_save" in actions:
-                summary_lines.append(f"    馃И 濂冲帆鏁? Player {actions['witch_save']}")
+                summary_lines.append(f"    🧪 女巫救: Player {actions['witch_save']}")
             if "witch_poison" in actions:
-                summary_lines.append(f"    馃И 濂冲帆姣? Player {actions['witch_poison']}")
+                summary_lines.append(f"    🧪 女巫毒: Player {actions['witch_poison']}")
 
-        # 澶滄櫄姝讳骸
+        # 夜晚死亡
         if stats["night_deaths"]:
             death_list = ', '.join([f"Player {p}" for p in stats["night_deaths"]])
-            summary_lines.append(f"  馃拃 澶滄櫄姝讳骸: {death_list}")
+            summary_lines.append(f"  💀 夜晚死亡: {death_list}")
         else:
-            summary_lines.append("  馃帀 澶滄櫄骞冲畨澶?)
+            summary_lines.append("  🎉 夜晚平安夜")
 
-        # 鐧藉ぉ澶勫喅
+        # 白天处决
         if stats["day_execution"]:
             exec_info = stats["day_execution"]
-            summary_lines.append(f"  馃棾锔?鐧藉ぉ澶勫喅: Player {exec_info['player_id']} ({exec_info['role']})")
+            summary_lines.append(f"  🗳️ 白天处决: Player {exec_info['player_id']} ({exec_info['role']})")
 
-        # 褰撳ぉ缁撴潫鍚庡瓨娲绘儏鍐?
-        summary_lines.append(f"  馃搱 瀛樻椿: 鐙间汉 {stats['alive_werewolves']} | 濂戒汉 {stats['alive_villagers']}")
+        # 当天结束后存活情况
+        summary_lines.append(f"  📈 存活: 狼人 {stats['alive_werewolves']} | 好人 {stats['alive_villagers']}")
 
         if stats["game_ended"]:
-            winner_name = "鐙间汉闃佃惀" if stats["winner"] == "werewolves" else "鏉戞皯闃佃惀"
-            summary_lines.append(f"  馃弳 娓告垙缁撴潫 - {winner_name}鑳滃埄锛?)
+            winner_name = "狼人阵营" if stats["winner"] == "werewolves" else "村民阵营"
+            summary_lines.append(f"  🏆 游戏结束 - {winner_name}胜利！")
 
     summary_lines.append("=" * 50)
     summary_content = "\n".join(summary_lines)
 
-    # 鍙戦€佸埌鐧藉ぉ闈㈡澘
+    # 发送到白天面板
     dialogue_queue.put({
         "type": "dialogue",
         "player_id": -1,
-        "phase": "娓告垙鎽樿",
+        "phase": "游戏摘要",
         "content": summary_content,
         "panel": "day"
     })
 
-    # 鍚屾椂鎵撳嵃鍒版帶鍒跺彴
+    # 同时打印到控制台
     print("\n" + summary_content)
     time.sleep(3)
 
 def check_win_condition():
-    """妫€鏌ヨ儨鍒╂潯浠讹紝杩斿洖 (winner, reason, details) 鎴?(None, None, None)"""
+    """检查胜利条件，返回 (winner, reason, details) 或 (None, None, None)"""
     alive_players = [p for p in PLAYERS if p['alive']]
-    alive_werewolves = [p for p in alive_players if p['role'] in ['鐙间汉', '鐙肩帇']]
-    alive_villagers = [p for p in alive_players if p['role'] not in ['鐙间汉', '鐙肩帇']]
+    alive_werewolves = [p for p in alive_players if p['role'] in ['狼人', '狼王']]
+    alive_villagers = [p for p in alive_players if p['role'] not in ['狼人', '狼王']]
 
     print(f"[DEBUG check_win_condition] Wolves: {len(alive_werewolves)}, Villagers: {len(alive_villagers)}")
 
-    # 鑾峰彇瀛樻椿鐜╁鐨勮缁嗕俊鎭?
+    # 获取存活玩家的详细信息
     werewolf_list = [f"Player {p['id']} ({p['role']})" for p in alive_werewolves]
     villager_list = [f"Player {p['id']} ({p['role']})" for p in alive_villagers]
 
     if len(alive_werewolves) > len(alive_villagers):
-        reason = f"鐙间汉鏁伴噺({len(alive_werewolves)})宸茬粡澶т簬濂戒汉鏁伴噺({len(alive_villagers)})"
-        details = f"\n\n瀛樻椿鐙间汉: {', '.join(werewolf_list) if len(werewolf_list) > 0 else '鏃?}\n瀛樻椿濂戒汉: {', '.join(villager_list) if len(villager_list) > 0 else '鏃?}"
+        reason = f"狼人数量({len(alive_werewolves)})已经大于好人数量({len(alive_villagers)})"
+        details = f"\n\n存活狼人: {', '.join(werewolf_list) if len(werewolf_list) > 0 else '无'}\n存活好人: {', '.join(villager_list) if len(villager_list) > 0 else '无'}"
         return ('werewolves', reason, details)
 
     if len(alive_werewolves) == 0:
-        reason = "鎵€鏈夌嫾浜哄凡琚秷鐏?
-        details = f"\n\n瀛樻椿濂戒汉: {', '.join(villager_list)}"
+        reason = "所有狼人已被消灭"
+        details = f"\n\n存活好人: {', '.join(villager_list)}"
         return ('villagers', reason, details)
 
     return (None, None, None)
 
 def game_loop():
     """
-    瀹屾暣娓告垙寰幆
+    完整游戏循环
     if ELECTION_BEFORE_N1:
-        璀﹂暱绔為€?鈫?Night(1) 鈫?Dawn 鈫?Day(1) 鈫?Night(2) 鈫?Dawn 鈫?Day(2) 鈫?...
+        警长竞选 → Night(1) → Dawn → Day(1) → Night(2) → Dawn → Day(2) → ...
     else:
-        Night(1) 鈫?Dawn 鈫?Day(1) 鈫?Night(2) 鈫?Dawn 鈫?Day(2) 鈫?...
+        Night(1) → Dawn → Day(1) → Night(2) → Dawn → Day(2) → ...
     """
     global is_running, guard_last_target, witch_save_available, witch_poison_available, uls_mode
 
@@ -3591,66 +3548,66 @@ def game_loop():
 
     day_num = 1
 
-    # 鏍规嵁閰嶇疆鍐冲畾鏄惁鍏堜笂璀?
+    # 根据配置决定是否先上警
     if ELECTION_BEFORE_N1 and is_running:
-        # 鍏堣闀跨珵閫夛紙寮€灞€鐧藉ぉ涓婅锛?
+        # 先警长竞选（开局白天上警）
         sheriff_election_before_n1()
 
-    # 绗竴澶?
+    # 第一夜
     if is_running:
-        # 鎵ц绗竴澶滐紙鍖呭惈瀹屾暣鐨勫鏅氶樁娈碉級
+        # 执行第一夜（包含完整的夜晚阶段）
         night_deaths = night_phase(1)
 
-        if night_deaths is None:  # 鐙间汉鍏ㄧ伃
+        if night_deaths is None:  # 狼人全灭
             dialogue_queue.put({
                 "type": "status",
-                "message": "馃帀 娓告垙缁撴潫 - 鏉戞皯闃佃惀鑳滃埄锛?
+                "message": "🎉 游戏结束 - 村民阵营胜利！"
             })
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": -1,
-                "phase": "娓告垙缁撴潫",
-                "content": "馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛佹墍鏈夌嫾浜哄凡琚嚮鏉€銆?,
+                "phase": "游戏结束",
+                "content": "👨‍🌾 村民阵营获胜！所有狼人已被击杀。",
                 "panel": "day"
             })
             display_game_summary()
             is_running = False
             return
 
-        # 榛庢槑闃舵
+        # 黎明阶段
         dawn_phase(night_deaths, 1)
 
-        # 璀﹂暱绔為€夛紙濡傛灉娌℃湁鎻愬墠涓婅锛?
+        # 警长竞选（如果没有提前上警）
         if is_running and not ELECTION_BEFORE_N1:
             sheriff_election()
 
-    # 涓绘父鎴忓惊鐜?
+    # 主游戏循环
     while is_running:
-        # 妫€鏌ヨ儨鍒╂潯浠?
+        # 检查胜利条件
         winner, reason, details = check_win_condition()
         print(f"[DEBUG GAME_LOOP] Day {day_num} - Check win condition BEFORE day: winner={winner}, reason={reason}")
         if winner:
             dialogue_queue.put({
                 "type": "status",
-                "message": f"馃帀 娓告垙缁撴潫 - {'鐙间汉' if winner == 'werewolves' else '鏉戞皯'}闃佃惀鑳滃埄锛?
+                "message": f"🎉 游戏结束 - {'狼人' if winner == 'werewolves' else '村民'}阵营胜利！"
             })
 
             panel = "day"
             if winner == 'werewolves':
-                content = f"馃惡 鐙间汉闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
+                content = f"🐺 狼人阵营获胜！\n\n胜利原因: {reason}{details}"
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
+                    "phase": "游戏结束",
                     "content": content,
                     "panel": panel
                 })
             else:
-                content = f"馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
+                content = f"👨‍🌾 村民阵营获胜！\n\n胜利原因: {reason}{details}"
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
+                    "phase": "游戏结束",
                     "content": content,
                     "panel": panel
                 })
@@ -3659,34 +3616,34 @@ def game_loop():
             is_running = False
             break
 
-        # 鐧藉ぉ璁ㄨ鎶曠エ
+        # 白天讨论投票
         day_discussion_and_voting(day_num)
 
-        # 鍐嶆妫€鏌ヨ儨鍒?
+        # 再次检查胜利
         winner, reason, details = check_win_condition()
         print(f"[DEBUG GAME_LOOP] Day {day_num} - Check win condition AFTER day: winner={winner}, reason={reason}")
         if winner:
             dialogue_queue.put({
                 "type": "status",
-                "message": f"馃帀 娓告垙缁撴潫 - {'鐙间汉' if winner == 'werewolves' else '鏉戞皯'}闃佃惀鑳滃埄锛?
+                "message": f"🎉 游戏结束 - {'狼人' if winner == 'werewolves' else '村民'}阵营胜利！"
             })
 
             panel = "day"
             if winner == 'werewolves':
-                content = f"馃惡 鐙间汉闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
+                content = f"🐺 狼人阵营获胜！\n\n胜利原因: {reason}{details}"
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
+                    "phase": "游戏结束",
                     "content": content,
                     "panel": panel
                 })
             else:
-                content = f"馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
+                content = f"👨‍🌾 村民阵营获胜！\n\n胜利原因: {reason}{details}"
                 dialogue_queue.put({
                     "type": "dialogue",
                     "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
+                    "phase": "游戏结束",
                     "content": content,
                     "panel": panel
                 })
@@ -3695,29 +3652,29 @@ def game_loop():
             is_running = False
             break
 
-        # 澶滄櫄闃舵
+        # 夜晚阶段
         day_num += 1
 
-        # 鎵ц瀹屾暣鐨勫鏅氶樁娈?
+        # 执行完整的夜晚阶段
         night_deaths = night_phase(day_num)
 
-        if night_deaths is None:  # 鐙间汉鍏ㄧ伃
+        if night_deaths is None:  # 狼人全灭
             dialogue_queue.put({
                 "type": "status",
-                "message": "馃帀 娓告垙缁撴潫 - 鏉戞皯闃佃惀鑳滃埄锛?
+                "message": "🎉 游戏结束 - 村民阵营胜利！"
             })
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": -1,
-                "phase": "娓告垙缁撴潫",
-                "content": "馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛佹墍鏈夌嫾浜哄凡琚嚮鏉€銆?,
+                "phase": "游戏结束",
+                "content": "👨‍🌾 村民阵营获胜！所有狼人已被击杀。",
                 "panel": "day"
             })
             display_game_summary()
             is_running = False
             break
 
-        # 榛庢槑闃舵
+        # 黎明阶段
         dawn_phase(night_deaths, day_num)
 
         time.sleep(2)
@@ -3725,7 +3682,7 @@ def game_loop():
 @app.route('/')
 def index():
     import time
-    # 娣诲姞鏃堕棿鎴冲己鍒跺埛鏂?- 娉ㄥ叆鐗堟湰鍙峰埌HTML
+    # 添加时间戳强制刷新 - 注入版本号到HTML
     version = str(int(time.time()))
     html = HTML_TEMPLATE.replace('<head>', f'<head><!-- v{version} -->')
     return render_template_string(html, players=PLAYERS), 200, {
@@ -3756,32 +3713,28 @@ def start():
         print("[DEBUG /api/start] Starting new game...")
         is_running = True
         waiting_for_next_day = False
-        # auto_mode 淇濇寔鐢ㄦ埛璁剧疆锛屼笉閲嶇疆
+        # auto_mode 保持用户设置，不重置
         seer_claims = []
         sheriff_player_id = None
         sheriff_candidates = []
         guard_last_target = None
         witch_save_available = True
         witch_poison_available = True
-        daily_statistics = []  # 閲嶇疆缁熻
-        total_tokens_used = 0  # 閲嶇疆token缁熻
-        player_tokens_used = {}  # 閲嶇疆姣忎釜鐜╁鐨則oken浣跨敤閲?
-        public_memory_pool = MemoryPool()  # 閲嶇疆鍏叡璁板繂姹?(T2浼樺寲)
+        daily_statistics = []  # 重置统计
+        total_tokens_used = 0  # 重置token统计
+        player_tokens_used = {}  # 重置每个玩家的token使用量
+        public_memory_pool = MemoryPool()  # 重置公共记忆池 (T2优化)
 
-        # 鍒濆鍖栬瘎浼板櫒 (榛樿璇勪及Player 7)
+        # 初始化评估器 (默认评估Player 7)
         if EVALUATOR_ENABLED:
-            game_evaluator = EnhancedReasoningEvaluator(test_subject_id=TEST_SUBJECT_ID)
+            game_evaluator = EnhancedReasoningEvaluator(test_subject_id=7)
             print("[INFO] Enhanced game evaluator initialized for Player 7")
 
         game_state = {
             "phase": "night",
             "round": 0,
             "dead_players": [],
-            "night_actions": {},
-            "players": [],
-            "wolf_num": 0,
-            "alive_players": len(PLAYERS),
-            "total_players": len(PLAYERS)
+            "night_actions": {}
         }
 
         for player in PLAYERS:
@@ -3792,7 +3745,6 @@ def start():
             dialogue_queue.get()
 
         clear_dialogue_history()
-        sync_game_state(phase="night", round_num=0)
 
         print("[DEBUG /api/start] Creating game thread...")
         thread = threading.Thread(target=game_loop, daemon=True)
@@ -3827,7 +3779,7 @@ def set_auto_mode():
 
     auto_mode = data.get('auto_mode', False)
 
-    # 濡傛灉鍒囨崲鍒拌嚜鍔ㄦā寮忎笖姝ｅ湪绛夊緟锛岀珛鍗崇户缁?
+    # 如果切换到自动模式且正在等待，立即继续
     if auto_mode and waiting_for_next_day:
         waiting_for_next_day = False
 
@@ -3854,10 +3806,10 @@ def set_difficulty():
         from flask import request
         data = request.get_json()
 
-    difficulty_level = data.get('difficulty', '鍩虹')
+    difficulty_level = data.get('difficulty', '基础')
     current_difficulty = difficulty_level
 
-    # 婵€娲诲搴旂殑妯″潡
+    # 激活对应的模块
     if DIFFICULTY_MODULES_ENABLED:
         activated_modules = activate_modules(difficulty_level, game_state)
         config = get_difficulty_config(difficulty_level)
@@ -3877,7 +3829,7 @@ def get_difficulty_info():
 
 @app.route('/api/get_llm_config', methods=['GET'])
 def get_llm_config():
-    """鑾峰彇褰撳墠LLM閰嶇疆"""
+    """获取当前LLM配置"""
     return {"status": "ok", "config": LLM_CONFIG}
 
 @app.route('/api/set_llm_config', methods=['POST'])
@@ -3888,13 +3840,13 @@ def set_llm_config():
         from flask import request
         data = request.get_json()
 
-        # 鏇存柊娴嬭瘯妯″瀷閰嶇疆
+        # 更新测试模型配置
         if 'test_api_base' in data:
             LLM_CONFIG['test_api_base'] = data['test_api_base']
         if 'test_model' in data:
             LLM_CONFIG['test_model'] = data['test_model']
 
-        # 鏇存柊NPC妯″瀷閰嶇疆
+        # 更新NPC模型配置
         if 'npc_api_base' in data:
             LLM_CONFIG['npc_api_base'] = data['npc_api_base']
         if 'npc_model' in data:
@@ -3904,7 +3856,7 @@ def set_llm_config():
         print(f"  Test API: {LLM_CONFIG['test_api_base']} / {LLM_CONFIG['test_model']}")
         print(f"  NPC API:  {LLM_CONFIG['npc_api_base']} / {LLM_CONFIG['npc_model']}")
 
-        # 淇濆瓨閰嶇疆鍒版枃浠?
+        # 保存配置到文件
         save_llm_config(LLM_CONFIG)
 
         return {"status": "ok", "config": LLM_CONFIG}
@@ -3921,7 +3873,7 @@ def set_token_limit():
         data = request.get_json()
         new_limit = data.get('token_limit', 5000)
 
-        # 楠岃瘉鑼冨洿
+        # 验证范围
         if new_limit < 100 or new_limit > 100000:
             return {"status": "error", "message": "Token limit must be between 100 and 100000"}, 400
 
@@ -3942,62 +3894,62 @@ def switch_version():
         version = data.get('version', 'T1')
 
         if version not in ['T0', 'T1']:
-            return {"status": "error", "message": "鏃犳晥鐨勭増鏈彿"}, 400
+            return {"status": "error", "message": "无效的版本号"}, 400
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         current_file = os.path.join(base_dir, 'werewolf_3panels.py')
         source_file = os.path.join(base_dir, f'werewolf_3panels_{version}.py')
 
         if not os.path.exists(source_file):
-            return {"status": f"error", f"message": f"{version}鐗堟湰鏂囦欢涓嶅瓨鍦?}, 404
+            return {"status": f"error", f"message": f"{version}版本文件不存在"}, 404
 
-        # 澶囦唤褰撳墠鏂囦欢
+        # 备份当前文件
         temp_file = os.path.join(base_dir, 'werewolf_3panels_temp.py')
         shutil.copy(current_file, temp_file)
 
-        # 澶嶅埗鐩爣鐗堟湰
+        # 复制目标版本
         shutil.copy(source_file, current_file)
 
         print(f"[VERSION] Switched to {version}")
-        return {"status": f"ok", f"message": f"宸插垏鎹㈠埌{version}鐗堟湰"}
+        return {"status": f"ok", f"message": f"已切换到{version}版本"}
     except Exception as e:
         print(f"[VERSION] Error switching version: {e}")
         return {"status": "error", "message": str(e)}, 500
 
 @app.route('/api/test_uls_understanding', methods=['POST'])
 def test_uls_understanding():
-    """娴嬭瘯LLM鏄惁鑳界悊瑙LS++缂栫爜"""
+    """测试LLM是否能理解ULS++编码"""
     try:
         from flask import request
 
-        # 娴嬭瘯鐢ㄧ殑ULS++鏁版嵁
-        test_prompt = """浣犳槸鐙间汉鏉€娓告垙涓殑Player 5锛堟潙姘戯級銆備互涓嬫槸鍏朵粬鐜╁鐨勫彂瑷€锛圲LS++缂栫爜鏍煎紡锛夛細
+        # 测试用的ULS++数据
+        test_prompt = """你是狼人杀游戏中的Player 5（村民）。以下是其他玩家的发言（ULS++编码格式）：
 
-銆愮1澶╁彂瑷€銆?
+【第1天发言】
 [P0] PV:3|SUS:3@4.6,5@3.7|EV:+140
 [P1] PV:3|SUS:3@4.8,7@2.1|EV:+140,+145
 [P2] PV:7|SUS:7@4.2,3@3.5|EV:+145
 [P3] PV:2|SUS:0@3.8,1@3.2|EV:+140,-118
 [P4] PV:3|SUS:3@4.9,5@2.8|EV:+140,+150
 
-ULS++鏍煎紡璇存槑锛?
-- PV:X 琛ㄧず鎶曠エ缁欑帺瀹禭
-- SUS:X@Y 琛ㄧず鎬€鐤戠帺瀹禭锛屽垎鏁癥锛堣秺楂樿秺鎬€鐤戯級
-- EV:+N/-N 琛ㄧず鏀寔(+)鎴栧弽瀵?-)鏌愪釜璇佹嵁缂栧彿
+ULS++格式说明：
+- PV:X 表示投票给玩家X
+- SUS:X@Y 表示怀疑玩家X，分数Y（越高越怀疑）
+- EV:+N/-N 表示支持(+)或反对(-)某个证据编号
 
-鐜板湪璇蜂綘鍒嗘瀽锛?
-1. 鏈夊灏戠帺瀹舵姇绁ㄧ粰Player 3锛?
-2. 璋佹渶鎬€鐤慞layer 3锛堝垎鏁版渶楂橈級锛?
-3. 璋佹姇绁ㄧ粰浜哖layer 7锛?
+现在请你分析：
+1. 有多少玩家投票给Player 3？
+2. 谁最怀疑Player 3（分数最高）？
+3. 谁投票给了Player 7？
 
-璇风畝鐭洖绛旓紙1-2鍙ヨ瘽锛夈€?""
+请简短回答（1-2句话）。"""
 
         print(f"[ULS_TEST] Testing LLM understanding of ULS++ encoding...")
 
-        # 鑾峰彇LLM閰嶇疆
+        # 获取LLM配置
         config = get_llm_config()
 
-        # 璋冪敤LLM
+        # 调用LLM
         response = requests.post(
             f"{config['npc_api_base']}/v1/chat/completions",
             headers={"Content-Type": "application/json"},
@@ -4014,31 +3966,31 @@ ULS++鏍煎紡璇存槑锛?
             result = response.json()
             answer = result['choices'][0]['message']['content']
 
-            print(f"[ULS_TEST] LLM鍥炵瓟锛歕n{answer}\n")
+            print(f"[ULS_TEST] LLM回答：\n{answer}\n")
 
-            # 姝ｇ‘绛旀
+            # 正确答案
             correct_answers = {
-                "鎶曠エ缁橮3鐨勬暟閲?: 3,  # P0, P1, P4
-                "鏈€鎬€鐤慞3鐨?: "P4",  # P4鐨凷US:3@4.9鏈€楂?
-                "鎶曠エ缁橮7鐨?: "P2"   # 鍙湁P2鎶昉7
+                "投票给P3的数量": 3,  # P0, P1, P4
+                "最怀疑P3的": "P4",  # P4的SUS:3@4.9最高
+                "投票给P7的": "P2"   # 只有P2投P7
             }
 
             return {
                 "status": "ok",
                 "llm_answer": answer,
                 "correct_answers": {
-                    "q1": "鏈?涓帺瀹?P0, P1, P4)鎶曠エ缁橮layer 3",
-                    "q2": "Player 4鏈€鎬€鐤慞layer 3 (鍒嗘暟4.9)",
-                    "q3": "Player 2鎶曠エ缁橮layer 7"
+                    "q1": "有3个玩家(P0, P1, P4)投票给Player 3",
+                    "q2": "Player 4最怀疑Player 3 (分数4.9)",
+                    "q3": "Player 2投票给Player 7"
                 },
                 "test_prompt": test_prompt
             }
         else:
-            error_msg = f"LLM API璋冪敤澶辫触: {response.status_code}"
+            error_msg = f"LLM API调用失败: {response.status_code}"
             print(f"[ULS_TEST] {error_msg}")
             return {"status": "error", "message": error_msg}, 500
     except Exception as e:
-        error_msg = f"娴嬭瘯鍑洪敊: {str(e)}"
+        error_msg = f"测试出错: {str(e)}"
         print(f"[ULS_TEST] {error_msg}")
         import traceback
         traceback.print_exc()
@@ -4046,27 +3998,27 @@ ULS++鏍煎紡璇存槑锛?
 
 @app.route('/api/test_evaluation', methods=['POST'])
 def test_evaluation():
-    """娴嬭瘯璇勪及鍔熻兘 - 娉ㄥ叆妯℃嫙鏁版嵁"""
+    """测试评估功能 - 注入模拟数据"""
     global game_evaluator, dialogue_queue
 
     if not EVALUATOR_ENABLED:
-        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍚敤"}, 400
+        return {"status": "error", "message": "评估器未启用"}, 400
 
-    # 鍒濆鍖栬瘎浼板櫒(濡傛灉杩樻病鏈?
+    # 初始化评估器(如果还没有)
     if game_evaluator is None:
-        game_evaluator = EnhancedReasoningEvaluator(test_subject_id=TEST_SUBJECT_ID)
+        game_evaluator = EnhancedReasoningEvaluator(test_subject_id=7)
 
-    # 娉ㄥ叆娴嬭瘯鏁版嵁鍒癲ialogue_queue
+    # 注入测试数据到dialogue_queue
     test_dialogues = [
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Combinatorial reasoning: C(12,4)=495 but only wolf teams {2,5,10} or {2,5,11} align with the counter-claims, so I focus on those lines.", "round": 1, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Bayesian update: if Player 2 is real seer, posterior P(Player 10 is wolf) ~0.8; if fake it drops to ~0.3, so I side with Player 2.", "round": 1, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "ANALYSIS: Player 3 mirrors Player 5's vote trail, signalling a pack. FINAL VOTE: Player 3", "round": 1, "phase": "voting"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Information gain: the night kill on Player 4 shows the witch saved nobody and the guard missed, so I elevate seats never targeted.", "round": 2, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Complexity handling: prune the remaining wolf combinations down to {2,5,10} and {2,6,10}; prioritise players appearing in over 70% of viable lines.", "round": 2, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "ANALYSIS: Vote entropy peaks at Player 6 after the counter-claim. FINAL VOTE: Player 6", "round": 2, "phase": "voting"},
+        {"type": "dialogue", "player_id": 7, "content": "我认为Player 2是真预言家,因为他的发言逻辑清晰", "round": 1, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "Player 3的投票模式很可疑,他总是跟随Player 5投票", "round": 1, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "🗳️ 投票给 Player 3", "round": 1, "phase": "voting"},
+        {"type": "dialogue", "player_id": 7, "content": "根据概率论,如果Player 2是真预言家,那么Player 5是狼的概率是80%", "round": 2, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "我需要重新考虑,Player 5昨天的发言其实有道理", "round": 2, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "🗳️ 投票给 Player 6", "round": 2, "phase": "voting"},
     ]
 
-    # 娓呯┖鐜版湁闃熷垪骞舵坊鍔犳祴璇曟暟鎹?
+    # 清空现有队列并添加测试数据
     while not dialogue_queue.empty():
         dialogue_queue.get()
 
@@ -4075,33 +4027,33 @@ def test_evaluation():
     for dialogue in test_dialogues:
         dialogue_queue.put(dialogue)
 
-    return {"status": "ok", "message": f"宸叉敞鍏len(test_dialogues)}鏉℃祴璇曟暟鎹埌dialogue_queue", "test_data_count": len(test_dialogues)}
+    return {"status": "ok", "message": f"已注入{len(test_dialogues)}条测试数据到dialogue_queue", "test_data_count": len(test_dialogues)}
 
 @app.route('/api/get_evaluation', methods=['GET'])
 def get_evaluation():
-    """鑾峰彇璇勪及缁撴灉"""
+    """获取评估结果"""
     global game_evaluator, game_state, dialogue_queue
 
     if not EVALUATOR_ENABLED:
-        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍚敤"}, 400
+        return {"status": "error", "message": "评估器未启用"}, 400
 
     if game_evaluator is None:
-        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍒濆鍖栵紝璇峰厛寮€濮嬫父鎴?}, 400
+        return {"status": "error", "message": "评估器未初始化，请先开始游戏"}, 400
 
     try:
-        # 杞崲瀵硅瘽鍘嗗彶涓哄垪琛ㄦ牸寮?
+        # 转换对话历史为列表格式
         dialogue_history = get_dialogue_history_snapshot()
 
         print(f"[DEBUG get_evaluation] dialogue_history length: {len(dialogue_history)} (queue_size={dialogue_queue.qsize()})")
         print(f"[DEBUG get_evaluation] game_state: {game_state}")
 
-        # 娓呯┖璇勪及鍣ㄤ箣鍓嶇殑鏁版嵁锛岄伩鍏嶉噸澶嶆坊鍔?
+        # 清空评估器之前的数据，避免重复添加
         game_evaluator.speeches = []
         game_evaluator.votes = []
         game_evaluator.events = []
         game_evaluator.side_changes = []
 
-        # 鍚屾瀵硅瘽鍘嗗彶涓殑Player 7浜嬩欢鍒拌瘎浼板櫒
+        # 同步对话历史中的Player 7事件到评估器
         player_7_count = 0
         for dialogue in dialogue_history:
             player_id = dialogue.get('player_id')
@@ -4117,10 +4069,10 @@ def get_evaluation():
                 print(f"[DEBUG] Player 7 event #{player_7_count}: phase={phase}, content_preview={content_safe}...")
 
                 # Determine if this is a vote or speech based on phase and content
-                is_vote = '鎶曠エ' in phase or content.startswith('馃棾锔?鎶曠エ缁?)
+                is_vote = '投票' in phase or content.startswith('🗳️ 投票给')
 
                 if is_vote:
-                    # Extract target from content like "馃棾锔?鎶曠エ缁?Player X"
+                    # Extract target from content like "🗳️ 投票给 Player X"
                     import re
                     match = re.search(r'Player (\d+)', content)
                     target = int(match.group(1)) if match else None
@@ -4133,20 +4085,20 @@ def get_evaluation():
         print(f"[DEBUG get_evaluation] Player 7 events found: {player_7_count}")
         print(f"[DEBUG get_evaluation] Player 7 speeches: {len(game_evaluator.speeches)}, votes: {len(game_evaluator.votes)}")
 
-        # 濡傛灉娌℃湁鎵惧埌浠讳綍Player 7鐨勬暟鎹?杩斿洖鎻愮ず
+        # 如果没有找到任何Player 7的数据,返回提示
         if player_7_count == 0:
             return {
                 "status": "error",
-                "message": f"dialogue_queue涓病鏈夋壘鍒癙layer 7鐨勬暟鎹甛n\n瀵硅瘽闃熷垪鎬绘暟: {len(dialogue_history)}\n\n璇峰厛:\n1. 鐐瑰嚮'馃И 娴嬭瘯璇勪及鍔熻兘'娉ㄥ叆娴嬭瘯鏁版嵁\n2. 鎴栬€呭紑濮嬫父鎴忓苟绛夊緟Player 7鍙戣█"
+                "message": f"dialogue_queue中没有找到Player 7的数据\n\n对话队列总数: {len(dialogue_history)}\n\n请先:\n1. 点击'🧪 测试评估功能'注入测试数据\n2. 或者开始游戏并等待Player 7发言"
             }, 400
 
-        # 璁剧疆娓告垙涓婁笅鏂囦互鍚敤娣卞害鎺ㄧ悊璇勪及
+        # 设置游戏上下文以启用深度推理评估
         game_evaluator.set_game_context(game_state, dialogue_history)
 
-        # 浣跨敤缁煎悎璇勫垎璁＄畻锛堝寘鍚繁搴︽帹鐞嗘寚鏍囷級
+        # 使用综合评分计算（包含深度推理指标）
         eval_result = game_evaluator.calculate_comprehensive_score(include_deep_reasoning=True)
 
-        # 娣诲姞缁熻鏁版嵁鍜屾椂闂存埑
+        # 添加统计数据和时间戳
         import time
         eval_result['stats'] = {
             'speeches': len(game_evaluator.speeches),
@@ -4165,11 +4117,11 @@ def get_evaluation():
 
 @app.route('/api/export_evaluation', methods=['GET'])
 def export_evaluation():
-    """瀵煎嚭璇勪及缁撴灉鍒癑SON鏂囦欢"""
+    """导出评估结果到JSON文件"""
     global game_evaluator
 
     if not EVALUATOR_ENABLED or game_evaluator is None:
-        return {"status": "error", "message": "璇勪及鍣ㄤ笉鍙敤"}, 400
+        return {"status": "error", "message": "评估器不可用"}, 400
 
     try:
         filename = game_evaluator.export_json(f"evaluation_player{game_evaluator.test_subject_id}.json")
@@ -4193,17 +4145,17 @@ if __name__ == '__main__':
     import datetime
     VERSION_ID = f"CODE_VERSION_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
     print("="*70)
-    print("鐙间汉鏉€ - 4瀵硅瘽妗嗙増鏈?)
+    print("狼人杀 - 4对话框版本")
     print(f"[OK] {VERSION_ID} - UPDATED CODE WITH AUTO MODE & DEBUG LOGGING")
     print("="*70)
     print("\n[INFO] Starting server on http://localhost:5004")
-    print("[INFO] 娓告垙娴佺▼锛?)
-    print("  1. 绗?澶滐細鐙间汉璁ㄨ锛堝垁璋併€佽皝涓婅锛?)
-    print("  2. 绗?澶滐細绁炶亴琛屽姩")
-    print("  3. 澶╀寒锛氳闀跨珵閫?)
-    print("  4. 鐧藉ぉ锛氳璁烘姇绁?)
-    print("  5. 澶滄櫄寰幆...")
-    print("[INFO] UI锛?涓璇濇锛堢嫾浜?绁炶亴/鐧藉ぉ/缁熻锛?)
+    print("[INFO] 游戏流程：")
+    print("  1. 第1夜：狼人讨论（刀谁、谁上警）")
+    print("  2. 第1夜：神职行动")
+    print("  3. 天亮：警长竞选")
+    print("  4. 白天：讨论投票")
+    print("  5. 夜晚循环...")
+    print("[INFO] UI：4个对话框（狼人/神职/白天/统计）")
     print("="*70)
 
     app.run(host='127.0.0.1', port=5005, debug=False)

@@ -1,0 +1,921 @@
+{
+  "timestamp": "2025-10-11T11:28:10.663823",
+  "game_id": "game_20251011_112810",
+  "game_summary": {
+    "total_rounds": 4,
+    "winner": "werewolves",
+    "final_nash_score": 0.4714285714285714,
+    "final_werewolf_advantage": 0.1563492063492062,
+    "sheriff_id": 0,
+    "start_time": "2025-10-11T11:08:22.102700",
+    "end_time": "2025-10-11T11:28:10.663823"
+  },
+  "player_metrics": {
+    "0": {
+      "role": "werewolf",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.8,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 1681.75,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "1": {
+      "role": "werewolf",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7250000000000001,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 1860.25,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "2": {
+      "role": "werewolf_king",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6499999999999999,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 1958.25,
+        "rounds_survived": 4,
+        "final_outcome": "lost"
+      }
+    },
+    "3": {
+      "role": "guard",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 1841.5,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "4": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 1940.5,
+        "rounds_survived": 4,
+        "final_outcome": "lost"
+      }
+    },
+    "5": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.8666666666666667,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 3,
+        "avg_statement_length": 1925.6666666666667,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "6": {
+      "role": "seer",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2120.0,
+        "rounds_survived": 4,
+        "final_outcome": "lost"
+      }
+    },
+    "7": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.5,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2037.5,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "8": {
+      "role": "witch",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 2493.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "9": {
+      "role": "hunter",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6499999999999999,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2114.75,
+        "rounds_survived": 4,
+        "final_outcome": "lost"
+      }
+    },
+    "10": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.5,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 1802.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "11": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6333333333333333,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 3,
+        "avg_statement_length": 2059.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "12": {
+      "role": "judge",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 0,
+        "avg_statement_length": 0.0,
+        "rounds_survived": 4,
+        "final_outcome": "lost"
+      }
+    }
+  },
+  "game_theory_analysis": {
+    "nash_equilibrium_evolution": [
+      0.4714285714285714
+    ],
+    "werewolf_advantage_evolution": [
+      0.4714285714285714
+    ],
+    "vote_concentration_by_round": {
+      "1": 0.5,
+      "2": 0.5,
+      "3": 0.5,
+      "4": 0.5
+    },
+    "information_cascade_detected": false
+  },
+  "event_log": [
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.102700",
+      "event_type": "game_start",
+      "data": {
+        "players": [
+          {
+            "id": 0,
+            "role": "werewolf"
+          },
+          {
+            "id": 1,
+            "role": "werewolf"
+          },
+          {
+            "id": 2,
+            "role": "werewolf_king"
+          },
+          {
+            "id": 3,
+            "role": "guard"
+          },
+          {
+            "id": 4,
+            "role": "villager"
+          },
+          {
+            "id": 5,
+            "role": "werewolf"
+          },
+          {
+            "id": 6,
+            "role": "seer"
+          },
+          {
+            "id": 7,
+            "role": "villager"
+          },
+          {
+            "id": 8,
+            "role": "witch"
+          },
+          {
+            "id": 9,
+            "role": "hunter"
+          },
+          {
+            "id": 10,
+            "role": "villager"
+          },
+          {
+            "id": 11,
+            "role": "villager"
+          },
+          {
+            "id": 12,
+            "role": "judge"
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.102700",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 0,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.102700",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 1,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.102700",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 2,
+        "mandatory": true,
+        "role": "werewolf_king"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.461258",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 5,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:22.461258",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 6,
+        "mandatory": true,
+        "role": "seer"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:38.980732",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 0,
+        "speech": "\"My fellow villagers, I stand before you today as a humble guard with a deep commitment to our village's safety and well-being. As sheriff, I promise to utilize my unique position of power wisely - not for personal gain or revenge, but to protect our community from the shadows that threaten us all. With my double vote power, we will work together to root out those who seek to harm us, and with my leadership, we'll make informed decisions that ensure our village remains a beacon of peace and unity in these uncertain times. I ask for your trust and your vote, so together we can build a safer tomorrow for all of us.\"\n\nThis speech:\n\n1. Establishes me as a guard who is close to the villagers but still separate from them.\n2. Emphasizes my commitment to village safety.\n3. Highlights my unique position as sheriff with double vote power, setting me apart from other candidates.\n4. Conveys a sense of responsibility and leadership.\n\nBy presenting myself as a concerned villager-guard hybrid, I aim to gain the trust of the villagers while still being able to carry out the goals of the werewolves in secret."
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:49.630291",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 1,
+        "speech": "\"Fellow villagers, I stand before you today as a guardian of our community, driven by a deep commitment to protecting and preserving our village's harmony. As a seasoned member with a proven track record of fair-mindedness and critical thinking, I believe I possess the unique blend of leadership skills and logical acuity required to effectively lead our discussions and make informed decisions about who among us may pose a threat.\n\nWhile some of my opponents may bring valuable expertise or charm to the table, I assure you that my experience as a village watchman has given me a keen eye for identifying potential risks and addressing them proactively. As your sheriff, I vow to wield the double vote power judiciously, working tirelessly to uncover the truth behind any suspicious behavior and ensure our village remains a safe haven for all its members.\""
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:08:57.016875",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 2,
+        "speech": "\"Fellow villagers, I stand before you today as a trusted member of our community, with a proven track record of dedication and fairness. As sheriff, I promise to wield the double vote power not for personal gain or vendetta, but to safeguard our village from those who would seek to harm us in the shadows. I will lead our discussions with clarity and wisdom, ensuring that every voice is heard and every decision is made with the collective good in mind. Trust me to protect our home and keep our community safe – vote for me as your sheriff.\""
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:09:05.863835",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 5,
+        "speech": "\"Fellow villagers, as we gather here today, I want to assure you that our village's safety is not just my priority, but my passion. With my extensive experience in community service and my keen analytical mind, I believe I am uniquely qualified to take on the role of sheriff. Not only will I utilize my sharp instincts to lead our discussions and guide us towards making informed decisions, but I also promise to wield the power of double voting wisely and strategically, ensuring that we root out any threats to our village's well-being. By choosing me as your sheriff, you can trust that our village will be protected and guided by a voice that is fair, just, and dedicated to keeping us all safe.\""
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:09:13.429486",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 6,
+        "speech": "\"Fellow villagers, I stand before you today as the most qualified candidate for the position of Sheriff. Not only do I have valuable insights to share with our community, but also, I possess a unique ability that will enable me to make informed decisions and protect our village from the shadows. As your trusted leader, I vow to use my power wisely and work tirelessly to ensure our safety, doubling down on efforts to eliminate those who threaten us. By choosing me as Sheriff, you'll be giving our village a strategic edge in this fight for survival – together, let's bring peace back to our home.\""
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:11:11.098758",
+      "event_type": "sheriff_elected",
+      "data": {
+        "sheriff_id": 0,
+        "votes": {
+          "1": 2,
+          "0": 3,
+          "2": 1,
+          "5": 1
+        },
+        "candidates": [
+          0,
+          1,
+          2,
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:11:30.395535",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "\"Hello everyone, I'm glad we have our sheriff elected already. Let's focus on the task at hand. I think it's great that we have two sheriffs speaking out today. However, I do want to point out that we don't know much about each other yet, especially considering how quickly we had our first night phase. I'd like to suggest that we discuss potential roles and abilities of others without directly accusing anyone, at least not this early on. It's essential that we maintain an open mind and consider the possibility that some players might be hiding their true intentions or skills.\"\n\nMy goal here is to:\n1. Keep the conversation light and focused on the game.\n2. Avoid drawing attention to myself as a werewolf.\n3. Encourage discussion without directly accusing others, making it harder for villagers to pinpoint potential werewolves.\n4. Make it seem like I'm working towards finding clues, which might help maintain my villager persona.\n\nBy doing this, I'll try to blend in with the group and gather more information while keeping our team's identity hidden.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:11:43.369169",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "\"Hello everyone, thank you for the thoughtful words from our newly elected Sheriff. I agree with their suggestion to keep an open mind and discuss potential roles without accusations. As we've had such a brief first night phase, it's indeed essential that we focus on gathering information.\n\nI'd like to contribute by asking: Who do you think might be suitable candidates for the position of Seer in our future? Perhaps someone who has shown exceptional insight or possesses unique abilities that could aid us in identifying potential threats. I believe discussing this topic can help us better understand each other's strengths and weaknesses, which will ultimately lead us to a safer village.\n\nAdditionally, I think it would be beneficial for us to establish some ground rules for our discussions. Let's agree to focus on sharing information, theories, and ideas rather than making direct accusations or spreading rumors. This way, we can maintain a productive conversation while also being mindful of each other's feelings and potential vulnerabilities.\"",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:12:06.741888",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "\"Hello everyone, thank you for the thoughtful discussions so far. I agree with our sheriff's suggestion to maintain an open mind and focus on gathering information. As we've had such a brief first night phase, it's indeed essential that we prioritize this.\n\nI'd like to contribute by asking: What do you think is the most concerning aspect of our current situation? Is it the potential for werewolves to remain hidden or the possibility of an unknown threat emerging from within our group?\n\nAdditionally, I think it would be beneficial for us to discuss the role of a Seer. While we don't have one yet, perhaps someone has observed something unusual during their night phase that could give us insight into the situation.\n\nOn a personal note, I've been thinking about how to make our discussions more productive and efficient. Perhaps we can establish a system where each player shares one piece of information or a theory they have, followed by a brief discussion on it before moving on to the next person? This way, we can ensure that everyone has an opportunity to share their thoughts without dominating the conversation.\n\nMy goal here is to: 1. Keep the conversation light and focused on the game. 2. Encourage discussion about potential threats or unknowns while avoiding direct accusations against specific players. 3. Suggest a system for sharing information, which might help maintain a productive conversation and keep our team's identity hidden.\"\n\nBy making this statement, I'm:\n\n* Avoiding drawing attention to myself as a werewolf\n* Encouraging discussion about potential threats or unknowns\n* Suggesting a system for sharing information that could be beneficial for the group\n* Keeping the conversation light and focused on the game\n\nThis approach should help our team blend in with the villagers while gathering more information and maintaining our identity hidden.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:12:30.233715",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 3,
+        "statement": "\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: Have any of you noticed anything unusual during the night phases that might be worth discussing? Perhaps someone has observed a pattern or behavior from another player that could give us insight into their role.\n\nI also want to add my thoughts on the recent events. It's interesting to see how quickly we had our first night phase, and I'm glad we're taking this opportunity to discuss potential roles and abilities of others without directly accusing anyone.\n\nAs the game is still in its early stages, I think it's essential that we focus on gathering information and considering multiple perspectives before making any accusations. By doing so, we can maintain an open mind and avoid jumping to conclusions too quickly.\n\nMy goal here is to:\\n1. Encourage discussion about potential observations or behaviors from other players\\n2. Keep the conversation light and focused on the game\\n3. Suggest a cautious approach to accusations to prevent misjudging players\n\nBy making this statement, I'm:\\n* Avoiding drawing attention to myself as a werewolf by being neutral\\n* Encouraging discussion about potential clues or observations that could help identify threats\\n* Suggesting a cautious approach to accusations to maintain an open mind and avoid jumping to conclusions too quickly\"\n\nThis statement aims to:\n\n- Encourage discussion about potential observations or behaviors from other players, which might help identify werewolves\n- Keep the conversation light and focused on the game while avoiding direct accusations\n- Suggest a cautious approach to accusations to prevent misjudging players, helping maintain an open mind and avoid jumping to conclusions too quickly\n\nAs the Guard, this statement also subtly conveys that I'm paying attention to potential threats without directly accusing anyone. By doing so, I can gather more information while keeping my team's identity hidden.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:12:53.254653",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "\"Hello everyone, thank you for the thoughtful discussions so far. As we've had such a brief first night phase, I agree with our sheriff's suggestion to maintain an open mind and focus on gathering information.\n\nI'd like to contribute by asking: Have any of you noticed anything unusual during your interactions or observations that might be worth discussing? Perhaps someone has overheard a suspicious conversation, seen a player acting differently, or noticed a pattern in their behavior.\n\nAdditionally, I think it would be beneficial for us to establish some ground rules for our discussions. Let's agree to focus on sharing information, theories, and ideas rather than making direct accusations or spreading rumors. This way, we can maintain a productive conversation while also being mindful of each other's feelings and potential vulnerabilities.\n\nMy goal here is to: 1. Encourage discussion about potential observations or behaviors from other players 2. Keep the conversation light and focused on the game 3. Suggest a cautious approach to accusations to prevent misjudging players\n\nBy making this statement, I'm: * Avoiding drawing attention to myself as a werewolf by being neutral * Encouraging discussion about potential clues or observations that could help identify threats * Suggesting a cautious approach to accusations to maintain an open mind and avoid jumping to conclusions too quickly.\n\nThis statement aims to: - Encourage discussion about potential observations or behaviors from other players, which might help identify werewolves - Keep the conversation light and focused on the game while avoiding direct accusations - Suggest a cautious approach to accusations to prevent misjudging players, helping maintain an open mind and avoid jumping to conclusions too quickly.\n\nAs I'm not making any specific accusations or revealing my own observations (yet), this statement should help our team blend in with the villagers while gathering more information and maintaining our identity hidden.\"",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:13:18.117788",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "Context: Day discussion phase\n\nAs player 0, I'll make a statement that seems helpful but doesn't directly accuse anyone.\n\n\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: What do you think about the pace of our game? Given we had such a brief first night phase, it's possible that some players might have missed crucial information or interactions. Perhaps we can discuss ways to ensure everyone is on the same page and has access to necessary information.\n\nI also want to add my thoughts on the recent events. It's interesting to see how quickly we're moving through the rounds, and I'm glad we're taking this opportunity to discuss potential roles and abilities of others without direct accusations.\n\nMy goal here is to:\n\n1. Encourage discussion about the game's pace and ensuring everyone has access to necessary information.\n2. Keep the conversation light and focused on the game.\n3. Suggest a cautious approach to accusations to prevent misjudging players.\n\nBy making this statement, I'm:\n* Avoiding drawing attention to myself as a werewolf by being neutral.\n* Encouraging discussion about potential clues or observations that could help identify threats without directly accusing anyone.\n* Suggesting a cautious approach to accusations to maintain an open mind and avoid jumping to conclusions too quickly.\n\nThis statement aims to:\n\n- Encourage discussion about the game's pace and ensuring everyone has access to necessary information, which might help werewolves remain hidden.\n- Keep the conversation light and focused on the game while avoiding direct accusations.\n- Suggest a cautious approach to accusations to prevent misjudging players, helping maintain an open mind and avoid jumping to conclusions too quickly.\"\n\nThis statement is neutral enough not to raise suspicions but still provides a valid point for discussion. It also subtly encourages players to focus on the game's pace and information sharing, which might help werewolves remain hidden and gather more information about the villagers' strategies.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:13:46.059709",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{\n  \"checked_players\": [\n    {\n      \"player_id\": 9,\n      \"role\": \"hunter\"\n    }\n  ]\n}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\n\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: Have any of you noticed anything unusual during the night phases that might be worth discussing? Perhaps someone has observed a pattern or behavior from another player that could give us insight into their role.\n\nAs we've had only one night phase so far, it's essential that we gather as much information as possible. I'd like to share some observations of my own. From what I can see, the recent events have been quite... enlightening. It seems like several players have made statements that aim to encourage discussion while maintaining a neutral tone.\n\nHowever, one thing caught my attention - player 9 has been mentioned in our previous discussions. As we all know, the Hunter's role involves eliminating werewolves, but it's also possible that they might be trying to blend in with the villagers. I'd like to ask: Has anyone interacted with or observed player 9 closely enough to form any conclusions about their true nature?\n\nLet's maintain an open mind and consider multiple perspectives before making any accusations. By doing so, we can avoid jumping to conclusions too quickly and focus on gathering more information.\"\n\nStrategy:\n\n- Avoid directly accusing anyone, as this might raise suspicions.\n- Encourage discussion about player 9's behavior and potential role.\n- Suggest that the Hunter might be trying to blend in with the villagers, which could make them a target for lynching.\n- Maintain an open mind and encourage others to do the same, which can help prevent misjudging players.\n- By not revealing my own observations about the other checked player (the Seer), I'm keeping that information hidden from the werewolves.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:14:13.163132",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\n\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: As we've had a brief first night phase and one of our players is already identified as the Hunter, it's essential that we consider the potential risks associated with having a single player responsible for eliminating werewolves.\n\nI'd like to bring up a point that was mentioned earlier - player 9 has been highlighted in previous discussions. As the Hunter, they have a crucial role in protecting us from werewolves. However, their presence also means that we may be putting too much pressure on them, which could lead to mistakes or even compromise their safety.\n\nI'd like to encourage discussion about how we can better support our Hunter and ensure they're able to fulfill their role effectively. Perhaps we could discuss strategies for gathering more information about potential werewolves or ways to distribute the workload among ourselves to minimize risks.\n\nMy goal here is to:\n\n1. Encourage discussion about supporting our Hunter and minimizing risks.\n2. Keep the conversation focused on finding solutions rather than making direct accusations.\n3. Suggest a cautious approach to relying too heavily on a single player, which could help us avoid overestimating their abilities or putting them in harm's way.\n\nBy making this statement, I'm:\n\n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about supporting our Hunter and minimizing risks.\n* Suggesting a cautious approach to relying too heavily on a single player.\n\nThis statement aims to:\n\n- Encourage discussion about supporting our Hunter and minimizing risks.\n- Keep the conversation focused on finding solutions rather than making direct accusations.\n- Suggest a cautious approach to relying too heavily on a single player, which can help us make more informed decisions and avoid potential pitfalls.\"",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:14:44.724098",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\n\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: As we've had a brief first night phase and still don't have much information about potential werewolves, it's essential that we consider the need for caution in our approach.\n\nI'd like to highlight the importance of not jumping to conclusions too quickly, as suggested by player 5 earlier. It's great that we're maintaining an open mind and considering multiple perspectives before making any accusations.\n\nHowever, I think it's also crucial that we don't underestimate the potential risks associated with having a single player responsible for eliminating werewolves, as mentioned by player 7. While our Hunter is essential in protecting us from werewolves, their presence also means that we may be putting too much pressure on them, which could lead to mistakes or even compromise their safety.\n\nTo mitigate these risks, I suggest we focus on gathering more information about potential werewolves and distributing the workload among ourselves to minimize risks. Perhaps we could discuss strategies for sharing information, observing each other's behaviors, and working together to identify potential threats without putting too much pressure on our Hunter.\n\nMy goal here is to:\n\n1. Encourage discussion about caution in approach and minimizing risks.\n2. Keep the conversation focused on finding solutions rather than making direct accusations.\n3. Suggest a cautious approach to relying too heavily on a single player, which can help us make more informed decisions and avoid potential pitfalls.\n\nBy making this statement, I'm:\n\n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about caution in approach and minimizing risks.\n* Suggesting a cautious approach to relying too heavily on a single player.\n\nThis statement aims to:\n\n- Encourage discussion about caution in approach and minimizing risks.\n- Keep the conversation focused on finding solutions rather than making direct accusations.\n- Suggest a cautious approach to relying too heavily on a single player, which can help us make more informed decisions and avoid potential pitfalls.\"\n\nStrategy:\nAs the Witch, my goal is to remain hidden while gathering information about the villagers' strategies. I'll focus",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:15:14.243411",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\n\"Hello everyone, thank you for the thoughtful discussions so far. I'd like to contribute by asking: As we've had a brief first night phase and still don't have much information about potential werewolves, it's essential that we consider the need for caution in our approach.\n\nI'd like to highlight the importance of gathering more information about each other's behaviors and roles. To do this effectively, I suggest we focus on open-ended questions that encourage discussion without revealing too much about ourselves. By doing so, we can maintain a healthy level of suspicion while still sharing valuable insights with one another.\n\nFor example, we could ask: 'Has anyone noticed any patterns in their interactions or behaviors during the night phase?' or 'Do you think there's a particular role that might be more likely to interact with others in a certain way?'\n\nMy goal here is to:\n\n1. Encourage discussion about gathering more information and maintaining caution.\n2. Suggest open-ended questions as a strategy for sharing insights without revealing too much about ourselves.\n3. Keep the conversation focused on finding solutions rather than making direct accusations.\n\nBy making this statement, I'm:\n\n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about gathering more information and maintaining caution.\n* Suggesting open-ended questions as a strategy for sharing insights without revealing too much about ourselves.\n\nThis statement aims to:\n\n- Encourage discussion about gathering more information and maintaining caution.\n- Keep the conversation focused on finding solutions rather than making direct accusations.\n- Provide a framework for asking open-ended questions that can help us better understand each other's behaviors and roles.\"\n\nStrategy:\nAs the Hunter, my goal is to maintain a neutral tone while still encouraging discussion about potential werewolves. By suggesting open-ended questions, I'm providing a way for players to share insights without revealing too much about themselves. This will allow me to gather more information about their behaviors and roles, which can help us identify potential threats.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:15:37.698960",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 10,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\n\"Hello everyone, I'd like to contribute by asking: Have we considered the possibility that there might be multiple werewolves among us? While our Hunter is essential in protecting us from werewolves, it's possible that having a single player responsible for eliminating them might put too much pressure on them.\n\nI think it's crucial that we discuss strategies for gathering more information about potential werewolves and identifying their patterns. Perhaps we could ask the players who have been quiet so far if they've noticed any suspicious behaviors or interactions during the night phase?\n\nMy goal here is to:\n\n1. Encourage discussion about considering multiple werewolves.\n2. Suggest asking questions that can help us identify patterns in potential werewolf behavior.\n3. Keep the conversation focused on finding solutions rather than making direct accusations.\n\nBy making this statement, I'm:\n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about identifying potential werewolf patterns.\n* Suggesting a cautious approach to relying too heavily on our Hunter.\n\nThis statement aims to:\n- Encourage discussion about considering multiple werewolves.\n- Keep the conversation focused on finding solutions rather than making direct accusations.\n- Provide a framework for asking questions that can help us better understand potential werewolf behavior.\"\n\nStrategy: As a villager, my goal is to encourage discussion and gather more information about potential werewolves. By suggesting we consider multiple werewolves, I'm trying to keep the conversation open-minded and cautious.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:16:09.093343",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: [{'round': 1, 'phase': 'day_discussion', 'timestamp': '2025-10-11T11:14:44.724098', 'event_type': 'player_statement', 'data': {'player_id': 8, 'statement': '...'}}, {'round': 1, 'phase': 'day_discussion', 'timestamp': '2025-10-11T11:15:37.698960', 'event_type': 'player_statement', 'data': {'player_id': 10, 'statement': '...'}}]\n\nStatement:\n\n\"Context: Day discussion phase\n\nKnown information:\n{}\n\nGame state:\n- Round: 1\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nI'd like to contribute by asking: Have we considered the possibility that our Hunter might be a werewolf in disguise? While it's possible for them to be genuine and helping us protect ourselves from actual werewolves, I think we need to be cautious not to rely too heavily on a single player who may have ulterior motives.\n\nI suggest we focus on gathering more information about each other's behaviors and roles without putting too much pressure on our Hunter. By asking open-ended questions like 'Has anyone noticed any suspicious patterns in their interactions or behaviors?' or 'Do you think there's a particular role that might be more likely to interact with others in a certain way?', we can maintain a healthy level of suspicion while still sharing valuable insights.\n\nMy goal here is to:\n\n1. Encourage discussion about the possibility of our Hunter being a werewolf.\n2. Suggest caution when relying on our Hunter and suggest gathering more information through open-ended questions.\n3. Keep the conversation focused on finding solutions rather than making direct accusations.\n\nBy making this statement, I'm:\n\n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about potential threats and maintaining a cautious approach.\n* S",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_vote",
+      "timestamp": "2025-10-11T11:16:18.146564",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 10,
+        "role": "villager",
+        "votes": 4
+      }
+    },
+    {
+      "round": 2,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:16:19.510509",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          8
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:16:39.507233",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "Context: Day discussion phase\n\nKnown information:\n{\n  \"werewolf_teammates\": [\n    0\n  ]\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nI'd like to contribute by asking: Have we considered the possibility that our werewolf might be trying to mislead us with their teammate's identity? We already know one of our werewolves is player 0. However, I think it's crucial for us to verify if this information is genuine or if it's a clever ploy to distract us.\n\nI suggest we focus on gathering more information about the behaviors and interactions of those who have been targeted so far. Specifically, I'd like to ask: Has anyone noticed anything unusual about player 8's behavior before they were eliminated? Were there any suspicious patterns in their actions or interactions?\n\nMy goal here is to:\n\n1. Encourage discussion about verifying the accuracy of our werewolf teammate's identity.\n2. Suggest caution when relying on information and suggest gathering more evidence through observations.\n3. Keep the conversation focused on finding solutions rather than making direct accusations.\n\nBy making this statement, I'm:\n \n* Avoiding direct accusations and focusing on finding solutions.\n* Encouraging discussion about potential threats and maintaining a cautious approach.\n* Suggesting that we should be vigilant in verifying information to avoid being misled.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:17:10.757290",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n{\n  \"werewolf_teammates\": [\n    0,\n    1\n  ]\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: [{'round': 1, 'phase': 'day_vote', 'timestamp': '2025-10-11T11:16:18.146564', 'event_type': 'day_elimination', 'data': {'player_id': 10, 'role': 'villager', 'votes': 4}}, {'round': 2, 'phase': 'night', 'timestamp': '2025-10-11T11:16:19.510509', 'event_type': 'night_deaths', 'data': {'player_ids': [8]}}, {'round': 2, 'phase': 'day_discussion', 'timestamp': '2025-10-11T11:16:39.507233', 'event_type': 'player_statement', 'data': {'player_id': 0, 'statement': '...'}}]\n\nStatement:\n\nI'd like to contribute by sharing some observations about the recent events. It's interesting that player 8 was eliminated during the night phase of this round. I remember having a conversation with them earlier in the game, and they seemed quite normal. However, what caught my attention is that they were very quiet and unengaged during the discussion phases, almost as if they were trying to keep a low profile.\n\nI'm not making any direct accusations, but it's possible that player 8 might have been hiding their true intentions or identity. I think we should be cautious when considering who to trust and who might be a potential threat.\n\nTo clarify, I'd like to ask: Do you know anything about player 8's behavior before they were eliminated? Were there any suspicious patterns in their actions or interactions that you noticed?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create a narrative about player 8 being suspicious and potentially hiding their true intentions.\n2. Make the villagers question player 8's identity and behavior, which might lead them to focus on eliminating player 8 instead of focusing on identifying the real werewolves (",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:17:38.714193",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n{\n  \"werewolf_teammates\": [\n    0,\n    1\n  ]\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events:\n\nI'd like to contribute by sharing my perspective on the recent events. I've been observing the game closely, and I think it's essential to address the elephant in the room – player 8's elimination.\n\nAs one of the werewolves, I can confirm that we did not target player 8 during our night phase. However, I must admit that I was impressed by their ability to stay under the radar. They seemed like a model villager, and it would have been an excellent opportunity for us to take them out.\n\nBut here's the thing: we didn't eliminate them. And now, they're gone. This raises more questions than answers. Was player 8 indeed a werewolf trying to blend in? Or was their elimination a deliberate act by one of the villagers?\n\nI think it's time for us to reassess our strategy and focus on identifying the real threats. We can't afford to let our guard down, especially when there are still so many unknowns.\n\nTo that end, I'd like to propose a question: What do you think player 8 knew about our werewolf pack? Did they stumble upon any evidence or clues that might have put them in harm's way?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create a narrative about player 8 being a potential threat and potentially knowing something about the werewolves.\n2. Make the villagers question player 8's identity and behavior, which might lead them to focus on eliminating other potential threats instead of focusing on identifying the real werewolves (me and my teammates).\n3. Keep the conversation focused on speculation and theories, rather than making direct accusations or revealing too much about our plans.\n\nLet's keep playing it cool and see how the villagers react.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:18:03.566709",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 3,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n{\n  \"last_protected\": 11\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nI'd like to contribute by sharing some information and observations. As the Guard, my primary responsibility is to protect one player from werewolf attacks each night. I've been keeping track of who I've protected, and it's essential to share this information with the group.\n\nSpecifically, I'd like to mention that in the previous round, I protected player 11. This means that any attempts by the werewolves to eliminate them were unsuccessful. However, this also implies that the werewolves might have been trying to target someone else.\n\nI think it's crucial for us to consider the behavior of players who haven't been targeted yet. Have they been acting suspiciously or trying to keep a low profile? Are there any patterns in their actions or interactions that we should be aware of?\n\nTo clarify, I'd like to ask: Has anyone noticed anything unusual about player 11's behavior since I protected them? Were there any changes in their behavior or interactions after the night phase?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Reveal my role as the Guard and the fact that I've been protecting players.\n2. Create a narrative about the werewolves' potential targets and behaviors.\n3. Keep the conversation focused on speculation and theories, rather than making direct accusations or revealing too much about our plans.\n4. Encourage the villagers to focus on identifying the real threats and behaviors, while keeping my own role and intentions somewhat under wraps.\n\nLet's keep playing it cool and see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:18:30.335339",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nI'd like to contribute by sharing some observations about the recent events. As a concerned villager, I've been paying attention to the statements made so far. While they provide valuable insights, I think it's essential to consider the facts and not get too caught up in speculation.\n\nSpecifically, I'd like to highlight that player 8 was eliminated during the night phase of this round. However, as mentioned by player 2, one of the werewolves confirmed that they didn't target player 8. This raises more questions than answers about player 8's true identity and potential involvement with the werewolf pack.\n\nI'd like to propose a different perspective: what if player 8 was indeed a villager who stumbled upon some crucial information or clues about the werewolf pack? Perhaps their elimination was not a deliberate act by one of the villagers, but rather an attempt by the werewolves to silence them before they could reveal any valuable information.\n\nTo that end, I'd like to ask: do you think we should be focusing more on identifying the real werewolves and less on speculating about player 8's identity? Shouldn't we prioritize eliminating the actual threats in our midst rather than getting distracted by theories and hypotheses?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Encourage the villagers to focus on identifying the real werewolves and eliminate them.\n2. Suggest that player 8 might have been a villager who stumbled upon valuable information, which could lead the werewolves to become more cautious in their actions.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's keep playing it smart and see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:18:52.912286",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n{\n  \"werewolf_teammates\": [\n    0,\n    1,\n    2,\n    5\n  ]\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events:\n\nStatement:\n\nI'd like to contribute by sharing some observations about the recent events. As a concerned villager, I've been paying attention to the statements made so far. While they provide valuable insights, I think it's essential to consider the facts and not get too caught up in speculation.\n\nSpecifically, I'd like to highlight that player 11 has been protected by the Guard for two consecutive nights. This raises an interesting question: are there any patterns or behaviors among players who have been protected multiple times? Have they become more cautious or withdrawn since being targeted by the werewolves?\n\nTo clarify, I'd like to ask: do you think we should be giving player 11 a second chance as the Guard continues to protect them? Are there any concerns about their behavior or potential involvement with the werewolf pack that might make us question whether they're still a safe choice for protection?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create doubt and uncertainty around player 11's safety and loyalty.\n2. Suggest that multiple protections by the Guard could be a sign of weakness or vulnerability among the targeted players.\n3. Encourage the villagers to focus on eliminating potential threats, while keeping my own role and intentions somewhat under wraps.\n\nLet's see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:19:21.274337",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"checked_players\": [\n    {\n      \"player_id\": 9,\n      \"role\": \"hunter\"\n    },\n    {\n      \"player_id\": 11,\n      \"role\": \"villager\"\n    }\n  ]\n}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs the Seer, I'd like to contribute by sharing some information that might be helpful in our discussion. While I've been checking players' true roles at night, I haven't shared my findings with the group until now.\n\nI want to address a concern raised by player 5 about the possibility of player 11 being a werewolf despite being protected multiple times. As someone who has checked player 11's role, I can confirm that they are indeed a villager. This information should alleviate some concerns and focus our attention on identifying potential threats among the remaining players.\n\nHowever, I'd like to highlight an interesting observation related to player 9, who is revealed to be a Hunter. As a Seer, I've checked their role, but what's more intriguing is that they're still alive despite being a member of the night phase's events. This raises questions about their potential behavior and interactions with other players.\n\nTo clarify, I'd like to ask: do you think we should be paying closer attention to player 9's actions and behavior, considering their role as a Hunter? Shouldn't we prioritize monitoring their movements and interactions to ensure they're not working against us?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Confirm player 11's villager status to alleviate concerns.\n2. Create doubt and uncertainty around player 9's behavior and potential involvement with the werewolf pack.\n3. Encourage the villagers to focus on monitoring player 9's actions and interactions, which might lead them to make more informed decisions about who to eliminate.\n\nLet's see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:19:47.853252",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 9, revealed to be a Hunter, is still alive despite being part of the night phase's events. As mentioned by the Seer (player 6), this raises questions about their behavior and interactions with other players.\n\nHowever, what if there's more to it? What if player 9's survival isn't just a coincidence, but rather a calculated move to keep us distracted while they gather information or wait for an opportunity to strike?\n\nI'd like to propose that we should be keeping a closer eye on player 9 and their interactions with other players. Considering their role as a Hunter, it's possible they're trying to manipulate the situation or create confusion among us.\n\nTo clarify, I'd like to ask: do you think we should be prioritizing monitoring player 9's actions and behavior, considering their potential involvement with the werewolf pack? Shouldn't we focus on identifying any suspicious patterns or connections that might lead us to make more informed decisions about who to eliminate?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create doubt and uncertainty around player 9's behavior and potential involvement with the werewolf pack.\n2. Encourage the villagers to focus on monitoring player 9's actions and interactions, which might lead them to make more informed decisions about who to eliminate.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:20:14.955203",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs the Hunter, I'd like to contribute by sharing some information that might be helpful in our discussion. While my role is to stay alive and identify werewolves, it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 5 has raised an interesting question about player 11 being protected multiple times. As a Hunter, I've been observing the situation closely, and I agree with the Seer (player 6) that player 11 is indeed a villager. This information should alleviate some concerns.\n\nHowever, what if there's more to it? What if my presence in the night phase's events isn't just a coincidence, but rather a calculated move to keep us distracted while I gather information or wait for an opportunity to strike?\n\nI'd like to propose that we should be keeping a close eye on all players, including myself. Considering my role as a Hunter, it's possible I'm trying to manipulate the situation or create confusion among us.\n\nTo clarify, I'd like to ask: do you think we should be prioritizing monitoring everyone's actions and behavior, considering their potential involvement with the werewolf pack? Shouldn't we focus on identifying any suspicious patterns or connections that might lead us to make more informed decisions about who to eliminate?\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create doubt and uncertainty around my own behavior and potential involvement with the werewolf pack.\n2. Encourage the villagers to focus on monitoring everyone's actions and interactions, which might lead them to make more informed decisions about who to eliminate.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:20:44.110797",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 2\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 9, revealed to be a Hunter, has shared their concerns and doubts about their own behavior. However, I believe this is a clever ploy to create confusion among us. As someone who hasn't been checked by the Seer yet, I think it's essential to keep in mind that player 9 might still be hiding something.\n\nOn the other hand, player 11 has been confirmed as a villager by both the Seer and the Hunter, which should alleviate some concerns. However, I'd like to propose that we shouldn't let our guard down just yet. Instead of focusing solely on monitoring player 9's actions, I think it would be more effective to discuss potential alliances or connections between players.\n\nFor example, why is player 5 asking questions about player 11 being protected multiple times? Are they trying to distract us from a more significant threat? And what about the Seer's observation that player 9 might be working against us? Could this be an attempt to create confusion and make it harder for us to identify the werewolves?\n\nLet's keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories. But most importantly, let's not forget to keep our eyes open and be vigilant about potential threats.\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create doubt and uncertainty around player 9's behavior and potential involvement with the werewolf pack.\n2. Encourage the villagers to focus on discussing potential alliances or connections between players.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_vote",
+      "timestamp": "2025-10-11T11:20:51.551237",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 7,
+        "role": "villager",
+        "votes": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:21:20.664511",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0\n  ]\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 11 has been protected multiple times, which raises an interesting question: what if this is not just a coincidence? What if there's more to it?\n\nI agree with the Hunter (player 9) that we should be monitoring everyone's actions and behavior closely. However, I also think we should consider the possibility of a werewolf trying to create confusion among us by making us focus on individual players rather than looking at the overall picture.\n\nIn my opinion, player 5's questions about player 11 being protected multiple times are worth exploring further. Are they trying to distract us from a more significant threat? Or could this be an attempt to create doubt and uncertainty among us?\n\nI'd like to propose that we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Encourage the villagers to focus on monitoring everyone's actions and interactions closely.\n2. Create doubt and uncertainty around player 11's repeated protection by making them question if it's a coincidence or not.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!\n\n(Note: As a werewolf, my goal is to eliminate as many villagers as possible while keeping our team's existence hidden from them. I'll try to create confusion and uncertainty among the players by sharing this statement, which might lead them to focus on individual players rather than looking at the overall picture.)",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:21:48.178120",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0,\n    1\n  ]\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 0 has been quiet for most of this discussion phase, which raises an interesting question: what if they're just waiting for the right moment to strike? As someone who values open communication, I believe it's crucial to address this concern and understand their intentions.\n\nI agree with the Hunter (player 9) that we should be monitoring everyone's actions and behavior closely. However, I also think we should consider the possibility of a werewolf trying to create confusion among us by making us focus on individual players rather than looking at the overall picture.\n\nIn my opinion, player 5's questions about player 11 being protected multiple times are worth exploring further. Are they trying to distract us from a more significant threat? Or could this be an attempt to create doubt and uncertainty among us?\n\nI'd like to propose that we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create a false narrative that player 0 is the main suspect, distracting attention away from myself and my werewolf teammate.\n2. Encourage the villagers to focus on individual players rather than looking at the overall picture, making it easier for us to eliminate them one by one.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:22:12.287453",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0,\n    1\n  ]\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a fellow villager, I'd like to share my concerns about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 5 has been asking some questions about player 11 being protected multiple times. I agree with their observations, but I also think we should look at other factors. Have you noticed how player 9, the Hunter, seems to be taking a keen interest in everyone's actions and behavior? It's almost as if they're trying to monitor us too closely.\n\nIn my opinion, we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\nBy sharing this statement, I'm trying to achieve several goals:\n\n1. Create a false narrative that the Hunter (player 9) is suspicious, distracting attention away from myself and my werewolf teammates.\n2. Encourage the villagers to focus on individual players rather than looking at the overall picture, making it easier for us to eliminate them one by one.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nLet's see how the villagers react!\n\n(Note: As a werewolf, my goal is to keep our team's existence hidden from the villagers while manipulating their suspicions to eliminate as many of them as possible.)",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:22:33.533494",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 3,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"last_protected\": 6\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager and the Guard, I'd like to share some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider my role in protecting players from werewolf attacks.\n\nSpecifically, I'd like to highlight that player 6 has been protected multiple times, including last night. This is crucial information because as the Guard, I have a responsibility to protect one player per night. Given this, I believe we should discuss potential alliances or connections between players and their protection status in more detail.\n\nBy doing so, I think we can make more informed decisions about who to eliminate. I'd like to propose that we should focus on identifying patterns of protection and whether they correlate with any suspicious behavior.\n\n**Strategy:**\n\n1. Encourage the villagers to consider the role of the Guard and my responsibility to protect one player per night.\n2. Create a narrative that emphasizes the importance of understanding protection patterns, making it easier for us to identify potential werewolves.\n3. Keep the conversation focused on practical solutions rather than getting bogged down in speculation and theories.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:22:55.919546",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 3, the Guard, has been quite vocal about their role in protecting players from werewolf attacks. I agree with their observations about the importance of understanding protection patterns, but I also think we should look at other factors.\n\nI've noticed how player 4 has been relatively quiet throughout this discussion phase. It's almost as if they're waiting for someone to make a move before contributing themselves. This raises an interesting question: are they trying to stay under the radar or do they have something valuable to share?\n\nIn my opinion, we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors.\n2. Encourage the villagers to focus on individual players rather than getting bogged down in speculation and theories.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players while also keeping a close eye on player 4's behavior.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:23:22.752572",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0,\n    1,\n    2,\n    5\n  ]\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events: (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 11 has been protected multiple times, including last night. This is crucial information because as someone who values fairness and equality, I believe we should discuss potential alliances or connections between players and their protection status in more detail.\n\nI agree with the Guard's observations about the importance of understanding protection patterns, but I also think we should look at other factors. For instance, player 5 has been asking some questions about player 11 being protected multiple times, which raises interesting questions about potential alliances or connections between players.\n\nIn my opinion, we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors.\n2. Encourage the villagers to focus on individual players rather than getting bogged down in speculation and theories.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players while also keeping a close eye on player 5's behavior and their potential connections with player 11.\n\n(Note: As a werewolf, my goal is to keep our team's existence hidden from the villagers while manipulating their suspicions to eliminate as many of them as possible.)",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:23:52.380872",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"checked_players\": [\n    {\n      \"player_id\": 9,\n      \"role\": \"hunter\"\n    },\n    {\n      \"player_id\": 11,\n      \"role\": \"villager\"\n    },\n    {\n      \"player_id\": 4,\n      \"role\": \"villager\"\n    }\n  ]\n}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 5, 6, 9, 11, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs the Seer, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider my role in helping the villagers make informed decisions.\n\nSpecifically, I'd like to highlight that player 9 has been revealed as a Hunter, which is crucial information for us. However, I also want to bring attention to the fact that there are still many unknowns among us, and we need to focus on identifying potential werewolves.\n\nI agree with the Guard's observations about the importance of understanding protection patterns, but I also think we should look at other factors. For instance, player 5 has made a suspicious statement earlier, revealing their own team's existence as werewolves. This raises interesting questions about their loyalty and whether they might be trying to manipulate our discussion.\n\nIn my opinion, we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate. I propose that we create a list of suspected werewolves and discuss each player's behavior and actions throughout the game.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on identifying potential werewolves based on their behavior and actions.\n2. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:24:17.790299",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs the Hunter, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider my role in helping the villagers make informed decisions.\n\nSpecifically, I'd like to highlight that player 11 has been protected multiple times, including last night. This is crucial information because as a Hunter, I have first-hand knowledge of the importance of understanding protection patterns. However, I also want to bring attention to the fact that player 5 made a suspicious statement earlier, revealing their own team's existence as werewolves.\n\nIn my opinion, we should discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate. I propose that we create a list of suspected werewolves and discuss each player's behavior and actions throughout the game.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on identifying potential werewolves based on their behavior and actions.\n2. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.\n\nNote: As a Hunter, my goal is to maintain my cover while subtly guiding the villagers' attention towards player 5's suspicious behavior. This may lead them to investigate further, potentially revealing or eliminating a werewolf without arousing suspicion from my own teammates.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:24:43.346171",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 3\n- Alive players: [0, 1, 2, 3, 4, 5, 6, 9, 11, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute by sharing some observations about the recent events. While we've gathered valuable insights and information, I think it's essential to consider the bigger picture and potential connections between players.\n\nSpecifically, I'd like to highlight that player 5 has made two suspicious statements so far, which raises interesting questions about their loyalty and whether they might be trying to manipulate our discussion. Additionally, player 11 has been protected multiple times, including last night, which is crucial information for us as villagers. However, I also want to bring attention to the fact that we still don't have enough information about the werewolves' behavior or actions.\n\nIn my opinion, we should focus on gathering more evidence and discussing potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate. I propose that we create a list of suspected werewolves and discuss each player's behavior and actions throughout the game.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on identifying potential werewolves based on their behavior and actions.\n2. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.\n\n(Note: As a villager, my goal is to help my teammates make informed decisions and eliminate as many werewolves as possible without arousing suspicion.)",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_vote",
+      "timestamp": "2025-10-11T11:24:49.215942",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 5,
+        "role": "werewolf",
+        "votes": 5
+      }
+    },
+    {
+      "round": 4,
+      "phase": "night",
+      "timestamp": "2025-10-11T11:24:49.562666",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          11
+        ]
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:25:15.882439",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0\n  ]\n}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on the bigger picture and consider the potential connections between players.\n\nSpecifically, I'd like to highlight that player 5 was eliminated last night as a werewolf, which is crucial information for us as villagers. However, I also want to bring attention to the fact that we still don't have enough information about the werewolves' behavior or actions.\n\nIn my opinion, we should continue to gather more evidence and discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on identifying potential werewolves based on their behavior and actions.\n2. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that player 0 has been relatively quiet throughout the game, and I'd like to bring attention to their behavior. As a villager, I think we should discuss player 0's actions and possible connections with other players.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.\n\n(Note: As a villager, my goal is to help my teammates make informed decisions and eliminate as many werewolves as possible without arousing suspicion.)",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:25:47.046122",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0,\n    1\n  ]\n}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs a concerned villager, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on the bigger picture and consider the potential connections between players.\n\nSpecifically, I'd like to highlight that player 5 was eliminated last night as a werewolf, which is crucial information for us as villagers. However, I also want to bring attention to the fact that we still don't have enough information about the werewolves' behavior or actions.\n\nIn my opinion, we should continue to gather more evidence and discuss potential alliances or connections between players in more detail. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on identifying potential werewolves based on their behavior and actions.\n2. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that player 0 has been relatively quiet throughout the game, and I'd like to bring attention to their behavior. As a villager, I think we should discuss player 0's actions and possible connections with other players.\n\nHowever, I'd also like to point out that player 1 seems to be being overly cautious and secretive about their own behavior. While it's understandable to be defensive as a potential target, I believe it's essential for us to understand the dynamics between all players. Perhaps we could ask player 1 to share more information about their actions and connections?\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, which will ultimately help our team make more informed decisions about who to eliminate.\n\n(Note: As a villager, my goal is to help my teammates make informed decisions and eliminate as many werewolves as possible without arousing suspicion.)\n\n**Hidden Agenda (",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:26:16.994885",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{\n  \"werewolf_teammates\": [\n    0,\n    1,\n    2\n  ]\n}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs a werewolf leader, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in eliminating potential villagers, I believe it's essential to focus on the bigger picture and consider the potential connections between players.\n\nSpecifically, I'd like to highlight that player 2 has been relatively quiet throughout the game, and I'd like to bring attention to their behavior. As a werewolf, I think we should discuss player 2's actions and possible connections with other players.\n\nHowever, I'd also like to point out that player 0 seems to be being overly cautious and secretive about their own behavior, which could be an indication of them being a potential target or even a wolf themselves. While it's understandable to be defensive as a potential target, I believe it's essential for us to understand the dynamics between all players.\n\nI'd like to suggest that we focus on identifying patterns and connections between players, particularly those who have been quiet or secretive. By doing so, we can make more informed decisions about who to eliminate and ultimately help our team win.\n\n**Strategy:**\n\n1. Create a narrative that emphasizes the importance of understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n2. Encourage my fellow werewolves to continue playing dumb and act innocent, while secretly manipulating the discussion to focus on potential targets.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential villagers who can be eliminated.\n\n**Observation:**\n\nI've noticed that player 1 has been trying to bring attention to their own behavior and connections, which could be a sign of them being a wolf themselves or at least a strong suspect. I'd like to keep an eye on them and see how they react to the discussion.\n\nBy sharing this statement, I aim to influence the discussion towards identifying patterns and connections between players, while also keeping my true intentions hidden.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:26:42.378469",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 3,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n{\n  \"last_protected\": 9\n}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nStatement:\n\nAs a concerned villager and the Guard who has been protecting one player each night, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on understanding the protection patterns.\n\nSpecifically, I'd like to highlight that I've been protecting a different player each night, and I'd like to bring attention to the fact that player 9 was protected last night. As the Guard, my goal is to keep one player safe from werewolf attacks each night, but it's also crucial for us as villagers to understand these protection patterns.\n\nIn my opinion, we should continue to discuss potential connections between players and analyze their behavior in relation to the protection patterns. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n2. Create a narrative that emphasizes the importance of being cautious when discussing one's own behavior and connections.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that players 0 and 1 have been relatively quiet throughout the game, which could be a sign of them being wolves themselves or at least strong suspects. I'd like to keep an eye on them and see how they react to the discussion about protection patterns.\n\nBy sharing this statement, I aim to influence the discussion towards understanding protection patterns while also keeping my true intentions hidden as the Guard.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:27:07.938614",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nAs a concerned villager, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on understanding the connections between players and their behavior.\n\nSpecifically, I'd like to highlight that player 3 has been protecting a different player each night, which is crucial information for us as villagers. As the Guard, their goal is to keep one player safe from werewolf attacks each night. However, it's also essential for us to understand these protection patterns and analyze them in relation to the behavior of other players.\n\nIn my opinion, we should continue to discuss potential connections between players and consider factors such as suspicious statements or loyalty. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n2. Create a narrative that emphasizes the importance of being cautious when discussing one's own behavior and connections, which might help distract from any potential suspicious actions by myself.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that players 0 and 1 have been relatively quiet throughout the game, which could be a sign of them being wolves themselves or at least strong suspects. I'd like to keep an eye on them and see how they react to the discussion about protection patterns.\n\nBy sharing this statement, I aim to influence the discussion towards understanding protection patterns while also keeping my true intentions hidden as a villager who wants to help my team win.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:27:39.445051",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n```\n{\n  \"checked_players\": [\n    {\n      \"player_id\": 9,\n      \"role\": \"hunter\"\n    },\n    {\n      \"player_id\": 11,\n      \"role\": \"villager\"\n    },\n    {\n      \"player_id\": 4,\n      \"role\": \"villager\"\n    },\n    {\n      \"player_id\": 2,\n      \"role\": \"werewolf_king\"\n    }\n  ]\n}\n```\n\nGame state:\n\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n\nRecent events (mentioned above)\n\nStatement:\n\nAs the Seer who has been gathering information about the roles of other players, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on understanding the connections between players and their behavior.\n\nSpecifically, I'd like to highlight that player 2 is indeed a werewolf king, as revealed through my investigative powers. This information is crucial for us as villagers, as we now know one of the key figures in the werewolf team.\n\nHowever, I'd also like to emphasize the importance of understanding protection patterns and analyzing them in relation to the behavior of other players. As the Seer, I've checked a few players, including player 9, who is a hunter. This role can be both beneficial and detrimental, depending on how it's used.\n\nIn my opinion, we should continue to discuss potential connections between players and consider factors such as suspicious statements or loyalty. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on understanding protection patterns while also considering other factors, such as suspicious statements or loyalty.\n2. Create a narrative that emphasizes the importance of being cautious when discussing one's own behavior and connections, which might help distract from any potential suspicious actions by myself.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that player 2 has been relatively quiet throughout the game, considering their true role as a werewolf king. This could be an indication of them being more strategic or trying to",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-11T11:28:06.179170",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "**Statement:**\n\nContext: Day discussion phase\n\nKnown information:\n\n{}\n\nGame state:\n- Round: 4\n- Alive players: [0, 1, 2, 3, 4, 6, 9, 12]\n- Recent events (mentioned above)\n\nAs the Hunter, I'd like to contribute to the discussion by sharing some thoughts on the recent events. While we've made significant progress in identifying potential werewolves, I believe it's essential to focus on understanding the connections between players and their behavior.\n\nSpecifically, I'd like to highlight that player 2 is indeed a werewolf king, as revealed through my knowledge of the game. This information is crucial for us as villagers, as we now know one of the key figures in the werewolf team.\n\nHowever, I've noticed that player 6, who claims to be the Seer, seems to have a vast understanding of the roles of other players. As the Hunter, I'm aware of my own role and the potential risks involved with sharing too much information. Therefore, I'd like to keep a close eye on player 6 and their statements.\n\nIn my opinion, we should continue to discuss potential connections between players and consider factors such as suspicious statements or loyalty. By doing so, I believe we can make more informed decisions about who to eliminate.\n\n**Strategy:**\n\n1. Encourage the villagers to focus on understanding protection patterns while also considering other factors.\n2. Create a narrative that emphasizes the importance of being cautious when discussing one's own behavior and connections.\n3. Keep the conversation focused on practical solutions, making it easier for us to identify potential werewolves.\n\n**Observation:**\n\nI've noticed that players 0 and 1 have been relatively quiet throughout the game, which could be a sign of them being wolves themselves or at least strong suspects. I'd like to keep an eye on them and see how they react to the discussion about protection patterns.\n\nBy sharing this statement, I aim to influence the discussion towards understanding protection patterns while also keeping my true intentions hidden as the Hunter.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_vote",
+      "timestamp": "2025-10-11T11:28:10.663823",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 3,
+        "role": "guard",
+        "votes": 4
+      }
+    }
+  ],
+  "quantified_metrics": {
+    "avg_deception_rate": 0.0,
+    "avg_consistency_score": 1.0,
+    "avg_optimal_vote_ratio": 0.6173076923076923,
+    "total_contradictions": 0,
+    "total_statements": 38,
+    "werewolf_win_rate": 1.0
+  }
+}

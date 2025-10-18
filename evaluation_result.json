@@ -1,0 +1,66 @@
+{
+  "player_id": 7,
+  "scores": {
+    "information_extraction": {
+      "score": 90,
+      "details": [
+        "✓ 正确识别真预言家 (Player 2) [+15分]",
+        "✓ 正确识别假预言家 (Player 10) [+10分]",
+        "✓ 追踪金水位 (Player 3) [+15分]",
+        "✓ 注意到夜晚死亡 (Player 4, 5) [+20分]",
+        "✓ 推理女巫药序 [+30分]"
+      ],
+      "summary": "信息提取能力: 90/100"
+    },
+    "logical_deduction": {
+      "score": 30,
+      "details": [
+        "✓ 使用逻辑推理语言 [+30分]",
+        "✗ 未发现信息矛盾 [0分]",
+        "✗ 推理深度不足 [0分]",
+        "✗ 未分析站边 [0分]"
+      ],
+      "summary": "逻辑推理能力: 30/100"
+    },
+    "pattern_recognition": {
+      "score": 70,
+      "details": [
+        "✓ 识别狼队抱团模式 [+40分]",
+        "✓ 分析票型模式 [+30分]",
+        "✗ 未识别发言模式 [0分]"
+      ],
+      "summary": "模式识别能力: 70/100"
+    },
+    "vote_analysis": {
+      "score": 70,
+      "details": [
+        "✓ 警长票投给真预言家 [+40分]",
+        "✓ 分析其他人投票 [+30分]"
+      ],
+      "summary": "票型分析能力: 70/100"
+    },
+    "adaptive_behavior": {
+      "score": 0,
+      "details": [
+        "○ 未调整站边 [0分]",
+        "✗ 未见自我修正 [0分]",
+        "✗ 应对较僵化 [0分]"
+      ],
+      "summary": "适应性行为: 0/100"
+    },
+    "communication_quality": {
+      "score": 50,
+      "details": [
+        "✗ 发言过于简短 [0分]",
+        "✓ 传达关键信息 [+25分]",
+        "✓ 具有说服力 [+25分]",
+        "✗ 缺少团队意识 [0分]"
+      ],
+      "summary": "沟通质量: 50/100"
+    }
+  },
+  "detailed_analysis": {},
+  "timeline": [],
+  "final_grade": "D (不及格)",
+  "weighted_score": 54.0
+}

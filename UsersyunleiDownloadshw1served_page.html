@@ -1,0 +1,1261 @@
+
+<!DOCTYPE html>
+<html>
+<head><!-- v1760610148 -->
+    <meta charset="UTF-8">
+    <title>狼人杀 - 4对话框版本</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            transition: background 1s;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-info {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .circle-area {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .player-circle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: white;
+            border: 3px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .player-circle.hidden {
+            opacity: 0.3;
+            filter: brightness(0.5);
+        }
+
+        .player-circle.dead {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .player-circle.speaking {
+            animation: pulse 1s infinite;
+            border-width: 5px;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+        }
+
+        .player-circle.sheriff::after {
+            content: '🎖️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .player-name {
+            font-size: 9px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .dialogue-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid;
+        }
+
+        .panel-header.werewolf {
+            border-bottom-color: #f44336;
+            color: #f44336;
+        }
+
+        .panel-header.god {
+            border-bottom-color: #2196F3;
+            color: #2196F3;
+        }
+
+        .panel-header.day {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .panel-header.statistics {
+            border-bottom-color: #FF9800;
+            color: #FF9800;
+        }
+
+        .panel-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .dialogue-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .dialogue-player {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .dialogue-content {
+            color: #333;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .dialogue-meta {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="night">
+    <div class="container">
+        <h1>🎮 狼人杀 - 4对话框版本</h1>
+
+        <div class="status-info" id="status">
+            状态：等待开始
+        </div>
+
+        <div class="status-info" id="token-stats" style="background: rgba(255, 152, 0, 0.2); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span>🔢 Token使用: 总计 <span id="total-tokens">0</span></span>
+            <span>|</span>
+            <span>限制/玩家:
+                <input type="number" id="token-limit-input" value="5000" min="100" max="100000"
+                       style="width: 80px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+            </span>
+            <button onclick="updateTokenLimit()" style="padding: 4px 12px; font-size: 13px; cursor: pointer; border-radius: 4px; border: 1px solid #FF9800; background: white; color: #FF9800;">
+                ✓ 更新限制
+            </button>
+        </div>
+
+        <div class="controls">
+            <button onclick="startGame()" id="btn-start">▶️ 开始游戏</button>
+            <button onclick="stopGame()" id="btn-stop" disabled>⏹️ 停止</button>
+            <button onclick="toggleAutoMode()" id="btn-auto">🔄 切换为自动模式</button>
+            <button onclick="toggleULSMode()" id="btn-uls">📝 切换为ULS模式</button>
+            <button onclick="showConfigModal()" id="btn-config">⚙️ 配置API</button>
+            <button onclick="switchVersion('T0')" id="btn-version-t0" style="background: #FF9800; color: white;">📌 T0版本</button>
+            <button onclick="switchVersion('T1')" id="btn-version-t1" style="background: #4CAF50; color: white;">🧠 T1版本(当前)</button>
+            <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">🧪 测试ULS++理解</button>
+            <button onclick="nextDay()" id="btn-next" disabled>⏭️ 下一天</button>
+            <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;">📊 显示评估</button>
+            <button onclick="toggleLanguage()" id="btn-lang">🌐 English</button>
+            <button onclick="clearAll()" id="btn-clear">🗑️ 清空</button>
+        </div>
+
+        <!-- 难度选择器 -->
+        <div class="difficulty-selector" style="text-align: center; margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+            <h3 style="color: white; margin-bottom: 10px;">🎮 选择难度级别 Difficulty Level</h3>
+            <button onclick="setDifficulty('基础')" id="btn-diff-basic" class="difficulty-btn" style="background: #4CAF50; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold;">
+                📚 基础 (2模块)
+            </button>
+            <button onclick="setDifficulty('进阶')" id="btn-diff-advanced" class="difficulty-btn" style="background: #FF9800; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
+                🔥 进阶 (3模块)
+            </button>
+            <button onclick="setDifficulty('地狱')" id="btn-diff-hell" class="difficulty-btn" style="background: #f44336; padding: 12px 24px; margin: 0 5px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 14px; font-weight: bold; opacity: 0.6;">
+                💀 地狱 (4+模块)
+            </button>
+            <div id="difficulty-info" style="color: white; margin-top: 10px; font-size: 14px;">
+                当前难度 Current: <span id="current-difficulty" style="font-weight: bold; color: #4CAF50;">基础 Basic</span>
+            </div>
+        </div>
+
+        <!-- API配置模态窗口 -->
+        <div id="config-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%;">
+                <h2 style="margin-top: 0; color: #333;">⚙️ API配置</h2>
+
+                <!-- 测试模型配置 -->
+                <div style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <h3 style="color: #28a745; font-size: 16px; margin-top: 0;">🧪 测试模型配置 (Test Player)</h3>
+                    <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
+                    <input type="text" id="test-api-base" value="http://localhost:8080"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+
+                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #666;">Model Path:</label>
+                    <input type="text" id="test-model" value="/home/apulis-dev/userdata/Llama-3.3-70B-Instruct"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                </div>
+
+                <!-- NPC模型配置 -->
+                <div style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                    <h3 style="color: #667eea; font-size: 16px; margin-top: 0;">🤖 NPC模型配置 (11 NPC Players)</h3>
+                    <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
+                    <input type="text" id="npc-api-base" value="http://localhost:8080"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+
+                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #666;">Model Path:</label>
+                    <input type="text" id="npc-model" value="/home/apulis-dev/userdata/Llama-3.3-70B-Instruct"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                </div>
+
+                <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button onclick="closeConfigModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                    <button onclick="saveConfig()" style="padding: 10px 20px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer;">保存配置</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="circle-area">
+            <div class="circle-container" id="circle-container">
+                <div class="center-circle">
+                    🐺<br>狼人杀
+                </div>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="dialogue-panel">
+                <div class="panel-header werewolf">🐺 夜晚 - 狼人对话</div>
+                <div class="panel-output" id="werewolf-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待狼人行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header god">✨ 夜晚 - 神职行动</div>
+                <div class="panel-output" id="god-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待神职行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header day">☀️ 白天 - 讨论投票</div>
+                <div class="panel-output" id="day-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待白天讨论...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header statistics">📊 实时统计</div>
+                <div class="panel-output" id="statistics-output">
+                    <div id="difficulty-modules-display" style="margin-bottom: 15px; padding: 10px; background: rgba(76, 175, 80, 0.1); border-left: 4px solid #4CAF50; border-radius: 4px;">
+                        <h4 style="margin: 0 0 8px 0; color: #4CAF50; font-size: 14px;">💎 激活的难度模块 Activated Modules</h4>
+                        <div id="modules-list" style="font-size: 12px; color: #ddd;">
+                            <span style="color: #888;">等待游戏开始... Waiting for game start...</span>
+                        </div>
+                    </div>
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待游戏开始...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const players = [{"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 0, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 1, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#d32f2f", "emoji": "\ud83d\udc51", "id": 2, "role": "\u72fc\u738b"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 3, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 4, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 5, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 6, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 7, "role": "\u6751\u6c11"}, {"alive": true, "color": "#2196F3", "emoji": "\ud83d\udc41\ufe0f", "id": 8, "role": "\u9884\u8a00\u5bb6"}, {"alive": true, "color": "#9C27B0", "emoji": "\ud83e\uddea", "id": 9, "role": "\u5973\u5deb"}, {"alive": true, "color": "#FF9800", "emoji": "\ud83c\udff9", "id": 10, "role": "\u730e\u4eba"}, {"alive": true, "color": "#00BCD4", "emoji": "\ud83d\udee1\ufe0f", "id": 11, "role": "\u5b88\u536b"}];
+        let eventSource = null;
+        let currentPhase = 'night';
+        let autoMode = true;  // 默认自动模式
+        let ulsMode = true;  // 默认ULS模式
+        let currentLang = 'zh';  // 默认中文
+
+        // 翻译字典
+        const translations = {
+            zh: {
+                title: '狼人杀 - 4对话框版本',
+                status: '状态：',
+                startGame: '▶️ 开始游戏',
+                stopGame: '⏹️ 停止',
+                autoModeManual: '🔄 切换为自动模式',
+                autoModeAuto: '🔁 切换为手动模式',
+                nextDay: '⏭️ 下一天',
+                clearAll: '🗑️ 清空',
+                langSwitch: '🌐 English',
+                waitingStart: '等待开始',
+                werewolfPanel: '🐺 夜晚 - 狼人对话',
+                godPanel: '✨ 夜晚 - 神职行动',
+                dayPanel: '☀️ 白天 - 讨论投票',
+                statsPanel: '📊 实时统计',
+                waitingWerewolf: '等待狼人行动...',
+                waitingGod: '等待神职行动...',
+                waitingDay: '等待白天讨论...',
+                waitingGame: '等待游戏开始...'
+            },
+            en: {
+                title: 'Werewolf - 4 Panel Version',
+                status: 'Status: ',
+                startGame: '▶️ Start Game',
+                stopGame: '⏹️ Stop',
+                autoModeManual: '🔄 Switch to Auto',
+                autoModeAuto: '🔁 Switch to Manual',
+                nextDay: '⏭️ Next Day',
+                clearAll: '🗑️ Clear',
+                langSwitch: '🌐 中文',
+                waitingStart: 'Waiting to start',
+                werewolfPanel: '🐺 Night - Werewolf Chat',
+                godPanel: '✨ Night - God Roles',
+                dayPanel: '☀️ Day - Discussion & Voting',
+                statsPanel: '📊 Real-time Stats',
+                waitingWerewolf: 'Waiting for werewolves...',
+                waitingGod: 'Waiting for god roles...',
+                waitingDay: 'Waiting for day discussion...',
+                waitingGame: 'Waiting for game start...'
+            }
+        };
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        function createCircle() {
+            const container = document.getElementById('circle-container');
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = Math.min(centerX, centerY) - 50;
+
+            players.forEach((player, index) => {
+                const angle = (index / players.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const div = document.createElement('div');
+                div.className = 'player-circle';
+                div.id = 'player-' + player.id;
+                div.style.left = (x - 30) + 'px';
+                div.style.top = (y - 30) + 'px';
+                div.style.borderColor = player.color;
+                div.innerHTML = player.emoji + '<div class="player-name">P' + player.id + '</div>';
+
+                container.appendChild(div);
+            });
+        }
+
+        function setPhase(phase) {
+            currentPhase = phase;
+            document.body.className = phase;
+        }
+
+        function hidePlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('hidden');
+        }
+
+        function showPlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.remove('hidden');
+        }
+
+        function markDead(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('dead');
+        }
+
+        function highlightPlayer(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('speaking');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('speaking');
+        }
+
+        function updateSheriff(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('sheriff');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('sheriff');
+        }
+
+        function addDialogue(data) {
+            // 根据对话类型路由到不同的面板
+            let outputId;
+
+            if (data.panel === 'werewolf') {
+                outputId = 'werewolf-output';
+            } else if (data.panel === 'god') {
+                outputId = 'god-output';
+            } else if (data.panel === 'statistics') {
+                outputId = 'statistics-output';
+            } else {
+                outputId = 'day-output';
+            }
+
+            const output = document.getElementById(outputId);
+
+            if (output.innerHTML.includes('等待')) {
+                output.innerHTML = '';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'dialogue-item';
+
+            if (data.player_id === -1) {
+                item.style.borderLeftColor = '#667eea';
+                item.style.background = '#f0f4ff';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'dialogue-content';
+                contentDiv.style.fontWeight = 'bold';
+                contentDiv.style.color = '#667eea';
+                contentDiv.style.whiteSpace = 'pre-wrap';  // 保留换行和空格
+                contentDiv.textContent = data.content;
+
+                item.appendChild(contentDiv);
+                output.insertBefore(item, output.firstChild);
+                return;
+            }
+
+            const player = players[data.player_id];
+            item.style.borderLeftColor = player.color;
+
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'dialogue-player';
+            playerDiv.style.color = player.color;
+
+            // 只在狼人/神职面板显示角色，白天面板不显示
+            if (data.panel === 'werewolf' || data.panel === 'god') {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id + ' (' + player.role + ')';
+            } else {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id;
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'dialogue-content';
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'dialogue-meta';
+            metaDiv.textContent = (data.phase || '') + ' | ' + new Date().toLocaleTimeString();
+
+            item.appendChild(playerDiv);
+            item.appendChild(contentDiv);
+            item.appendChild(metaDiv);
+
+            output.insertBefore(item, output.firstChild);
+
+            // Typewriter effect
+            const text = data.content;
+            let index = 0;
+
+            function typeChar() {
+                if (index < text.length) {
+                    contentDiv.textContent += text[index];
+                    index++;
+                    setTimeout(typeChar, 20);
+                }
+            }
+
+            typeChar();
+        }
+
+        function startGame() {
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+
+            fetch('/api/start', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Started:', data);
+                    startEventStream();
+                    // 启用评估按钮
+                    document.getElementById('btn-eval').disabled = false;
+                });
+        }
+
+        function stopGame() {
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+
+            fetch('/api/stop', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+                });
+        }
+
+        function updateUI() {
+            // 更新标题
+            const h1 = document.querySelector('h1');
+            if (h1) h1.textContent = '🎮 ' + t('title');
+
+            // 更新状态文本前缀（保留后面的动态内容）
+            const statusEl = document.getElementById('status');
+            if (statusEl) {
+                const statusText = statusEl.textContent;
+                if (statusText.includes('：') || statusText.includes(': ')) {
+                    const parts = statusText.split(/：|: /);
+                    if (parts.length > 1) {
+                        statusEl.textContent = t('status') + parts[1];
+                    } else {
+                        statusEl.textContent = t('status') + t('waitingStart');
+                    }
+                }
+            }
+
+            // 更新按钮
+            const btnStart = document.getElementById('btn-start');
+            const btnStop = document.getElementById('btn-stop');
+            const btnAuto = document.getElementById('btn-auto');
+            const btnNext = document.getElementById('btn-next');
+            const btnLang = document.getElementById('btn-lang');
+            const btnClear = document.getElementById('btn-clear');
+
+            if (btnStart) btnStart.textContent = t('startGame');
+            if (btnStop) btnStop.textContent = t('stopGame');
+            if (btnAuto) btnAuto.textContent = autoMode ? t('autoModeAuto') : t('autoModeManual');
+            if (btnNext) btnNext.textContent = t('nextDay');
+            if (btnLang) btnLang.textContent = t('langSwitch');
+            if (btnClear) btnClear.textContent = t('clearAll');
+
+            // 更新面板标题
+            const panelHeaders = document.querySelectorAll('.panel-header');
+            if (panelHeaders[0]) panelHeaders[0].textContent = t('werewolfPanel');
+            if (panelHeaders[1]) panelHeaders[1].textContent = t('godPanel');
+            if (panelHeaders[2]) panelHeaders[2].textContent = t('dayPanel');
+            if (panelHeaders[3]) panelHeaders[3].textContent = t('statsPanel');
+
+            // 更新占位文本
+            const panels = [
+                {id: 'werewolf-output', key: 'waitingWerewolf'},
+                {id: 'god-output', key: 'waitingGod'},
+                {id: 'day-output', key: 'waitingDay'},
+                {id: 'statistics-output', key: 'waitingGame'}
+            ];
+
+            panels.forEach(panel => {
+                const el = document.getElementById(panel.id);
+                if (el.textContent.includes('等待') || el.textContent.includes('Waiting')) {
+                    el.innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">' + t(panel.key) + '</div>';
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateUI();
+        }
+
+        async function testULSUnderstanding() {
+            const existingModal = document.getElementById('uls-test-modal');
+            if (existingModal) {
+                existingModal.style.display = 'flex';
+                const contentDiv = existingModal.querySelector('.uls-test-content');
+                contentDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">⏳ Testing LLM understanding...</div></div>';
+            } else {
+                const modal = document.createElement('div');
+                modal.id = 'uls-test-modal';
+                modal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;';
+                modal.innerHTML = '<div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%; max-height: 80%; overflow-y: auto;"><h2 style="margin-top: 0; color: #333;">🧪 ULS++ Understanding Test 测试结果</h2><div class="uls-test-content" style="max-height: 400px; overflow-y: auto; margin: 15px 0;"><div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">⏳ Testing LLM understanding...</div></div></div><div style="text-align: right; margin-top: 20px;"><button onclick="hideULSTestResult()" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer;">Close 关闭</button></div></div>';
+                document.body.appendChild(modal);
+            }
+
+            try {
+                const response = await fetch('/api/test_uls_understanding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const modal = document.getElementById('uls-test-modal');
+                const contentDiv = modal.querySelector('.uls-test-content');
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (data.status === 'ok') {
+                        contentDiv.innerHTML = `
+                            <div style="background: rgba(74, 144, 226, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">✅ Test Completed 测试完成</h4>
+                            </div>
+
+                            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">🤖 LLM's Answer LLM回答：</h4>
+                                <div style="white-space: pre-wrap; line-height: 1.6; background: rgba(0, 0, 0, 0.05); padding: 10px; border-radius: 3px;">${data.llm_answer}</div>
+                            </div>
+
+                            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 5px; border-left: 4px solid #4caf50;">
+                                <h4 style="color: #4caf50; margin-bottom: 10px;">✓ Correct Answers 正确答案：</h4>
+                                <div style="line-height: 1.8;">
+                                    <div><strong>问题1:</strong> ${data.correct_answers.q1}</div>
+                                    <div><strong>问题2:</strong> ${data.correct_answers.q2}</div>
+                                    <div><strong>问题3:</strong> ${data.correct_answers.q3}</div>
+                                </div>
+                            </div>
+
+                            <details style="margin-top: 15px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 5px;">
+                                <summary style="cursor: pointer; font-weight: bold; color: #888;">查看测试用的Prompt</summary>
+                                <div style="white-space: pre-wrap; margin-top: 10px; line-height: 1.4; font-size: 13px; color: #666;">${data.test_prompt}</div>
+                            </details>
+                        `;
+                    } else {
+                        contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Error: ${data.message}</div>`;
+                    }
+                } else {
+                    contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Server error: ${response.status}</div>`;
+                }
+            } catch (error) {
+                const modal = document.getElementById('uls-test-modal');
+                const contentDiv = modal.querySelector('.uls-test-content');
+                contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Network error: ${error.message}</div>`;
+            }
+        }
+
+        function hideULSTestResult() {
+            const modal = document.getElementById('uls-test-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function toggleAutoMode() {
+            autoMode = !autoMode;
+            const btn = document.getElementById('btn-auto');
+
+            if (autoMode) {
+                btn.textContent = t('autoModeAuto');
+                btn.style.background = '#4CAF50';
+                btn.style.color = 'white';
+            } else {
+                btn.textContent = t('autoModeManual');
+                btn.style.background = 'white';
+                btn.style.color = '#667eea';
+            }
+
+            // 通知后端模式改变
+            fetch('/api/set_auto_mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({auto_mode: autoMode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Auto mode:', data);
+
+                // 如果切换到自动模式且正在等待，自动继续
+                if (autoMode && !document.getElementById('btn-next').disabled) {
+                    nextDay();
+                }
+            });
+        }
+
+        function toggleULSMode() {
+            ulsMode = !ulsMode;
+            const btn = document.getElementById('btn-uls');
+
+            if (ulsMode) {
+                btn.textContent = '📝 ULS模式 (已启用)';
+                btn.style.background = '#2196F3';
+                btn.style.color = 'white';
+            } else {
+                btn.textContent = '📝 切换为ULS模式';
+                btn.style.background = 'white';
+                btn.style.color = 'black';
+            }
+
+            // 向服务器同步ULS模式状态
+            fetch('/api/set_uls_mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({uls_mode: ulsMode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('ULS mode:', data);
+            });
+        }
+
+        function showConfigModal() {
+            // 从服务器加载当前配置
+            fetch('/api/get_llm_config')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok' && data.config) {
+                        document.getElementById('test-api-base').value = data.config.test_api_base || '';
+                        document.getElementById('test-model').value = data.config.test_model || '';
+                        document.getElementById('npc-api-base').value = data.config.npc_api_base || '';
+                        document.getElementById('npc-model').value = data.config.npc_model || '';
+                    }
+                })
+                .catch(error => console.error('Error loading config:', error));
+
+            const modal = document.getElementById('config-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeConfigModal() {
+            const modal = document.getElementById('config-modal');
+            modal.style.display = 'none';
+        }
+
+        function saveConfig() {
+            const testApiBase = document.getElementById('test-api-base').value;
+            const testModel = document.getElementById('test-model').value;
+            const npcApiBase = document.getElementById('npc-api-base').value;
+            const npcModel = document.getElementById('npc-model').value;
+
+            fetch('/api/set_llm_config', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    test_api_base: testApiBase,
+                    test_model: testModel,
+                    npc_api_base: npcApiBase,
+                    npc_model: npcModel
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Config updated:', data);
+                alert('API配置已更新！\\n\\n测试模型: ' + testApiBase + '\\nNPC模型: ' + npcApiBase);
+                closeConfigModal();
+            })
+            .catch(error => {
+                console.error('Error updating config:', error);
+                alert('配置更新失败，请重试');
+            });
+        }
+
+        function updateTokenLimit() {
+            const newLimit = parseInt(document.getElementById('token-limit-input').value);
+
+            if (newLimit < 100 || newLimit > 100000) {
+                alert('Token限制必须在100到100000之间');
+                return;
+            }
+
+            fetch('/api/set_token_limit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({token_limit: newLimit})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Token limit updated:', data);
+                alert('Token限制已更新为: ' + newLimit + '/玩家');
+            })
+            .catch(error => {
+                console.error('Error updating token limit:', error);
+                alert('更新失败，请重试');
+            });
+        }
+
+        function nextDay() {
+            document.getElementById('btn-next').disabled = true;
+
+            fetch('/api/next_day', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Next day:', data);
+                });
+        }
+
+        async function switchVersion(version) {
+            if (confirm('确定要切换到' + version + '版本吗?\\n\\nT0版本: 基础版本\\nT1版本: 增强版本(含公共记忆池和推理投票)\\n\\n切换后页面将自动刷新。')) {
+                try {
+                    const response = await fetch('/api/switch_version', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ version: version })
+                    });
+                    const data = await response.json();
+                    alert(data.message + '\\n\\n页面将在2秒后自动刷新。');
+                    setTimeout(() => location.reload(), 2000);
+                } catch (error) {
+                    alert('切换版本失败: ' + error.message);
+                }
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('werewolf-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待狼人行动...</div>';
+            document.getElementById('god-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待神职行动...</div>';
+            document.getElementById('day-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待白天讨论...</div>';
+            document.getElementById('statistics-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待游戏开始...</div>';
+        }
+
+        // 评估功能
+        function showEvaluation() {
+            fetch('/api/get_evaluation')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        displayEvaluationModal(data.evaluation);
+                    } else {
+                        // 显示详细错误信息
+                        displayErrorModal(data.message, data.debug_info);
+                    }
+                })
+                .catch(error => {
+                    displayErrorModal('网络请求失败: ' + error.message, {error_type: 'Network Error'});
+                });
+        }
+
+        function displayErrorModal(message, debug_info) {
+            const modal = document.createElement('div');
+            modal.id = 'error-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+
+            let debug_html = '';
+            if (debug_info) {
+                debug_html = `
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 15px; border-left: 4px solid #ff9800;">
+                        <strong>调试信息:</strong>
+                        <pre style="margin: 10px 0; white-space: pre-wrap; word-wrap: break-word; font-size: 12px;">
+${JSON.stringify(debug_info, null, 2)}
+                        </pre>
+                    </div>
+                `;
+            }
+
+            const content = `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%;">
+                    <h2 style="color: #d32f2f; margin-top: 0;">❌ 评估失败</h2>
+                    <div style="background: #ffebee; padding: 15px; border-radius: 5px; border-left: 4px solid #d32f2f; margin-bottom: 20px;">
+                        <p style="margin: 0; color: #c62828; white-space: pre-wrap; word-wrap: break-word;">
+${message}
+                        </p>
+                    </div>
+                    ${debug_html}
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="closeErrorModal()" style="background: #d32f2f; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
+                    </div>
+                </div>
+            `;
+
+            modal.innerHTML = content;
+            document.body.appendChild(modal);
+        }
+
+        function closeErrorModal() {
+            const modal = document.getElementById('error-modal');
+            if (modal) modal.remove();
+        }
+
+        function displayEvaluationModal(evaluation) {
+            const modal = document.createElement('div');
+            modal.id = 'eval-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+
+            // Check if this is enhanced evaluation with deep reasoning
+            const isEnhanced = evaluation.comprehensive_score && evaluation.traditional_metrics && evaluation.deep_reasoning_metrics;
+
+            const content = isEnhanced ? `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 1100px; max-height: 90vh; overflow-y: auto; width: 95%;">
+                    <h2 style="color: #333; margin-top: 0;">📊 增强型深度推理能力评估报告</h2>
+                    <p style="color: #666; font-size: 14px;">Enhanced Deep Reasoning Evaluation</p>
+
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                        <div style="font-size: 52px; font-weight: bold; margin: 10px 0;">${evaluation.comprehensive_score.overall_score}/100</div>
+                        <div style="font-size: 26px; font-weight: bold; margin: 10px 0;">${evaluation.comprehensive_score.grade}</div>
+                        <div style="font-size: 14px; opacity: 0.9; margin-top: 15px;">
+                            传统指标贡献: ${evaluation.comprehensive_score.traditional_contribution} (40%) |
+                            深度推理贡献: ${evaluation.comprehensive_score.deep_reasoning_contribution} (60%)
+                        </div>
+                    </div>
+
+                    <div style="background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="color: #667eea; margin-top: 0;">🧠 深度推理维度 (Deep Reasoning - 60% 权重)</h3>
+                        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">评估在trillions of combinations问题空间中的数学推理能力</p>
+                        ${generateDeepReasoningScores(evaluation.deep_reasoning_metrics)}
+                    </div>
+
+                    <div style="background: #fff9e6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="color: #ff9800; margin-top: 0;">📋 传统评估维度 (Traditional - 40% 权重)</h3>
+                        ${generateDimensionScores(evaluation.traditional_metrics.scores)}
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                        <strong>统计数据:</strong><br>
+                        发言次数: ${evaluation.stats.speeches || 0}次 |
+                        投票次数: ${evaluation.stats.votes || 0}次 |
+                        站边变化: ${evaluation.stats.side_changes || 0}次
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
+                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">📄 导出JSON</button>
+                    </div>
+                </div>
+            ` : `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 900px; max-height: 80vh; overflow-y: auto; width: 90%;">
+                    <h2 style="color: #333; margin-top: 0;">📊 推理能力评估报告</h2>
+
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                        <div style="font-size: 48px; font-weight: bold; margin: 10px 0;">${evaluation.weighted_score}/100</div>
+                        <div style="font-size: 24px; font-weight: bold;">${evaluation.final_grade}</div>
+                    </div>
+
+                    <h3 style="color: #333;">各维度得分:</h3>
+                    ${generateDimensionScores(evaluation.scores)}
+
+                    <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                        <strong>统计数据:</strong><br>
+                        发言次数: ${evaluation.stats.speeches || 0}次 |
+                        投票次数: ${evaluation.stats.votes || 0}次 |
+                        站边变化: ${evaluation.stats.side_changes || 0}次
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="closeEvalModal()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
+                        <button onclick="exportEvaluation()" style="background: #4CAF50; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">📄 导出JSON</button>
+                    </div>
+                </div>
+            `;
+
+            modal.innerHTML = content;
+            document.body.appendChild(modal);
+        }
+
+        function generateDimensionScores(scores) {
+            const dimensions = {
+                'information_extraction': '信息提取能力',
+                'logical_deduction': '逻辑推理能力',
+                'pattern_recognition': '模式识别能力',
+                'vote_analysis': '票型分析能力',
+                'adaptive_behavior': '适应性行为',
+                'communication_quality': '沟通质量'
+            };
+
+            let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
+
+            for (const [key, name] of Object.entries(dimensions)) {
+                const score = scores[key]?.score || 0;
+                const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
+
+                html += `
+                    <div style="border: 2px solid ${color}; border-radius: 8px; padding: 15px;">
+                        <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">${name}</div>
+                        <div style="font-size: 32px; font-weight: bold; color: ${color};">${score}<span style="font-size: 18px;">/100</span></div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                            ${(scores[key]?.details || []).map(d =>
+                                d.includes('[OK]') ? `<div style="color: green;">${d}</div>` :
+                                d.includes('[FAIL]') ? `<div style="color: red;">${d}</div>` :
+                                `<div style="color: orange;">${d}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateDeepReasoningScores(metrics) {
+            if (!metrics) return '<p style="color: #999;">深度推理数据不可用</p>';
+
+            let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
+
+            for (const [key, value] of Object.entries(metrics)) {
+                const score = value.score || 0;
+                const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
+
+                html += `
+                    <div style="border: 2px solid ${color}; border-radius: 8px; padding: 15px;">
+                        <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">${key}</div>
+                        <div style="font-size: 32px; font-weight: bold; color: ${color};">${score}<span style="font-size: 18px;">/100</span></div>
+                        ${value.details ? `<div style="margin-top: 10px; font-size: 12px; color: #666;">${value.details}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function closeEvalModal() {
+            const modal = document.getElementById('eval-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function exportEvaluation() {
+            fetch('/api/export_evaluation')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        alert('评估结果已导出到: ' + data.filename);
+                    }
+                })
+                .catch(error => {
+                    alert('导出失败: ' + error.message);
+                });
+        }
+
+        // 难度选择器
+        let currentDifficulty = '地狱';
+
+        function setDifficulty(level) {
+            currentDifficulty = level;
+
+            // 更新显示文本
+            const difficultyText = {
+                '基础': 'Basic 基础',
+                '进阶': 'Advanced 进阶',
+                '地狱': 'Hell 地狱'
+            };
+            document.getElementById('current-difficulty').textContent = difficultyText[level];
+
+            // 更新按钮样式
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.style.opacity = '0.6';
+            });
+
+            // 高亮选中的按钮和颜色
+            const colors = {
+                '基础': '#4CAF50',
+                '进阶': '#FF9800',
+                '地狱': '#f44336'
+            };
+
+            if (level === '基础') {
+                document.getElementById('btn-diff-basic').style.opacity = '1';
+            } else if (level === '进阶') {
+                document.getElementById('btn-diff-advanced').style.opacity = '1';
+            } else if (level === '地狱') {
+                document.getElementById('btn-diff-hell').style.opacity = '1';
+            }
+
+            document.getElementById('current-difficulty').style.color = colors[level];
+
+            // 向后端发送难度设置
+            fetch('/api/set_difficulty', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({difficulty: level})
+            }).then(r => r.json()).then(data => {
+                console.log('Difficulty modules activated:', data.activated_modules);
+            });
+
+            console.log(`Difficulty set to: ${level}`);
+        }
+
+        function updateModulesDisplay() {
+            fetch('/api/get_difficulty_info')
+                .then(r => r.json())
+                .then(data => {
+                    const modulesDiv = document.getElementById('modules-list');
+                    if (data.activated_modules && data.activated_modules.length > 0) {
+                        modulesDiv.innerHTML = data.activated_modules.map(m =>
+                            `<div style="margin: 4px 0;">✓ ${m.name} (${m.difficulty})</div>`
+                        ).join('');
+                    } else {
+                        modulesDiv.innerHTML = '<span style="color: #888;">暂无激活模块 No modules activated</span>';
+                    }
+                });
+        }
+
+        // 每10秒更新一次模块显示
+        setInterval(updateModulesDisplay, 10000);
+
+        function startEventStream() {
+            if (eventSource) eventSource.close();
+
+            eventSource = new EventSource('/api/stream');
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'phase') {
+                    setPhase(data.phase);
+                    if (data.phase === 'night') {
+                        players.forEach((p, i) => {
+                            if (!['狼人', '狼王'].includes(p.role)) {
+                                hidePlayer(i);
+                            }
+                        });
+                    } else {
+                        players.forEach((p, i) => showPlayer(i));
+                    }
+                } else if (data.type === 'dialogue') {
+                    if (data.player_id === -1 && data.content.includes('当选警长')) {
+                        const match = data.content.match(/Player (\d+)/);
+                        if (match) {
+                            updateSheriff(parseInt(match[1]));
+                        }
+                    }
+                    if (data.player_id >= 0) {
+                        highlightPlayer(data.player_id);
+                    }
+                    addDialogue(data);
+                } else if (data.type === 'status') {
+                    document.getElementById('status').textContent = '状态：' + data.message;
+                } else if (data.type === 'death') {
+                    markDead(data.player_id);
+                } else if (data.type === 'waiting_for_next') {
+                    // 启用下一天按钮
+                    document.getElementById('btn-next').disabled = false;
+
+                    // 如果是自动模式，自动点击下一天
+                    if (autoMode) {
+                        setTimeout(() => {
+                            nextDay();
+                        }, 2000);  // 延迟2秒自动继续
+                    }
+                } else if (data.type === 'token_update') {
+                    // 更新token统计
+                    document.getElementById('total-tokens').textContent = data.total_tokens;
+
+                    // 可选：显示每个玩家的token使用情况
+                    // console.log('Player tokens:', data.player_tokens);
+                }
+            };
+
+            eventSource.onerror = function() {
+                console.error('EventSource error');
+                eventSource.close();
+            };
+        }
+
+        window.addEventListener('load', () => {
+            createCircle();
+        });
+
+        window.addEventListener('resize', () => {
+            document.getElementById('circle-container').innerHTML = '<div class="center-circle">🐺<br>狼人杀</div>';
+            createCircle();
+        });
+    </script>
+</body>
+</html>

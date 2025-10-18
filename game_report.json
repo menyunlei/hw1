@@ -1,0 +1,707 @@
+{
+  "timestamp": "2025-10-10T14:33:18.257922",
+  "game_id": "game_20251010_143318",
+  "game_summary": {
+    "total_rounds": 3,
+    "winner": "werewolves",
+    "final_nash_score": 0.43333333333333335,
+    "final_werewolf_advantage": 0.12407407407407402,
+    "sheriff_id": 11,
+    "start_time": "2025-10-10T14:28:54.219758",
+    "end_time": "2025-10-10T14:33:18.257922"
+  },
+  "player_metrics": {
+    "0": {
+      "role": "witch",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 1574.5,
+        "rounds_survived": 3,
+        "final_outcome": "lost"
+      }
+    },
+    "1": {
+      "role": "seer",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2009.5,
+        "rounds_survived": 0,
+        "final_outcome": "lost"
+      }
+    },
+    "2": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 1785.5,
+        "rounds_survived": 3,
+        "final_outcome": "lost"
+      }
+    },
+    "3": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 1.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 2245.0,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "4": {
+      "role": "werewolf",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 1.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2496.0,
+        "rounds_survived": 3,
+        "final_outcome": "won"
+      }
+    },
+    "5": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 2465.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "6": {
+      "role": "hunter",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2400.5,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "7": {
+      "role": "werewolf_king",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.5,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2458.0,
+        "rounds_survived": 3,
+        "final_outcome": "lost"
+      }
+    },
+    "8": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2311.0,
+        "rounds_survived": 3,
+        "final_outcome": "lost"
+      }
+    },
+    "9": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2421.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "10": {
+      "role": "guard",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 0,
+        "avg_statement_length": 0.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "11": {
+      "role": "werewolf",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 1.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2533.5,
+        "rounds_survived": 3,
+        "final_outcome": "won"
+      }
+    },
+    "12": {
+      "role": "judge",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 0,
+        "avg_statement_length": 0.0,
+        "rounds_survived": 3,
+        "final_outcome": "lost"
+      }
+    }
+  },
+  "game_theory_analysis": {
+    "nash_equilibrium_evolution": [
+      0.43333333333333335
+    ],
+    "werewolf_advantage_evolution": [
+      0.43333333333333335
+    ],
+    "vote_concentration_by_round": {
+      "1": 0.5,
+      "2": 0.5
+    },
+    "information_cascade_detected": false
+  },
+  "event_log": [
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:28:54.219758",
+      "event_type": "game_start",
+      "data": {
+        "players": [
+          {
+            "id": 0,
+            "role": "witch"
+          },
+          {
+            "id": 1,
+            "role": "seer"
+          },
+          {
+            "id": 2,
+            "role": "villager"
+          },
+          {
+            "id": 3,
+            "role": "werewolf"
+          },
+          {
+            "id": 4,
+            "role": "werewolf"
+          },
+          {
+            "id": 5,
+            "role": "villager"
+          },
+          {
+            "id": 6,
+            "role": "hunter"
+          },
+          {
+            "id": 7,
+            "role": "werewolf_king"
+          },
+          {
+            "id": 8,
+            "role": "villager"
+          },
+          {
+            "id": 9,
+            "role": "villager"
+          },
+          {
+            "id": 10,
+            "role": "guard"
+          },
+          {
+            "id": 11,
+            "role": "werewolf"
+          },
+          {
+            "id": 12,
+            "role": "judge"
+          }
+        ]
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:28:54.476593",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 1,
+        "mandatory": true,
+        "role": "seer"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:28:54.602298",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 3,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:28:54.602298",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 4,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:28:54.915003",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 7,
+        "mandatory": true,
+        "role": "werewolf_king"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:01.265753",
+      "event_type": "sheriff_campaign",
+      "data": {
+        "player_id": 11,
+        "mandatory": true,
+        "role": "werewolf"
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:05.279317",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 1,
+        "speech": "Fellow villagers, I stand before you as the most qualified candidate for sheriff, possessing critical information that can tip the scales in our favor against the werewolves. As your sheriff, I promise to utilize my unique insight to guide our discussions and make informed decisions, ensuring the double vote power is wielded wisely to eliminate the true threats. I urge you to entrust me with the badge, as I am confident that together, we can create a safer village and uncover the truth. By choosing me, you're not just electing a leader, you're investing in a guardian who will protect and serve our community with precision and care."
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:08.946569",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 3,
+        "speech": "Fellow villagers, I'm a humble guard who has always put the safety of our community first, and I believe my experience and dedication make me the ideal candidate for sheriff. As your sheriff, I promise to use my double vote power to protect our village from the werewolf threat, guiding our discussions with a logical and fair mindset to ensure we make informed decisions. Unlike my opponents, I've consistently demonstrated a commitment to our village's well-being, and I'm confident that my leadership will bring a sense of security and trust to our community. By electing me as sheriff, you can rest assured that our village will be in good hands, and together we'll work tirelessly to eliminate the werewolf menace and restore peace to our homes."
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:12.120031",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 4,
+        "speech": "Fellow villagers, I stand before you as a humble guardian of our community, dedicated to protecting our homes and our lives. As a seasoned watcher of our village's safety, I possess the keen insight and fair judgment necessary to wield the sheriff's double vote power wisely, ensuring that we eliminate the true threats to our village. Unlike my opponents, I bring a unique blend of experience and compassion to the table, allowing me to balance bold action with thoughtful consideration. By electing me as your sheriff, you can trust that our village will be guided by a steady hand, ever vigilant and always prioritizing the safety and well-being of our people."
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:15.299800",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 7,
+        "speech": "Fellow villagers, I stand before you as a dedicated and loyal guardian of our community, committed to protecting our homes and families from the threats that lurk in the shadows. As a seasoned member of our village's guard, I possess the unique blend of courage, wisdom, and experience necessary to lead us to victory against the forces of evil. I promise to wield the sheriff's double vote power with precision and integrity, guiding our discussions with a steady hand and ensuring that justice is served. By electing me as your sheriff, you can trust that our village will be safer, stronger, and more united than ever before."
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:18.741326",
+      "event_type": "sheriff_speech",
+      "data": {
+        "player_id": 11,
+        "speech": "\"Fellow villagers, I stand before you as a dedicated and vigilant guardian of our community, committed to protecting our homes and families from the lurking threats. As a seasoned observer and analyst, I possess a unique ability to discern truth from deception, making me the ideal candidate to wield the sheriff's double vote power and lead our village to safety. Unlike my opponents, I bring a calm and level-headed approach to decision-making, ensuring that our collective efforts are focused on eliminating the true dangers that plague us. By electing me as your sheriff, you can trust that our village will be guided by wisdom, courage, and a unwavering commitment to justice.\""
+      }
+    },
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:21.105301",
+      "event_type": "sheriff_elected",
+      "data": {
+        "sheriff_id": 11,
+        "votes": {
+          "11": 7
+        },
+        "candidates": [
+          1,
+          3,
+          4,
+          7,
+          11
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:29:23.621767",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          10
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:29:30.324784",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "\"Fellow villagers, I'd like to start by acknowledging our newly elected Sheriff, player 11. Their speech showcased their dedication to our community's safety, and I appreciate their commitment to justice. However, I'd like to remind everyone that we must remain vigilant and not rely solely on one person's judgment.\n\nRegarding the recent night events, we've lost player 10. While we don't know the circumstances of their death, it's essential to consider the possibilities. As we discuss and try to make sense of the situation, I urge everyone to share their thoughts and insights.\n\nAt this point, I'd like to ask Sheriff 11 if they have any information or observations that could help us understand what happened to player 10. Have you noticed anything unusual or suspicious during the night, Sheriff?\" \n\nBy making this statement, I'm trying to:\n\n1. Establish a positive relationship with the Sheriff, which might be beneficial in the future.\n2. Encourage the Sheriff to share any valuable information they might have, potentially revealing their thought process or any clues they've gathered.\n3. Avoid revealing my own role or any information that could put me in danger, while still contributing to the discussion and appearing cooperative.\n4. Keep the focus on gathering information and discussing the events, rather than making accusations or taking a confrontational approach.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:29:40.044049",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "\"I'd like to build upon the statement made by player 0, and I appreciate their effort to encourage discussion and gather information. As a villager, I'm concerned about the loss of player 10, and I believe it's crucial that we share any relevant information or observations.\n\nI don't have any concrete evidence or suspicions at this point, but I'd like to ask the group to consider the possibility that the werewolves might be trying to create confusion or misdirection. It's essential that we remain cautious and don't jump to conclusions based on limited information.\n\nI'd like to propose that we focus on gathering more information and observing the behavior of our fellow players. Let's see how people react to the events and discussions, and maybe we can identify some patterns or inconsistencies that could help us make a more informed decision during the voting phase.\n\nTo Sheriff 11, I'd like to add that I appreciate your leadership, and I'm willing to support you in your efforts to keep our community safe. If you have any insights or plans, please feel free to share them with us.\n\nLet's work together to uncover the truth and make a wise decision during the voting phase. I'm open to hearing more thoughts and ideas from everyone, and I'm confident that together, we can make progress in identifying the werewolves and protecting our village.\"\n\nBy making this statement, I aim to:\n\n1. Contribute to the discussion and appear cooperative, without revealing my role as the Seer.\n2. Encourage the group to think critically and consider different possibilities, rather than focusing on a single theory or accusation.\n3. Support Sheriff 11 and maintain a positive relationship, which could be beneficial in the future.\n4. Avoid making any accusations or taking a confrontational approach, while still promoting a sense of caution and vigilance among the villagers.\n5. Keep the focus on gathering information and observing behavior, which could help me gather more insights and make a more informed decision about who to check during the next night phase.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:29:49.453027",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "\"I'd like to add to the discussion started by players 0 and 1, and I appreciate their thoughtful approaches to our current situation. As a villager, I'm also concerned about the loss of player 10, and I believe it's essential that we consider all possible scenarios.\n\nI don't have any specific information or suspicions to share at this point, but I'd like to propose that we focus on establishing a baseline for behavior and communication. Let's observe how players interact with each other, and see if anyone's behavior seems inconsistent or suspicious.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a policy for sharing information or coordinating efforts during the day phase? Perhaps we could designate a thread or a specific time for sharing updates or discussing leads.\n\nI'd also like to suggest that we avoid making any hasty accusations or jumping to conclusions based on limited information. Let's take a cautious and methodical approach to gathering evidence and evaluating suspects.\n\nBy working together and sharing our insights, I'm confident that we can make progress in identifying the werewolves and protecting our village. I'm open to hearing more thoughts and ideas from everyone, and I'm willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\"\n\nBy making this statement, I aim to:\n\n1. Contribute to the discussion and appear cooperative, without revealing my role as a villager.\n2. Encourage the group to think critically and consider different possibilities, rather than focusing on a single theory or accusation.\n3. Support Sheriff 11 and maintain a positive relationship, which could be beneficial in the future.\n4. Avoid making any accusations or taking a confrontational approach, while still promoting a sense of caution and vigilance among the villagers.\n5. Keep the focus on gathering information and observing behavior, which could help me gather more insights and make a more informed decision during the voting phase.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:30:00.476817",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 3,
+        "statement": "\"I'd like to add my thoughts to the discussion started by players 0, 1, and 2. I appreciate their emphasis on caution and gathering information. As a concerned villager, I'm also worried about the loss of player 10 and the potential presence of werewolves among us.\n\nI don't have any specific information or suspicions to share at this point, but I'd like to suggest that we focus on building a sense of community and trust. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nTo Sheriff 11, I'd like to ask: Have you considered organizing a community event or activity that can help us bond and build trust? Maybe we can have a shared discussion thread or a virtual gathering where we can talk about our interests, hobbies, or concerns.\n\nI'd also like to propose that we establish a 'no-lynch' policy for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior. We can always revisit the voting phase tomorrow or in subsequent days when we have more insights.\n\nBy working together, building trust, and taking a cautious approach, I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers and appear cooperative, without revealing my true role as a werewolf.\n2. Shift the focus from suspicion and accusation to community-building and trust, which can help to reduce the likelihood of a werewolf being targeted.\n3. Support Sheriff 11 and maintain a positive relationship, which could be beneficial in the future.\n4. Propose a 'no-lynch' policy to avoid eliminating a potential werewolf ally or an innocent villager, and to give us more time to gather information and plan our next move.\n5. Keep the discussion focused on gathering information and observing behavior, which can help me to gather more insights and make a more informed decision about our next steps.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:30:12.544386",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "\"I'd like to build upon the thoughtful discussions started by players 0, 1, 2, and 3. I appreciate their emphasis on caution, community-building, and gathering information. As a concerned villager, I'm also worried about the loss of player 10 and the potential presence of werewolves among us.\n\nI agree with player 3's suggestion to focus on building a sense of community and trust. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy proposed by player 3, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nHowever, I'd like to add a caveat to this approach. While it's essential to avoid hasty accusations, we should also be mindful of the werewolves' potential strategy to create confusion or misdirection. Let's remain vigilant and consider the possibility that some players might be trying to manipulate the discussion or distract us from the real issues.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a system for tracking and analyzing the discussions, behaviors, and voting patterns of our fellow players? Perhaps we can identify some patterns or inconsistencies that could help us make a more informed decision in the future.\n\nBy working together, building trust, and taking a cautious approach, I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers and appear cooperative, without revealing my true role as a werewolf.\n2. Support the 'no-lynch' policy to avoid eliminating a potential werewolf ally or an innocent villager, and to give us more time to gather information and plan our next move.\n3. Shift the focus from suspicion and accusation to community-building and trust, which can help to reduce the likelihood of a werewolf being targeted.\n4. Propose a system for tracking and analyzing discussions, behaviors, and voting patterns to gather more insights and make a more informed decision about our next steps.\n5. Maintain a positive relationship with Sheriff 11 and the rest",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:30:24.616424",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "\"I'd like to contribute to the discussion and build upon the ideas shared by players 0, 1, 2, 3, and 4. I appreciate their emphasis on caution, community-building, and gathering information. As a concerned villager, I'm also worried about the loss of player 10 and the potential presence of werewolves among us.\n\nI agree with the proposal to focus on building a sense of community and trust, as suggested by player 3. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nHowever, I'd like to add that we should also be mindful of our own behavior and how it may be perceived by others. Let's be transparent and consistent in our actions and statements, and avoid making any sudden changes that could raise suspicions.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players? Perhaps we can use this as a tool to gather more insights and make a more informed decision in the future.\n\nI'd also like to propose that we establish a set of guidelines or principles for our discussion and decision-making process. This could include things like avoiding personal attacks, being respectful and open-minded, and focusing on the facts and evidence.\n\nBy working together, building trust, and taking a cautious approach, I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers and appear cooperative, without revealing my true role as a villager.\n2. Support the 'no-lynch' policy to avoid eliminating an innocent villager and to give us more time to gather information.\n3. Shift the focus from suspicion and accusation to community-building and trust, which can help to reduce the likelihood of a villager being targeted.\n4. Propose a system for sharing thoughts and feelings, and establish guidelines for discussion and decision-making,",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:30:36.553536",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "\"I'd like to add my thoughts to the discussion and appreciate the emphasis on caution, community-building, and gathering information. As the Hunter, I have a unique role in this game, and I'm committed to using my abilities to help the villagers.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nI'd like to propose that we establish a system for tracking and analyzing the discussions, behaviors, and voting patterns of our fellow players. Perhaps we can identify some patterns or inconsistencies that could help us make a more informed decision in the future.\n\nAs the Hunter, I want to assure the group that I'll do my best to protect the villagers and take out any werewolves that I can identify. If I were to die, I would take one player with me, so it's essential that we work together to ensure that doesn't happen to an innocent villager.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players? Perhaps we can use this as a tool to gather more insights and make a more informed decision in the future.\n\nLet's work together, build trust, and take a cautious approach. I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\" \n\nThis statement aims to:\n\n1. Reveal my role as the Hunter to establish trust and credibility with the villagers.\n2. Support the 'no-lynch' policy to avoid eliminating an innocent villager and to give us more time to gather information.\n3. Propose a system for tracking and analyzing discussions, behaviors, and voting patterns to gather more insights and make a more informed decision about our next steps.\n4. Assure the group that I'll do my best to protect the villagers and take out any werewolves that I can identify.\n5. Collaborate with Sheriff 11 and the rest of the group to achieve our goal of uncovering the truth and protecting the village.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:30:48.698693",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "\"I'd like to contribute to the discussion and appreciate the thoughtful statements from players 3, 4, 5, and 6. As a concerned villager, I'm also worried about the loss of player 10 and the potential presence of werewolves among us.\n\nI agree with the proposal to focus on building a sense of community and trust, as suggested by player 3. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nI'd like to propose that we establish a system for sharing our thoughts and feelings about the game state and our fellow players. Perhaps we can use this as a tool to gather more insights and make a more informed decision in the future.\n\nHowever, I'd like to caution against revealing too much information about our roles or strategies. Let's be mindful of the werewolves' potential ability to manipulate the discussion or distract us from the real issues.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players in a way that minimizes the risk of manipulation or misinformation?\n\nLet's work together, build trust, and take a cautious approach. I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers and appear cooperative, without revealing my true role as the Werewolf King.\n2. Support the 'no-lynch' policy to avoid eliminating a potential werewolf ally or an innocent villager, and to give us more time to gather information and plan our next move.\n3. Propose a system for sharing thoughts and feelings, while cautioning against revealing too much information about our roles or strategies.\n4. Maintain a positive relationship with Sheriff 11 and the rest of the group, while minimizing the risk of manipulation or misinformation.\n5. Gather more information about the other players' roles and strategies, while keeping my own",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:31:01.835523",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "\"I'd like to add my thoughts to the discussion and appreciate the emphasis on caution, community-building, and gathering information. As a villager, I'm committed to working together to uncover the truth and protect our village from the werewolves.\n\nI agree with the proposal to focus on building a sense of community and trust, as suggested by player 3. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nI'd like to propose that we establish a system for tracking and analyzing the discussions, behaviors, and voting patterns of our fellow players. Perhaps we can identify some patterns or inconsistencies that could help us make a more informed decision in the future.\n\nI also want to commend player 6, the Hunter, for their willingness to reveal their role and work with us to protect the village. This kind of transparency and cooperation is exactly what we need to succeed.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players in a way that minimizes the risk of manipulation or misinformation?\n\nLet's work together, build trust, and take a cautious approach. I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\n\nOne thing I'd like to suggest is that we pay close attention to any inconsistencies in players' statements or behavior. If someone is being overly defensive or evasive, it could be a sign that they're hiding something. Let's keep an eye out for these red flags and discuss them as a group.\n\nOverall, I think we're off to a great start, and I'm excited to work with all of you to achieve our goal. Let's keep the discussion going and see where it takes us.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers and appear cooperative, without revealing too much information about my own role or strategies.\n2. Support the 'no-lynch' policy to avoid eliminating",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:31:13.950688",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "\"I'd like to contribute to the discussion and appreciate the thoughtful statements from players 6, 7, and 8. As a villager, I'm committed to working together to uncover the truth and protect our village from the werewolves.\n\nI agree with the proposal to focus on building a sense of community and trust, as suggested by player 3. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nI'd like to propose that we establish a system for tracking and analyzing the discussions, behaviors, and voting patterns of our fellow players. Perhaps we can identify some patterns or inconsistencies that could help us make a more informed decision in the future.\n\nI also want to commend player 6, the Hunter, for their willingness to reveal their role and work with us to protect the village. This kind of transparency and cooperation is exactly what we need to succeed.\n\nHowever, I'd like to caution against putting too much trust in any one player, including the Hunter. While their role is crucial, we should still be vigilant and consider the possibility that they might be misinformed or manipulated.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players in a way that minimizes the risk of manipulation or misinformation?\n\nLet's work together, build trust, and take a cautious approach. I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\n\nOne thing I'd like to suggest is that we pay close attention to any inconsistencies in players' statements or behavior. If someone is being overly defensive or evasive, it could be a sign that they're hiding something. Let's keep an eye out for these red flags and discuss them as a group.\n\nAdditionally, I'd like to propose that we consider the possibility of a 'test vote' in the future. This could help us gauge the reactions of other players and potentially reveal",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:31:25.975689",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "\"I'd like to add my thoughts to the discussion and appreciate the emphasis on caution, community-building, and gathering information. As a concerned villager, I'm committed to working together to uncover the truth and protect our village from the werewolves.\n\nI agree with the proposal to focus on building a sense of community and trust, as suggested by player 3. Let's get to know each other better and share our thoughts and feelings openly. Perhaps we can learn something from each other's perspectives and experiences.\n\nRegarding the 'no-lynch' policy, I think it's a reasonable approach for today's voting phase. Let's not rush into eliminating anyone without solid evidence or a clear consensus. Instead, let's focus on gathering more information and observing each other's behavior.\n\nI'd like to propose that we establish a system for tracking and analyzing the discussions, behaviors, and voting patterns of our fellow players. Perhaps we can identify some patterns or inconsistencies that could help us make a more informed decision in the future.\n\nI also want to commend player 6, the Hunter, for their willingness to reveal their role and work with us to protect the village. This kind of transparency and cooperation is exactly what we need to succeed.\n\nHowever, I'd like to caution against putting too much trust in any one player, including the Hunter. While their role is crucial, we should still be vigilant and consider the possibility that they might be misinformed or manipulated.\n\nTo Sheriff 11, I'd like to ask: Have you considered establishing a thread or a system for players to share their thoughts and feelings about the game state and their fellow players in a way that minimizes the risk of manipulation or misinformation?\n\nLet's work together, build trust, and take a cautious approach. I'm confident that we can uncover the truth and protect our village from the werewolves. I'm open to hearing more thoughts and ideas from everyone and willing to collaborate with Sheriff 11 and the rest of the group to achieve our goal.\n\nOne thing I'd like to suggest is that we pay close attention to any inconsistencies in players' statements or behavior. If someone is being overly defensive or evasive, it could be a sign that they're hiding something. Let's keep an eye out for these red flags and discuss them as a group.\n\nAdditionally, I'd like to propose that we consider the possibility of a 'test vote' in the future. This could help us gauge the reactions of other players and potentially reveal",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T14:31:35.350673",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 3,
+        "role": "werewolf",
+        "votes": 6
+      }
+    },
+    {
+      "round": 2,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:31:36.334950",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          5
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:31:45.006806",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "\"I'd like to start by acknowledging the thoughtful statement from player 11, and I appreciate their emphasis on caution, community-building, and information gathering. It's essential that we work together to uncover the truth and protect our village.\n\nAs we move forward, I think it's crucial that we analyze the recent events and the information we have so far. We know that player 3 was a werewolf, and their elimination is a significant step forward. However, we also lost player 5 during the night, which means the werewolves are still active and posing a threat.\n\nI agree with player 11's proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns. This could help us identify potential inconsistencies and make more informed decisions in the future.\n\nAs for my own contribution, I'd like to suggest that we focus on building a list of potential suspects and gathering more information about each player's behavior and statements. We should be cautious not to jump to conclusions or make accusations without solid evidence.\n\nAt this point, I don't have any specific information to share, but I'm willing to collaborate with the group and provide any insights I might have as the game progresses. Let's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity.\n\nOne question I'd like to ask the group is: What do we know about player 5, and were there any suspicious behaviors or statements that might have indicated they were a target for the werewolves?\" \n\n(Note: As the Witch, I'm being cautious not to reveal too much information about my role or abilities, while still contributing to the discussion and trying to gather more information about the other players.)",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:31:54.794081",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "\"I'd like to build upon the thoughtful discussion started by player 0, and I appreciate their emphasis on caution and information gathering. As we analyze the recent events, I think it's essential to consider the potential implications of player 3's elimination and the loss of player 5 during the night.\n\nI agree with the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns. This could help us identify potential inconsistencies and make more informed decisions in the future.\n\nAs the Seer, I have some information that might be relevant to our discussion. However, I must be cautious about what I share, as I don't want to compromise my ability to gather more information in the future. I will say that I have checked two players so far, and I can confirm that one of them is indeed a villager. This information might help us to focus our efforts on other players who may be more suspicious.\n\nRegarding player 5, I don't have any specific information about their behavior or statements that might have indicated they were a target for the werewolves. However, I do think it's worth exploring the possibility that the werewolves may have targeted player 5 due to their potential role or actions in the game.\n\nI'd like to ask the group: What are our priorities for the day's discussion? Should we focus on gathering more information about the remaining players, or should we start building a case against a specific player based on the evidence we have so far? Let's work together to make a informed decision and take a step closer to winning the game.\" \n\nNote: As the Seer, I'm being cautious not to reveal too much information about the players I've checked, while still contributing to the discussion and trying to gather more information about the other players. I'm also trying to avoid drawing attention to myself, as the werewolves may try to eliminate me if they suspect I have valuable information.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:32:02.909904",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "\"I'd like to add to the discussion started by players 0 and 1, and appreciate their thoughtful insights. As a villager, I'm committed to working together to uncover the truth and protect our village.\n\nI think it's essential to focus on gathering more information about the remaining players, as suggested by player 1. We should be cautious not to jump to conclusions or make accusations without solid evidence.\n\nRegarding player 5, I didn't notice any suspicious behavior or statements that might have indicated they were a target for the werewolves. However, I do think it's worth exploring the possibility that the werewolves may have targeted player 5 due to their potential role or actions in the game.\n\nI'd like to propose that we start by sharing any information we have about the players who were active during the previous round. What did they say or do that might be relevant to our discussion? Let's work together to build a more comprehensive understanding of the game state and make informed decisions.\n\nAdditionally, I'd like to ask player 1, as the Seer, if they can provide any general insights or guidance on how to proceed without compromising their ability to gather more information in the future. Their perspective could be invaluable in helping us navigate the game and make strategic decisions.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:32:15.008192",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "\"I'd like to contribute to the discussion by acknowledging the valuable insights shared by players 0, 1, and 2. It's clear that we're all committed to working together to uncover the truth and protect our village.\n\nAs we gather more information about the remaining players, I think it's essential to consider the potential implications of player 3's elimination and the loss of player 5 during the night. I agree with player 1's suggestion to focus on gathering more information, and I believe we should prioritize sharing any relevant details about the players who were active during the previous round.\n\nRegarding player 5, I didn't notice any suspicious behavior or statements that might have indicated they were a target for the werewolves. However, I do think it's worth exploring the possibility that the werewolves may have targeted player 5 due to their potential role or actions in the game.\n\nI'd like to propose that we establish a system for tracking and analyzing discussions, behaviors, and voting patterns, as suggested by player 0. This could help us identify potential inconsistencies and make more informed decisions in the future.\n\nAs for my own contribution, I'd like to share that I've been paying close attention to the discussions and behaviors of the remaining players. While I don't have any concrete evidence, I do think it's worth considering the possibility that player 1's role as the Seer might make them a potential target for the werewolves. I'm not suggesting that we should suspect player 1 of being a werewolf, but rather that we should be cautious and protective of their role, given the potential value of their information.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Avoid drawing attention to myself or my werewolf teammates (players 3 and 4).\n3. Create a sense of caution and protection around player 1's role as the Seer, potentially making it more difficult for the villagers to suspect or target them.\n4. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, which could help the werewolves to identify potential threats or inconsistencies.\n5. Maintain a neutral tone and",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:32:27.460617",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "\"I'd like to add my thoughts to the discussion, building on the valuable insights shared by players 0, 1, and 2. As the Hunter, I'm committed to protecting our village and uncovering the truth. I appreciate player 1's cautious approach as the Seer, and I agree that gathering more information about the remaining players is crucial.\n\nRegarding player 5's elimination, I didn't notice any suspicious behavior or statements that might have indicated they were a target for the werewolves. However, I do think it's worth exploring the possibility that the werewolves may have targeted player 5 due to their potential role or actions in the game.\n\nI'd like to propose that we focus on sharing information about the players who were active during the previous round, as suggested by player 2. This could help us identify potential patterns or inconsistencies in their behavior. I also support the idea of establishing a system for tracking and analyzing discussions, behaviors, and voting patterns, as proposed by player 0 and player 4.\n\nAs the Hunter, I want to assure the group that I'm committed to protecting our village and taking out any werewolves that might be lurking among us. If I were to be targeted, I would take one player with me, so it's essential that we work together to make informed decisions and avoid any potential mistakes.\n\nLet's continue to collaborate, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By working together and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\n\nI'd like to ask player 1, as the Seer, if they can provide any general guidance on how to proceed without compromising their ability to gather more information in the future. I'd also like to ask the group: What are our priorities for the day's discussion? Should we focus on gathering more information, or should we start building a case against a specific player based on the evidence we have so far?\" \n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Reveal the Hunter role to add credibility and emphasize the importance of protecting the village.\n3. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns.\n4. Encourage the group to focus on gathering more information and sharing relevant details about the players.\n5. Avoid drawing attention to any",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:32:39.254787",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "\"I'd like to contribute to the discussion by acknowledging the valuable insights shared by players 0, 1, 2, 4, and 6. It's clear that we're all committed to working together to uncover the truth and protect our village.\n\nAs the discussion has progressed, I've noticed that players 1 and 6 have taken on a more prominent role in guiding the conversation. While their contributions are appreciated, I think it's essential to ensure that we're not relying too heavily on individual perspectives.\n\nRegarding the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, I agree that it could be a useful tool in identifying potential inconsistencies. However, I also think we should be cautious not to create unnecessary complexity or bureaucracy that might hinder our progress.\n\nAs we move forward, I'd like to suggest that we focus on sharing information about the players who were active during the previous round, as proposed by player 2. This could help us identify potential patterns or connections that might have been overlooked.\n\nI'd also like to ask the group: What are our priorities for the day's discussion? Should we focus on gathering more information, or should we start building a case against a specific player based on the evidence we have so far? Perhaps we could start by discussing the players who have been relatively quiet or haven't contributed much to the discussion yet.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Avoid drawing attention to myself or my werewolf teammates (players 3 and 7).\n3. Create a sense of caution and balance in the discussion, avoiding reliance on individual perspectives.\n4. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, while also introducing a note of caution.\n5. Focus the discussion on gathering more information and sharing relevant details about the players, rather than building a case against a specific player.\n6. Maintain a neutral tone and avoid revealing any information that might compromise my own role or the werewolf team's strategy.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:32:49.426249",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "\"I'd like to build on the discussion and acknowledge the valuable insights shared by players 0, 1, 2, 4, 6, and 7. It's clear that we're all committed to working together to uncover the truth and protect our village.\n\nI agree with player 7's suggestion to focus on sharing information about the players who were active during the previous round. This could help us identify potential patterns or connections that might have been overlooked. I also support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, as it could be a useful tool in identifying potential inconsistencies.\n\nHowever, I'd like to caution against creating unnecessary complexity or bureaucracy that might hinder our progress. Let's focus on gathering more information and sharing relevant details about the players, rather than building a case against a specific player based on limited evidence.\n\nI'd like to ask the group: Have any of you noticed any suspicious behavior or statements from players who have been relatively quiet or haven't contributed much to the discussion yet? Perhaps we could start by discussing players 8, 9, 11, and 12, and see if anyone has any information or insights to share about them.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns.\n3. Focus the discussion on gathering more information and sharing relevant details about the players.\n4. Avoid drawing attention to myself or any potential allies.\n5. Encourage the group to share information about quiet players, potentially revealing new information or insights.\n6. Maintain a neutral tone and avoid revealing any information that might compromise my own role or the villager team's strategy.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:33:01.478992",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "\"I'd like to add my thoughts to the discussion, building on the valuable insights shared by players 0, 1, 2, 4, 6, 7, and 8. It's clear that we're all committed to working together to uncover the truth and protect our village.\n\nI agree with the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, as it could be a useful tool in identifying potential inconsistencies. However, I also think we should be cautious not to create unnecessary complexity or bureaucracy that might hinder our progress.\n\nAs we move forward, I'd like to suggest that we focus on sharing information about the players who were active during the previous round, as well as those who have been relatively quiet or haven't contributed much to the discussion yet. This could help us identify potential patterns or connections that might have been overlooked.\n\nI'd like to ask players 9, 11, and 12 to share their thoughts and insights, as they have been relatively quiet so far. What are your observations, and do you have any information or suspicions about other players?\n\nAdditionally, I think it's essential to consider the role of player 5, who was eliminated in the previous round. While we don't have any concrete evidence, it's possible that their elimination might be related to their potential role or actions in the game.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns.\n3. Focus the discussion on gathering more information and sharing relevant details about the players.\n4. Encourage quiet players to share their thoughts and insights, potentially revealing new information or suspicions.\n5. Consider the role of player 5 and the potential implications of their elimination, without making any accusations or revealing too much information.\n6. Maintain a neutral tone and avoid revealing any information that might compromise my own role or the villager team's strategy.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T14:33:13.369233",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "\"I'd like to contribute to the discussion by acknowledging the valuable points made by players 7, 8, and 9. It's clear that we're all committed to working together to uncover the truth and protect our village.\n\nI agree that establishing a system for tracking and analyzing discussions, behaviors, and voting patterns could be a useful tool in identifying potential inconsistencies. However, I also think we should be cautious not to create unnecessary complexity or bureaucracy that might hinder our progress.\n\nAs we move forward, I'd like to suggest that we focus on sharing information about the players who were active during the previous round, as well as those who have been relatively quiet or haven't contributed much to the discussion yet. This could help us identify potential patterns or connections that might have been overlooked.\n\nI'd like to ask players 0, 1, 2, and 6 to share their thoughts on the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns. Have any of you considered how we can implement this system in a way that's efficient and effective?\n\nAdditionally, I think it's essential to consider the role of player 5, who was eliminated in the previous round. While we don't have any concrete evidence, it's possible that their elimination might be related to their potential role or actions in the game. Perhaps we could discuss potential theories or hypotheses about player 5's role and how it might relate to the current game state.\n\nLet's continue to work together, share our thoughts and ideas, and be vigilant for any signs of werewolf activity. By collaborating and analyzing the information we have, I'm confident that we can make progress and take a step closer to winning the game.\"\n\nThis statement aims to:\n\n1. Blend in with the villagers by acknowledging their insights and contributing to the discussion.\n2. Support the proposal to establish a system for tracking and analyzing discussions, behaviors, and voting patterns, while also introducing a note of caution.\n3. Focus the discussion on gathering more information and sharing relevant details about the players.\n4. Encourage players 0, 1, 2, and 6 to share their thoughts, potentially revealing new information or insights.\n5. Consider the role of player 5 and the potential implications of their elimination, without making any accusations or revealing too much information.\n6. Maintain a neutral tone and avoid revealing any information that might compromise my own role or the werewolf team's strategy.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T14:33:17.397013",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 6,
+        "role": "hunter",
+        "votes": 4
+      }
+    },
+    {
+      "round": 3,
+      "phase": "night",
+      "timestamp": "2025-10-10T14:33:18.256414",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          9
+        ]
+      }
+    }
+  ],
+  "quantified_metrics": {
+    "avg_deception_rate": 0.0,
+    "avg_consistency_score": 1.0,
+    "avg_optimal_vote_ratio": 0.6230769230769231,
+    "total_contradictions": 0,
+    "total_statements": 20,
+    "werewolf_win_rate": 1.0
+  }
+}

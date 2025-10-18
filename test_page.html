@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>狼人杀 - 4对话框版本</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            transition: background 1s;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-info {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .circle-area {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .player-circle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: white;
+            border: 3px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .player-circle.hidden {
+            opacity: 0.3;
+            filter: brightness(0.5);
+        }
+
+        .player-circle.dead {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .player-circle.speaking {
+            animation: pulse 1s infinite;
+            border-width: 5px;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+        }
+
+        .player-circle.sheriff::after {
+            content: '🎖️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .player-name {
+            font-size: 9px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .dialogue-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid;
+        }
+
+        .panel-header.werewolf {
+            border-bottom-color: #f44336;
+            color: #f44336;
+        }
+
+        .panel-header.god {
+            border-bottom-color: #2196F3;
+            color: #2196F3;
+        }
+
+        .panel-header.day {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .panel-header.statistics {
+            border-bottom-color: #FF9800;
+            color: #FF9800;
+        }
+
+        .panel-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .dialogue-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .dialogue-player {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .dialogue-content {
+            color: #333;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .dialogue-meta {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="night">
+    <div class="container">
+        <h1>🎮 狼人杀 - 4对话框版本</h1>
+
+        <div class="status-info" id="status">
+            状态：等待开始
+        </div>
+
+        <div class="status-info" id="token-stats" style="background: rgba(255, 152, 0, 0.2); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 15px;">
+            <span>🔢 Token使用: 总计 <span id="total-tokens">0</span></span>
+            <span>|</span>
+            <span>限制/玩家:
+                <input type="number" id="token-limit-input" value="5000" min="100" max="100000"
+                       style="width: 80px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+            </span>
+            <button onclick="updateTokenLimit()" style="padding: 4px 12px; font-size: 13px; cursor: pointer; border-radius: 4px; border: 1px solid #FF9800; background: white; color: #FF9800;">
+                ✓ 更新限制
+            </button>
+        </div>
+
+        <div class="controls">
+            <button onclick="startGame()" id="btn-start">▶️ 开始游戏</button>
+            <button onclick="stopGame()" id="btn-stop" disabled>⏹️ 停止</button>
+            <button onclick="toggleAutoMode()" id="btn-auto">🔄 切换为自动模式</button>
+            <button onclick="toggleULSMode()" id="btn-uls">📝 切换为ULS模式</button>
+            <button onclick="showConfigModal()" id="btn-config">⚙️ 配置API</button>
+            <button onclick="nextDay()" id="btn-next" disabled>⏭️ 下一天</button>
+            <button onclick="toggleLanguage()" id="btn-lang">🌐 English</button>
+            <button onclick="clearAll()" id="btn-clear">🗑️ 清空</button>
+        </div>
+
+        <!-- API配置模态窗口 -->
+        <div id="config-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%;">
+                <h2 style="margin-top: 0; color: #333;">⚙️ API配置</h2>
+
+                <!-- 测试模型配置 -->
+                <div style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <h3 style="color: #28a745; font-size: 16px; margin-top: 0;">🧪 测试模型配置 (Test Player)</h3>
+                    <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
+                    <input type="text" id="test-api-base" value="http://localhost:8080"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+
+                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #666;">Model Path:</label>
+                    <input type="text" id="test-model" value="/home/apulis-dev/userdata/Llama-3.3-70B-Instruct"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                </div>
+
+                <!-- NPC模型配置 -->
+                <div style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                    <h3 style="color: #667eea; font-size: 16px; margin-top: 0;">🤖 NPC模型配置 (11 NPC Players)</h3>
+                    <label style="display: block; margin-bottom: 8px; color: #666;">API Base URL:</label>
+                    <input type="text" id="npc-api-base" value="http://localhost:8080"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+
+                    <label style="display: block; margin-top: 12px; margin-bottom: 8px; color: #666;">Model Path:</label>
+                    <input type="text" id="npc-model" value="/home/apulis-dev/userdata/Llama-3.3-70B-Instruct"
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                </div>
+
+                <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button onclick="closeConfigModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer;">取消</button>
+                    <button onclick="saveConfig()" style="padding: 10px 20px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer;">保存配置</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="circle-area">
+            <div class="circle-container" id="circle-container">
+                <div class="center-circle">
+                    🐺<br>狼人杀
+                </div>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="dialogue-panel">
+                <div class="panel-header werewolf">🐺 夜晚 - 狼人对话</div>
+                <div class="panel-output" id="werewolf-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待狼人行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header god">✨ 夜晚 - 神职行动</div>
+                <div class="panel-output" id="god-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待神职行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header day">☀️ 白天 - 讨论投票</div>
+                <div class="panel-output" id="day-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待白天讨论...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header statistics">📊 实时统计</div>
+                <div class="panel-output" id="statistics-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待游戏开始...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const players = [{"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 0, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 1, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 2, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#d32f2f", "emoji": "\ud83d\udc51", "id": 3, "role": "\u72fc\u738b"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 4, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 5, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 6, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 7, "role": "\u6751\u6c11"}, {"alive": true, "color": "#2196F3", "emoji": "\ud83d\udc41\ufe0f", "id": 8, "role": "\u9884\u8a00\u5bb6"}, {"alive": true, "color": "#9C27B0", "emoji": "\ud83e\uddea", "id": 9, "role": "\u5973\u5deb"}, {"alive": true, "color": "#FF9800", "emoji": "\ud83c\udff9", "id": 10, "role": "\u730e\u4eba"}, {"alive": true, "color": "#00BCD4", "emoji": "\ud83d\udee1\ufe0f", "id": 11, "role": "\u5b88\u536b"}];
+        let eventSource = null;
+        let currentPhase = 'night';
+        let autoMode = false;  // 默认手动模式
+        let ulsMode = false;  // 默认非ULS模式
+        let currentLang = 'zh';  // 默认中文
+
+        // 翻译字典
+        const translations = {
+            zh: {
+                title: '狼人杀 - 4对话框版本',
+                status: '状态：',
+                startGame: '▶️ 开始游戏',
+                stopGame: '⏹️ 停止',
+                autoModeManual: '🔄 切换为自动模式',
+                autoModeAuto: '🔁 切换为手动模式',
+                nextDay: '⏭️ 下一天',
+                clearAll: '🗑️ 清空',
+                langSwitch: '🌐 English',
+                waitingStart: '等待开始',
+                werewolfPanel: '🐺 夜晚 - 狼人对话',
+                godPanel: '✨ 夜晚 - 神职行动',
+                dayPanel: '☀️ 白天 - 讨论投票',
+                statsPanel: '📊 实时统计',
+                waitingWerewolf: '等待狼人行动...',
+                waitingGod: '等待神职行动...',
+                waitingDay: '等待白天讨论...',
+                waitingGame: '等待游戏开始...'
+            },
+            en: {
+                title: 'Werewolf - 4 Panel Version',
+                status: 'Status: ',
+                startGame: '▶️ Start Game',
+                stopGame: '⏹️ Stop',
+                autoModeManual: '🔄 Switch to Auto',
+                autoModeAuto: '🔁 Switch to Manual',
+                nextDay: '⏭️ Next Day',
+                clearAll: '🗑️ Clear',
+                langSwitch: '🌐 中文',
+                waitingStart: 'Waiting to start',
+                werewolfPanel: '🐺 Night - Werewolf Chat',
+                godPanel: '✨ Night - God Roles',
+                dayPanel: '☀️ Day - Discussion & Voting',
+                statsPanel: '📊 Real-time Stats',
+                waitingWerewolf: 'Waiting for werewolves...',
+                waitingGod: 'Waiting for god roles...',
+                waitingDay: 'Waiting for day discussion...',
+                waitingGame: 'Waiting for game start...'
+            }
+        };
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        function createCircle() {
+            const container = document.getElementById('circle-container');
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = Math.min(centerX, centerY) - 50;
+
+            players.forEach((player, index) => {
+                const angle = (index / players.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const div = document.createElement('div');
+                div.className = 'player-circle';
+                div.id = 'player-' + player.id;
+                div.style.left = (x - 30) + 'px';
+                div.style.top = (y - 30) + 'px';
+                div.style.borderColor = player.color;
+                div.innerHTML = player.emoji + '<div class="player-name">P' + player.id + '</div>';
+
+                container.appendChild(div);
+            });
+        }
+
+        function setPhase(phase) {
+            currentPhase = phase;
+            document.body.className = phase;
+        }
+
+        function hidePlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('hidden');
+        }
+
+        function showPlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.remove('hidden');
+        }
+
+        function markDead(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('dead');
+        }
+
+        function highlightPlayer(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('speaking');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('speaking');
+        }
+
+        function updateSheriff(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('sheriff');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('sheriff');
+        }
+
+        function addDialogue(data) {
+            // 根据对话类型路由到不同的面板
+            let outputId;
+
+            if (data.panel === 'werewolf') {
+                outputId = 'werewolf-output';
+            } else if (data.panel === 'god') {
+                outputId = 'god-output';
+            } else if (data.panel === 'statistics') {
+                outputId = 'statistics-output';
+            } else {
+                outputId = 'day-output';
+            }
+
+            const output = document.getElementById(outputId);
+
+            if (output.innerHTML.includes('等待')) {
+                output.innerHTML = '';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'dialogue-item';
+
+            if (data.player_id === -1) {
+                item.style.borderLeftColor = '#667eea';
+                item.style.background = '#f0f4ff';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'dialogue-content';
+                contentDiv.style.fontWeight = 'bold';
+                contentDiv.style.color = '#667eea';
+                contentDiv.style.whiteSpace = 'pre-wrap';  // 保留换行和空格
+                contentDiv.textContent = data.content;
+
+                item.appendChild(contentDiv);
+                output.insertBefore(item, output.firstChild);
+                return;
+            }
+
+            const player = players[data.player_id];
+            item.style.borderLeftColor = player.color;
+
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'dialogue-player';
+            playerDiv.style.color = player.color;
+
+            // 只在狼人/神职面板显示角色，白天面板不显示
+            if (data.panel === 'werewolf' || data.panel === 'god') {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id + ' (' + player.role + ')';
+            } else {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id;
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'dialogue-content';
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'dialogue-meta';
+            metaDiv.textContent = (data.phase || '') + ' | ' + new Date().toLocaleTimeString();
+
+            item.appendChild(playerDiv);
+            item.appendChild(contentDiv);
+            item.appendChild(metaDiv);
+
+            output.insertBefore(item, output.firstChild);
+
+            // Typewriter effect
+            const text = data.content;
+            let index = 0;
+
+            function typeChar() {
+                if (index < text.length) {
+                    contentDiv.textContent += text[index];
+                    index++;
+                    setTimeout(typeChar, 20);
+                }
+            }
+
+            typeChar();
+        }
+
+        function startGame() {
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+
+            fetch('/api/start', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Started:', data);
+                    startEventStream();
+                });
+        }
+
+        function stopGame() {
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+
+            fetch('/api/stop', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+                });
+        }
+
+        function updateUI() {
+            // 更新标题
+            document.querySelector('h1').textContent = '🎮 ' + t('title');
+
+            // 更新状态文本前缀（保留后面的动态内容）
+            const statusEl = document.getElementById('status');
+            const statusText = statusEl.textContent;
+            if (statusText.includes('：') || statusText.includes(': ')) {
+                const parts = statusText.split(/：|: /);
+                if (parts.length > 1) {
+                    statusEl.textContent = t('status') + parts[1];
+                } else {
+                    statusEl.textContent = t('status') + t('waitingStart');
+                }
+            }
+
+            // 更新按钮
+            document.getElementById('btn-start').textContent = t('startGame');
+            document.getElementById('btn-stop').textContent = t('stopGame');
+            document.getElementById('btn-auto').textContent = autoMode ? t('autoModeAuto') : t('autoModeManual');
+            document.getElementById('btn-next').textContent = t('nextDay');
+            document.getElementById('btn-lang').textContent = t('langSwitch');
+            document.getElementById('btn-clear').textContent = t('clearAll');
+
+            // 更新面板标题
+            document.querySelectorAll('.panel-header')[0].textContent = t('werewolfPanel');
+            document.querySelectorAll('.panel-header')[1].textContent = t('godPanel');
+            document.querySelectorAll('.panel-header')[2].textContent = t('dayPanel');
+            document.querySelectorAll('.panel-header')[3].textContent = t('statsPanel');
+
+            // 更新占位文本
+            const panels = [
+                {id: 'werewolf-output', key: 'waitingWerewolf'},
+                {id: 'god-output', key: 'waitingGod'},
+                {id: 'day-output', key: 'waitingDay'},
+                {id: 'statistics-output', key: 'waitingGame'}
+            ];
+
+            panels.forEach(panel => {
+                const el = document.getElementById(panel.id);
+                if (el.textContent.includes('等待') || el.textContent.includes('Waiting')) {
+                    el.innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">' + t(panel.key) + '</div>';
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateUI();
+        }
+
+        function toggleAutoMode() {
+            autoMode = !autoMode;
+            const btn = document.getElementById('btn-auto');
+
+            if (autoMode) {
+                btn.textContent = t('autoModeAuto');
+                btn.style.background = '#4CAF50';
+                btn.style.color = 'white';
+            } else {
+                btn.textContent = t('autoModeManual');
+                btn.style.background = 'white';
+                btn.style.color = '#667eea';
+            }
+
+            // 通知后端模式改变
+            fetch('/api/set_auto_mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({auto_mode: autoMode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Auto mode:', data);
+
+                // 如果切换到自动模式且正在等待，自动继续
+                if (autoMode && !document.getElementById('btn-next').disabled) {
+                    nextDay();
+                }
+            });
+        }
+
+        function toggleULSMode() {
+            ulsMode = !ulsMode;
+            const btn = document.getElementById('btn-uls');
+
+            if (ulsMode) {
+                btn.textContent = '📝 ULS模式 (已启用)';
+                btn.style.background = '#2196F3';
+                btn.style.color = 'white';
+            } else {
+                btn.textContent = '📝 切换为ULS模式';
+                btn.style.background = 'white';
+                btn.style.color = 'black';
+            }
+
+            // 向服务器同步ULS模式状态
+            fetch('/api/set_uls_mode', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({uls_mode: ulsMode})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('ULS mode:', data);
+            });
+        }
+
+        function showConfigModal() {
+            const modal = document.getElementById('config-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeConfigModal() {
+            const modal = document.getElementById('config-modal');
+            modal.style.display = 'none';
+        }
+
+        function saveConfig() {
+            const testApiBase = document.getElementById('test-api-base').value;
+            const testModel = document.getElementById('test-model').value;
+            const npcApiBase = document.getElementById('npc-api-base').value;
+            const npcModel = document.getElementById('npc-model').value;
+
+            fetch('/api/set_llm_config', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    test_api_base: testApiBase,
+                    test_model: testModel,
+                    npc_api_base: npcApiBase,
+                    npc_model: npcModel
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Config updated:', data);
+                alert('API配置已更新！
+
+测试模型: ' + testApiBase + '
+NPC模型: ' + npcApiBase);
+                closeConfigModal();
+            })
+            .catch(error => {
+                console.error('Error updating config:', error);
+                alert('配置更新失败，请重试');
+            });
+        }
+
+        function updateTokenLimit() {
+            const newLimit = parseInt(document.getElementById('token-limit-input').value);
+
+            if (newLimit < 100 || newLimit > 100000) {
+                alert('Token限制必须在100到100000之间');
+                return;
+            }
+
+            fetch('/api/set_token_limit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({token_limit: newLimit})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Token limit updated:', data);
+                alert('Token限制已更新为: ' + newLimit + '/玩家');
+            })
+            .catch(error => {
+                console.error('Error updating token limit:', error);
+                alert('更新失败，请重试');
+            });
+        }
+
+        function nextDay() {
+            document.getElementById('btn-next').disabled = true;
+
+            fetch('/api/next_day', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Next day:', data);
+                });
+        }
+
+        function clearAll() {
+            document.getElementById('werewolf-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待狼人行动...</div>';
+            document.getElementById('god-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待神职行动...</div>';
+            document.getElementById('day-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待白天讨论...</div>';
+            document.getElementById('statistics-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待游戏开始...</div>';
+        }
+
+        function startEventStream() {
+            if (eventSource) eventSource.close();
+
+            eventSource = new EventSource('/api/stream');
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'phase') {
+                    setPhase(data.phase);
+                    if (data.phase === 'night') {
+                        players.forEach((p, i) => {
+                            if (!['狼人', '狼王'].includes(p.role)) {
+                                hidePlayer(i);
+                            }
+                        });
+                    } else {
+                        players.forEach((p, i) => showPlayer(i));
+                    }
+                } else if (data.type === 'dialogue') {
+                    if (data.player_id === -1 && data.content.includes('当选警长')) {
+                        const match = data.content.match(/Player (\d+)/);
+                        if (match) {
+                            updateSheriff(parseInt(match[1]));
+                        }
+                    }
+                    if (data.player_id >= 0) {
+                        highlightPlayer(data.player_id);
+                    }
+                    addDialogue(data);
+                } else if (data.type === 'status') {
+                    document.getElementById('status').textContent = '状态：' + data.message;
+                } else if (data.type === 'death') {
+                    markDead(data.player_id);
+                } else if (data.type === 'waiting_for_next') {
+                    // 启用下一天按钮
+                    document.getElementById('btn-next').disabled = false;
+
+                    // 如果是自动模式，自动点击下一天
+                    if (autoMode) {
+                        setTimeout(() => {
+                            nextDay();
+                        }, 2000);  // 延迟2秒自动继续
+                    }
+                } else if (data.type === 'token_update') {
+                    // 更新token统计
+                    document.getElementById('total-tokens').textContent = data.total_tokens;
+
+                    // 可选：显示每个玩家的token使用情况
+                    // console.log('Player tokens:', data.player_tokens);
+                }
+            };
+
+            eventSource.onerror = function() {
+                console.error('EventSource error');
+                eventSource.close();
+            };
+        }
+
+        window.addEventListener('load', () => {
+            createCircle();
+        });
+
+        window.addEventListener('resize', () => {
+            document.getElementById('circle-container').innerHTML = '<div class="center-circle">🐺<br>狼人杀</div>';
+            createCircle();
+        });
+    </script>
+</body>
+</html>

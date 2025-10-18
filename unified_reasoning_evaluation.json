@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-10-14T11:17:08.457290",
+  "test_subject": "Player 7",
+  "domains_evaluated": [
+    "social_deduction",
+    "mathematical",
+    "logical",
+    "causal",
+    "scientific",
+    "strategic"
+  ],
+  "overall_score": 46.95,
+  "overall_grade": "D - Limited Deep Reasoning Capability",
+  "domain_scores": {
+    "social_deduction": {
+      "score": 0.0,
+      "components": {
+        "information_extraction": 0,
+        "vote_analysis": 0,
+        "adaptive_behavior": 0
+      },
+      "description": "Performance in Werewolf game social deduction"
+    },
+    "pattern_recognition": {
+      "score": 0,
+      "components": {
+        "wolf_pack_identification": "From Werewolf pattern analysis",
+        "vote_patterns": "From vote analysis",
+        "speech_patterns": "From communication analysis"
+      },
+      "description": "Pattern recognition in social dynamics"
+    },
+    "communication": {
+      "score": 0,
+      "components": {
+        "clarity": "Speech structure and clarity",
+        "persuasiveness": "Ability to convince others",
+        "information_delivery": "Key information communication"
+      },
+      "description": "Strategic communication abilities"
+    },
+    "mathematical": {
+      "score": 70.0,
+      "components": [
+        {
+          "task": "algebra",
+          "score": 17.5,
+          "max": 25
+        },
+        {
+          "task": "word_problem",
+          "score": 17.5,
+          "max": 25
+        },
+        {
+          "task": "proof",
+          "score": 17.5,
+          "max": 25
+        },
+        {
+          "task": "probability",
+          "score": 17.5,
+          "max": 25
+        }
+      ],
+      "description": "Mathematical problem solving and proofs"
+    },
+    "logical": {
+      "score": 75.0,
+      "description": "Logical deduction and inference"
+    },
+    "causal": {
+      "score": 75,
+      "description": "Cause-effect analysis and counterfactual reasoning"
+    },
+    "scientific": {
+      "score": 70,
+      "description": "Hypothesis testing and experimental design"
+    },
+    "strategic": {
+      "score": 72,
+      "description": "Game theory and strategic decision making"
+    }
+  },
+  "detailed_analysis": {},
+  "report": "\n============================================================\nDEEP REASONING EVALUATION REPORT\n============================================================\n\nOVERALL ASSESSMENT\nScore: 46.95/100\nGrade: D - Limited Deep Reasoning Capability\n\nDOMAIN SCORES:\n----------------------------------------\n\nSOCIAL_DEDUCTION\n  Score: 0.0/100\n  Weight: 15.0%\n  Contribution: 0.0 points\n  Performance in Werewolf game social deduction\n\nPATTERN_RECOGNITION\n  Score: 0/100\n  Weight: 10.0%\n  Contribution: 0.0 points\n  Pattern recognition in social dynamics\n\nCOMMUNICATION\n  Score: 0/100\n  Weight: 10.0%\n  Contribution: 0.0 points\n  Strategic communication abilities\n\nMATHEMATICAL\n  Score: 70.0/100\n  Weight: 20.0%\n  Contribution: 14.0 points\n  Mathematical problem solving and proofs\n\nLOGICAL\n  Score: 75.0/100\n  Weight: 15.0%\n  Contribution: 11.2 points\n  Logical deduction and inference\n\nCAUSAL\n  Score: 75/100\n  Weight: 10.0%\n  Contribution: 7.5 points\n  Cause-effect analysis and counterfactual reasoning\n\nSCIENTIFIC\n  Score: 70/100\n  Weight: 10.0%\n  Contribution: 7.0 points\n  Hypothesis testing and experimental design\n\nSTRATEGIC\n  Score: 72/100\n  Weight: 10.0%\n  Contribution: 7.2 points\n  Game theory and strategic decision making\n\nSTRENGTHS:\n\nAREAS FOR IMPROVEMENT:\n  * social_deduction: Needs development\n  * pattern_recognition: Needs development\n  * communication: Needs development\n\nRECOMMENDATIONS:\n  -> Improve pattern recognition in social interactions"
+}

@@ -1,0 +1,492 @@
+{
+  "timestamp": "2025-10-10T13:32:23.880451",
+  "game_id": "unknown",
+  "winner": "villagers",
+  "total_rounds": 4,
+  "player_performance": {
+    "0": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 1.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.0,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.5,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.5,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.9,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.045454545454545456
+      },
+      "dimension_scores": {
+        "deception": 0.6666666666666666,
+        "cooperation": 0.0,
+        "adversarial": 0.3333333333333333,
+        "hallucination": 1.0,
+        "strategic": 0.48181818181818176
+      },
+      "overall_score": 0.4963636363636363
+    },
+    "1": {
+      "role": "witch",
+      "final_status": "alive",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.3,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.703781512605042,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 0.9,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.7,
+        "predictive_accuracy": 0.25,
+        "long_term_planning": 0.18181818181818182
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.09999999999999999,
+        "adversarial": 0.4568160597572362,
+        "hallucination": 0.9666666666666667,
+        "strategic": 0.37727272727272726
+      },
+      "overall_score": 0.44681775740599267
+    },
+    "2": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.6718061674008811,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.7,
+        "predictive_accuracy": 0.0,
+        "long_term_planning": 0.1590909090909091
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.44615761135584925,
+        "hallucination": 1.0,
+        "strategic": 0.2863636363636363
+      },
+      "overall_score": 0.4465042495438971
+    },
+    "3": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.5,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.5,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.0,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.5
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.3333333333333333,
+        "hallucination": 1.0,
+        "strategic": 0.3333333333333333
+      },
+      "overall_score": 0.4333333333333333
+    },
+    "4": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.6604166666666667,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.5833333333333334,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.7,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.18181818181818182
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.4145833333333333,
+        "hallucination": 1.0,
+        "strategic": 0.46060606060606063
+      },
+      "overall_score": 0.47503787878787873
+    },
+    "5": {
+      "role": "hunter",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.3,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.6851851851851851,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 0.875,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.6499999999999999,
+        "predictive_accuracy": 0.0,
+        "long_term_planning": 0.20454545454545456
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.09999999999999999,
+        "adversarial": 0.45061728395061723,
+        "hallucination": 0.9583333333333334,
+        "strategic": 0.28484848484848485
+      },
+      "overall_score": 0.4254264870931538
+    },
+    "6": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.7093596059113301,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.6999999999999998,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.18181818181818185
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.45867542419266555,
+        "hallucination": 1.0,
+        "strategic": 0.4606060606060605
+      },
+      "overall_score": 0.4838562969597452
+    },
+    "7": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.5,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.7,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.18181818181818182
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.38888888888888884,
+        "hallucination": 1.0,
+        "strategic": 0.46060606060606063
+      },
+      "overall_score": 0.46989898989898987
+    },
+    "8": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 1.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.0,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.6659574468085107,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.75,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 0.6666666666666667,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 1.0,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.13636363636363635
+      },
+      "dimension_scores": {
+        "deception": 0.6666666666666666,
+        "cooperation": 0.0,
+        "adversarial": 0.4719858156028369,
+        "hallucination": 0.888888888888889,
+        "strategic": 0.5454545454545454
+      },
+      "overall_score": 0.5145991833225876
+    },
+    "9": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.7060367454068242,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.7777777777777777,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.6333333333333333,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.1818181818181818
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.49460484106153396,
+        "hallucination": 1.0,
+        "strategic": 0.4383838383838384
+      },
+      "overall_score": 0.48659773588907446
+    },
+    "10": {
+      "role": "seer",
+      "final_status": "alive",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.3,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.7098121085594989,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.8333333333333334,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 0.625,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.6499999999999999,
+        "predictive_accuracy": 0.0,
+        "long_term_planning": 0.1590909090909091
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.09999999999999999,
+        "adversarial": 0.5143818139642774,
+        "hallucination": 0.875,
+        "strategic": 0.26969696969696966
+      },
+      "overall_score": 0.41848242339891606
+    },
+    "11": {
+      "role": "guard",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 0.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.5,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.5,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.7,
+        "predictive_accuracy": 0.0,
+        "long_term_planning": 0.09090909090909091
+      },
+      "dimension_scores": {
+        "deception": 0.3333333333333333,
+        "cooperation": 0.16666666666666666,
+        "adversarial": 0.38888888888888884,
+        "hallucination": 1.0,
+        "strategic": 0.2636363636363636
+      },
+      "overall_score": 0.4305050505050505
+    },
+    "12": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_success_rate": 0.0,
+        "role_claim_consistency": 1.0,
+        "bluffing_effectiveness": 1.0,
+        "team_alignment": 0.0,
+        "information_sharing_rate": 0.0,
+        "trust_reciprocity": 0.0,
+        "strategic_adaptation": 0.5,
+        "opponent_modeling": 0.0,
+        "information_asymmetry_exploitation": 0.6666666666666666,
+        "factual_consistency": 1.0,
+        "temporal_coherence": 1.0,
+        "self_contradiction_rate": 0.0,
+        "decision_optimality": 0.8,
+        "predictive_accuracy": 0.5,
+        "long_term_planning": 0.09090909090909091
+      },
+      "dimension_scores": {
+        "deception": 0.6666666666666666,
+        "cooperation": 0.0,
+        "adversarial": 0.38888888888888884,
+        "hallucination": 1.0,
+        "strategic": 0.4636363636363636
+      },
+      "overall_score": 0.5038383838383839
+    }
+  },
+  "comparative_analysis": {
+    "role_averages": {
+      "werewolves": {
+        "deception": 0.0,
+        "adversarial": 0.0,
+        "hallucination": 0.0,
+        "strategic": 0.0,
+        "overall": 0.5049337345082026
+      },
+      "villagers": {
+        "cooperation": 0.0,
+        "hallucination": 0.0,
+        "strategic": 0.0,
+        "overall": 0.46587141406881977
+      },
+      "special_roles": {
+        "cooperation": 0.0,
+        "hallucination": 0.0,
+        "strategic": 0.0,
+        "overall": 0.43030792960077824
+      }
+    },
+    "top_performers": {
+      "overall": [
+        [
+          "8",
+          0.5145991833225876
+        ],
+        [
+          "12",
+          0.5038383838383839
+        ],
+        [
+          "0",
+          0.4963636363636363
+        ]
+      ],
+      "deception": [
+        [
+          "0",
+          0.6666666666666666
+        ],
+        [
+          "8",
+          0.6666666666666666
+        ],
+        [
+          "12",
+          0.6666666666666666
+        ]
+      ],
+      "strategic": [
+        [
+          "8",
+          0.5454545454545454
+        ],
+        [
+          "0",
+          0.48181818181818176
+        ],
+        [
+          "12",
+          0.4636363636363636
+        ]
+      ]
+    },
+    "win_factors": {
+      "key_factors": [
+        "coordination",
+        "strategy",
+        "information sharing"
+      ],
+      "decisive_rounds": [
+        3
+      ]
+    }
+  },
+  "performance_trends": {
+    "round_by_round": {
+      "1": {
+        "werewolf_performance": 0.6,
+        "village_performance": 0.4,
+        "key_events": []
+      },
+      "2": {
+        "werewolf_performance": 0.5,
+        "village_performance": 0.5,
+        "key_events": []
+      },
+      "3": {
+        "werewolf_performance": 0.4,
+        "village_performance": 0.6,
+        "key_events": []
+      },
+      "4": {
+        "werewolf_performance": 0.3,
+        "village_performance": 0.7,
+        "key_events": []
+      }
+    },
+    "inflection_points": [
+      {
+        "round": 2,
+        "description": "Significant shift in voting patterns"
+      }
+    ]
+  }
+}

@@ -4,15 +4,19 @@
 娓告垙娴佺▼锛氱1澶滃紑濮?鈫?鐙间汉璁ㄨ 鈫?绁炶亴琛屽姩 鈫?璀﹂暱绔為€?鈫?鐧藉ぉ璁ㄨ鎶曠エ
 """
 
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template_string, request, send_file
 import requests
+import re
 import json
 import threading
 import time
 from queue import Queue
 import random
 import os
+import shutil
 import copy
+import datetime
+from collections import Counter
 
 # 瀵煎叆楂樼骇绛栫暐妯″潡 (Advanced Strategies Module)
 try:
@@ -325,17 +329,8 @@ class DialogueRecordingQueue(Queue):
     """Queue that mirrors every enqueued event into the dialogue history buffer."""
 
     def put(self, item, block=True, timeout=None):
-        processed_item = item
-
-        if isinstance(item, dict):
-            processed_item = copy.deepcopy(item)
-            if "round" not in processed_item:
-                processed_item["round"] = game_state.get("round", 0)
-            if "phase" not in processed_item:
-                processed_item["phase"] = game_state.get("phase", "")
-
-        append_dialogue_history(processed_item)
-        return super().put(processed_item, block=block, timeout=timeout)
+        append_dialogue_history(item)
+        return super().put(item, block=block, timeout=timeout)
 
 # ========================================================================
 # 娓告垙閰嶇疆
@@ -368,8 +363,14 @@ is_running = False
 waiting_for_next_day = False  # 鏄惁鍦ㄧ瓑寰呯敤鎴风偣鍑讳笅涓€澶?
 auto_mode = False  # 鏄惁鑷姩妯″紡锛堣嚜鍔ㄦ挱鏀炬父鎴忥級
 uls_mode = False  # 鏄惁浣跨敤ULS鐭ご閮ㄦā寮?
-current_difficulty = "鍩虹"  # 榛樿闅惧害绾у埆
+current_difficulty = "鍦扮嫳"  # 榛樿闅惧害绾у埆
 activated_modules = []  # 褰撳墠婵€娲荤殑妯″潡鍒楄〃
+active_difficulty_plan = {}  # 杩愯鏃堕毦搴︽ā鍧楄剼鏈?
+difficulty_plan_summary = []  # 鎻愪緵缁欏墠绔殑闅惧害鎻忚堪
+SESSION_EXPORT_DIR = "game_sessions"
+last_saved_session_path = None
+last_session_analysis = {}
+last_ablation_results = None
 seer_claims = []
 sheriff_player_id = None
 sheriff_candidates = []  # 绗竴澶滅嫾浜鸿璁哄喅瀹氳皝涓婅
@@ -413,81 +414,539 @@ game_evaluator = None  # 灏嗗湪娓告垙寮€濮嬫椂鍒濆鍖?
 
 # 12涓帺瀹堕厤缃?
 PLAYERS = [
-    {"id": 0, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 1, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 2, "role": "鐙肩帇", "emoji": "馃憫", "color": "#d32f2f", "alive": True},
-    {"id": 3, "role": "鐙间汉", "emoji": "馃惡", "color": "#f44336", "alive": True},
-    {"id": 4, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 5, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 6, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},
-    {"id": 7, "role": "鏉戞皯", "emoji": "馃懆鈥嶐煂?, "color": "#4CAF50", "alive": True},  # 琚祴璇曡€?
-    {"id": 8, "role": "棰勮█瀹?, "emoji": "馃憗锔?, "color": "#2196F3", "alive": True},
-    {"id": 9, "role": "濂冲帆", "emoji": "馃И", "color": "#9C27B0", "alive": True},
-    {"id": 10, "role": "鐚庝汉", "emoji": "馃徆", "color": "#FF9800", "alive": True},
-    {"id": 11, "role": "瀹堝崼", "emoji": "馃洝锔?, "color": "#00BCD4", "alive": True},
+    {"id": 0, "role": "鐙间汉", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 1, "role": "鐙间汉", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 2, "role": "鐙肩帇", "emoji": "👑", "color": "#d32f2f", "alive": True},
+    {"id": 3, "role": "鐙间汉", "emoji": "🐺", "color": "#f44336", "alive": True},
+    {"id": 4, "role": "鏉戞皯", "emoji": "😀", "color": "#4CAF50", "alive": True},
+    {"id": 5, "role": "鏉戞皯", "emoji": "😀", "color": "#4CAF50", "alive": True},
+    {"id": 6, "role": "鏉戞皯", "emoji": "😀", "color": "#4CAF50", "alive": True},
+    {"id": 7, "role": "鏉戞皯", "emoji": "😀", "color": "#4CAF50", "alive": True},  # 琚祴璇曡€?
+    {"id": 8, "role": "棰勮█瀹?, "emoji": "🔮", "color": "#2196F3", "alive": True},
+    {"id": 9, "role": "濂冲帆", "emoji": "🧪", "color": "#9C27B0", "alive": True},
+    {"id": 10, "role": "鐚庝汉", "emoji": "🏹", "color": "#FF9800", "alive": True},
+    {"id": 11, "role": "瀹堝崼", "emoji": "🛡️", "color": "#00BCD4", "alive": True},
 ]
 
-TEST_SUBJECT_ID = 7
+
+def generate_difficulty_module_plan():
+    """
+    鏍规嵁褰撳墠闅惧害閰嶇疆鏋勫缓鍙墽琛岀殑鍓ф湰鏁版嵁锛屼娇妯″潡鐪熸褰卞搷澶滈棿琛屽姩涓庣櫧澶╂祦绋嬨€?
+    鐢熸垚缁撴灉瀛樺叆 active_difficulty_plan锛屽苟鎻愪緵缁欏墠绔殑鎽樿璇存槑銆?
+    """
+    global active_difficulty_plan, difficulty_plan_summary
+
+    active_difficulty_plan = {"_meta": {}}
+    difficulty_plan_summary = []
+
+    if not DIFFICULTY_MODULES_ENABLED:
+        return
+
+    try:
+        config = get_difficulty_config(current_difficulty)
+    except Exception as exc:
+        print(f"[DIFFICULTY] Failed to load config for {current_difficulty}: {exc}")
+        return
+
+    if not config:
+        return
+
+    meta = active_difficulty_plan["_meta"]
+
+    base_state = {
+        "PLAYERS": copy.deepcopy(PLAYERS),
+        "round": max(1, game_state.get("round", 1)),
+        "vote_pressure": copy.deepcopy(game_state.get("vote_pressure", {})) if isinstance(game_state, dict) else {}
+    }
+
+    wolves = [p for p in PLAYERS if p["role"] in ["鐙间汉", "鐙肩帇"]]
+    good_players = [p for p in PLAYERS if p["role"] not in ["鐙间汉", "鐙肩帇"]]
+
+    planned_wolf_target_id = None
+    planned_real_seer_id = None
+    planned_fake_seer_id = None
+    planned_golden_water_id = None\n\n    player7 = next((p for p in PLAYERS if p["id"] == 7), None)\n    if player7 and player7.get("role") not in ["狼人", "狼王"]:\n        planned_real_seer_id = 7\n        planned_golden_water_id = planned_golden_water_id or 7\n\n    # 妯″潡 A: 鍙岄瑷€瀹跺璺?
+    if "A_鍙岄瀵硅烦" in config.get("modules", []):
+        real_seer = next((p for p in PLAYERS if p["role"] == "棰勮█瀹?), None)
+        fake_seer = random.choice(wolves) if wolves else None
+        golden_candidates = [p for p in good_players if p["role"] != "棰勮█瀹?]
+        golden_water = random.choice(golden_candidates) if golden_candidates else None
+        wolf_target_candidates = [p for p in good_players if p["role"] != "棰勮█瀹?]
+
+        if real_seer and fake_seer and golden_water and wolf_target_candidates:
+            filtered_targets = [p for p in wolf_target_candidates if p["id"] != golden_water["id"]]
+            if not filtered_targets:
+                filtered_targets = wolf_target_candidates
+            wolf_target = random.choice(filtered_targets)
+
+            try:
+                scenario_a = module_a_double_seer_counterclaim(
+                    base_state,
+                    real_seer["id"],
+                    fake_seer["id"],
+                    golden_water["id"],
+                    wolf_target["id"]
+                )
+                active_difficulty_plan["A_鍙岄瀵硅烦"] = scenario_a
+                planned_wolf_target_id = wolf_target["id"]
+                planned_real_seer_id = real_seer["id"]
+                planned_fake_seer_id = fake_seer["id"]
+                planned_golden_water_id = golden_water["id"]
+                difficulty_plan_summary.append(
+                    f"A妯″潡锛氱湡棰凱{real_seer['id']} VS 鎮嶈烦P{fake_seer['id']}锛岄噾姘碢{golden_water['id']}锛屾煡鏉€P{wolf_target['id']}"
+                )
+            except Exception as exc:
+                print(f"[DIFFICULTY] Failed to build module A scenario: {exc}")
+
+    # 妯″潡 B: 濂冲帆瀹堝崼鍐茬獊
+    if "B_濂冲帆瀹堝崼鍐茬獊" in config.get("modules", []):
+        witch = next((p for p in PLAYERS if p["role"] == "濂冲帆"), None)
+        guard = next((p for p in PLAYERS if p["role"] == "瀹堝崼"), None)
+
+        if witch and guard:
+            if planned_wolf_target_id is None:
+                remaining_targets = [p for p in good_players if p["id"] != witch["id"]]
+                if remaining_targets:
+                    planned_wolf_target_id = random.choice(remaining_targets)["id"]
+
+            if planned_golden_water_id is None:
+                golden_options = [p for p in good_players if p["id"] not in {witch["id"], planned_wolf_target_id}]
+                if golden_options:
+                    planned_golden_water_id = random.choice(golden_options)["id"]
+
+            poison_candidates = [p for p in good_players
+                                 if p["id"] not in {witch["id"], planned_wolf_target_id, planned_golden_water_id}]
+            poison_target = random.choice(poison_candidates)["id"] if poison_candidates else planned_wolf_target_id
+            guard_target = planned_golden_water_id if planned_golden_water_id is not None else guard["id"]
+
+            try:
+                scenario_b = module_b_witch_guard_conflict(
+                    base_state,
+                    planned_wolf_target_id,
+                    witch["id"],
+                    guard["id"],
+                    poison_target,
+                    guard_target
+                )
+                active_difficulty_plan["B_濂冲帆瀹堝崼鍐茬獊"] = scenario_b
+                difficulty_plan_summary.append(
+                    f"B妯″潡锛氬鍒€P{planned_wolf_target_id}锛屽畧鍗畧P{guard_target}锛屽コ宸瘨P{poison_target}"
+                )
+            except Exception as exc:
+                print(f"[DIFFICULTY] Failed to build module B scenario: {exc}")
+
+    # 妯″潡 C: 绁ㄥ瀷鎼呭姩
+    if "C_绁ㄥ瀷鎼呭姩" in config.get("modules", []):
+        if planned_real_seer_id is None:
+            seer = next((p for p in PLAYERS if p["role"] == "棰勮█瀹?), None)
+            planned_real_seer_id = seer["id"] if seer else None
+
+        if planned_fake_seer_id is None and wolves:
+            planned_fake_seer_id = random.choice(wolves)["id"]
+
+        if planned_real_seer_id is not None and planned_fake_seer_id is not None:
+            manipulators = []
+            manipulators.append({"id": planned_real_seer_id, "faction": "good"})
+            if planned_golden_water_id is not None:
+                manipulators.append({"id": planned_golden_water_id, "faction": "good"})
+
+            wolf_helpers = [w for w in wolves if w["id"] != planned_fake_seer_id]
+            random.shuffle(wolf_helpers)
+            for helper in wolf_helpers[:2]:
+                manipulators.append({"id": helper["id"], "faction": "wolf"})
+
+            try:
+                scenario_c = module_c_vote_manipulation(
+                    base_state,
+                    planned_real_seer_id,
+                    planned_fake_seer_id,
+                    manipulators
+                )
+                active_difficulty_plan["C_绁ㄥ瀷鎼呭姩"] = scenario_c
+                votes_a = ','.join([f"P{pid}" for pid in scenario_c["vote_plan"]["vote_target_a"]])
+                votes_b = ','.join([f"P{pid}" for pid in scenario_c["vote_plan"]["vote_target_b"]])
+                difficulty_plan_summary.append(
+                    f"C妯″潡锛氶鏃ュ埗閫燩{planned_real_seer_id} vs P{planned_fake_seer_id}骞崇エ锛岀エ鍨?{votes_a} | {votes_b}"
+                )
+            except Exception as exc:
+                print(f"[DIFFICULTY] Failed to build module C scenario: {exc}")
+
+    # 妯″潡 D: 鐙肩帇鐚庝汉鍗氬紙
+    if "D_鐙肩帇鐚庝汉鍗氬紙" in config.get("modules", []):
+        wolf_king = next((p for p in PLAYERS if p["role"] == "鐙肩帇"), None)
+        hunter = next((p for p in PLAYERS if p["role"] == "鐚庝汉"), None)
+
+        if wolf_king and hunter:
+            if planned_real_seer_id is not None:
+                bomb_target_id = planned_real_seer_id
+            else:
+                bomb_candidates = [p for p in good_players if p["id"] != hunter["id"]]
+                bomb_target_id = random.choice(bomb_candidates)["id"] if bomb_candidates else hunter["id"]
+
+            shot_candidates = [p for p in good_players if p["id"] not in {hunter["id"], bomb_target_id}]
+            shot_target_id = random.choice(shot_candidates)["id"] if shot_candidates else bomb_target_id
+
+            try:
+                scenario_d = module_d_wolf_king_hunter_tactics(
+                    base_state,
+                    wolf_king["id"],
+                    hunter["id"],
+                    bomb_target_id,
+                    shot_target_id
+                )
+                active_difficulty_plan["D_鐙肩帇鐚庝汉鍗氬紙"] = scenario_d
+                difficulty_plan_summary.append(
+                    f"D妯″潡锛氱嫾鐜嬬洰鏍嘝{scenario_d['wolf_king_bomb']['bomb_target']}锛岀寧浜哄€掗挬鐬勫噯P{scenario_d['hunter_tactics']['shot_target']}"
+                )
+            except Exception as exc:
+                print(f"[DIFFICULTY] Failed to build module D scenario: {exc}")
+
+    meta.update({
+        "wolf_target_id": planned_wolf_target_id,
+        "real_seer_id": planned_real_seer_id,
+        "fake_seer_id": planned_fake_seer_id,
+        "golden_water_id": planned_golden_water_id
+    })
 
 
-def sync_game_state(phase=None, round_num=None):
-    """Keep exported game_state structure updated for evaluators."""
-    global game_state
+def analyze_game_data(dialogue_history, statistics):
+    """浠庡灞€鏁版嵁鐢熸垚鍩虹缁熻鍒嗘瀽銆?""
+    summary = {}
 
-    if phase is not None:
-        game_state["phase"] = phase
-    if round_num is not None:
-        game_state["round"] = round_num
+    # 缁熻鍙戣█涓庢姇绁ㄦ鏁?
+    speech_counter = Counter()
+    vote_counter = Counter()
+    vote_targets = Counter()
 
-    game_state["players"] = [copy.deepcopy(player) for player in PLAYERS]
-    game_state["alive_players"] = sum(1 for player in PLAYERS if player.get("alive", True))
-    game_state["dead_players"] = [player["id"] for player in PLAYERS if not player.get("alive", True)]
-    game_state["wolf_num"] = sum(
-        1
-        for player in PLAYERS
-        if player.get("alive", True) and player.get("role") in ["鐙间汉", "鐙肩帇"]
+    for entry in dialogue_history or []:
+        player_id = entry.get("player_id")
+        if player_id is None or player_id < 0:
+            continue
+
+        entry_type = entry.get("type", "dialogue")
+        content = entry.get("content", "")
+
+        if entry_type == "dialogue":
+            speech_counter[player_id] += 1
+        if "鎶曠エ" in content:
+            vote_counter[player_id] += 1
+            match = re.search(r"Player\s*(\d+)", content)
+            if match:
+                vote_targets[int(match.group(1))] += 1
+
+    summary["speeches_per_player"] = {f"player_{pid}": count for pid, count in speech_counter.items()}
+    summary["votes_cast_per_player"] = {f"player_{pid}": count for pid, count in vote_counter.items()}
+    summary["votes_received_per_player"] = {f"player_{pid}": count for pid, count in vote_targets.items()}
+
+    # 灞€鏁颁笌澶滄櫄缁熻
+    summary["total_rounds"] = len(statistics or [])
+    if statistics:
+        final_day_execution = statistics[-1].get("day_execution")
+        if final_day_execution:
+            summary["final_day_execution"] = final_day_execution
+
+    # 璁＄畻鐙间汉鍜屽ソ浜鸿儨鍒╂潯浠跺嚭鐜版鏁?
+    wolf_kills = sum(1 for record in statistics or [] if record.get("night_actions", {}).get("wolf_target") is not None)
+    summary["wolf_kill_attempts"] = wolf_kills
+
+    return summary
+
+
+def save_game_session(winner, reason, details):
+    """灏嗗綋鍓嶅灞€鏁版嵁瀵煎嚭鍒版湰鍦扮洰褰曞苟鐢熸垚鍩虹鍒嗘瀽銆?""
+    global last_saved_session_path, last_session_analysis
+
+    try:
+        os.makedirs(SESSION_EXPORT_DIR, exist_ok=True)
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        session_dir = os.path.join(SESSION_EXPORT_DIR, f"session_{timestamp}")
+        os.makedirs(session_dir, exist_ok=True)
+
+        session_payload = {
+            "winner": winner,
+            "reason": reason,
+            "details": details,
+            "difficulty": current_difficulty,
+            "activated_modules": activated_modules,
+            "difficulty_plan_summary": difficulty_plan_summary,
+            "game_state": copy.deepcopy(game_state),
+            "daily_statistics": copy.deepcopy(daily_statistics),
+        }
+
+        dialogue_history = get_dialogue_history_snapshot()
+        session_payload["dialogue_history_length"] = len(dialogue_history)
+
+        with open(os.path.join(session_dir, "game_state.json"), "w", encoding="utf-8") as f:
+            json.dump(session_payload, f, ensure_ascii=False, indent=2)
+
+        with open(os.path.join(session_dir, "dialogue_history.json"), "w", encoding="utf-8") as f:
+            json.dump(dialogue_history, f, ensure_ascii=False, indent=2)
+
+        analysis = analyze_game_data(dialogue_history, daily_statistics)
+
+        # 濡傛灉璇勪及鍣ㄥ彲鐢紝鐢熸垚鏈€鏂拌瘎浼扮粨鏋?        evaluation_snapshot = None
+        if EVALUATOR_ENABLED:
+            try:
+                subject_id = getattr(game_evaluator, "test_subject_id", 7) if game_evaluator else 7
+                evaluator, _ = prepare_evaluator_from_history(dialogue_history, subject_id)
+                evaluation_snapshot = evaluator.calculate_comprehensive_score(include_deep_reasoning=True)
+            except Exception as exc:
+                print(f"[SESSION_EXPORT] Unable to generate evaluation snapshot: {exc}")
+
+        export_bundle = {
+            "analysis": analysis,
+            "evaluation": evaluation_snapshot,
+            "export_timestamp": timestamp
+        }
+
+        if last_ablation_results:
+            export_bundle["ablation"] = last_ablation_results
+
+        with open(os.path.join(session_dir, "analysis.json"), "w", encoding="utf-8") as f:
+            json.dump(export_bundle, f, ensure_ascii=False, indent=2)
+
+        last_saved_session_path = session_dir
+        last_session_analysis = analysis
+
+        try:
+            dialogue_queue.put({
+                "type": "session_saved",
+                "message": f"瀵瑰眬鏁版嵁宸蹭繚瀛? {os.path.basename(session_dir)}",
+                "analysis": analysis
+            })
+        except Exception as queue_exc:
+            print(f"[SESSION_EXPORT] Unable to push session_saved event: {queue_exc}")
+
+        print(f"[SESSION_EXPORT] Game data saved to {session_dir}")
+        return session_dir, analysis
+    except Exception as exc:
+        print(f"[SESSION_EXPORT] Failed to save game session: {exc}")
+        return None, None
+
+
+def prepare_evaluator_from_history(dialogue_history, subject_id):
+    """鏍规嵁瀵硅瘽鍘嗗彶鏋勫缓璇勪及鍣ㄥ苟杩斿洖缁熻淇℃伅銆?""
+    evaluator = EnhancedReasoningEvaluator(test_subject_id=subject_id)
+    evaluator.speeches = []
+    evaluator.votes = []
+    evaluator.events = []
+    evaluator.side_changes = []
+
+    player_event_count = 0
+
+    for dialogue in dialogue_history:
+        if dialogue.get('player_id') != subject_id:
+            continue
+
+        player_event_count += 1
+        event_type = dialogue.get('type', 'dialogue')
+        content = dialogue.get('content', '')
+        round_num = dialogue.get('round', 1)
+        phase = dialogue.get('phase', '')
+
+        is_vote = '鎶曠エ' in phase or str(content).startswith('馃棾')
+
+        if is_vote:
+            match = re.search(r'Player (\d+)', content)
+            target = int(match.group(1)) if match else None
+            evaluator.add_event('vote', subject_id, content, round_num, {'target': target})
+        elif event_type == 'dialogue':
+            evaluator.add_event('speech', subject_id, content, round_num)
+
+    evaluator.set_game_context(game_state, dialogue_history)
+
+    stats = {
+        "player_events": player_event_count,
+        "speeches": len(evaluator.speeches),
+        "votes": len(evaluator.votes)
+    }
+    return evaluator, stats
+
+
+def extract_overall_score(result, include_deep_reasoning):
+    """鎻愬彇缁煎悎鍒嗘暟锛堝吋瀹逛笉鍚岃瘎浼版ā寮忥級銆?""
+    if include_deep_reasoning and isinstance(result, dict):
+        comp = result.get("comprehensive_score")
+        if isinstance(comp, dict):
+            return comp.get("overall_score")
+    if isinstance(result, dict):
+        return result.get("weighted_score")
+    return None
+
+
+def normalize_deep_weights(evaluator, disabled_keys=None):
+    """璋冩暣娣卞害鎺ㄧ悊缁村害鏉冮噸锛屾敮鎸佸睆钄芥煇浜涚淮搴︺€?""
+    disabled_keys = set(disabled_keys or [])
+    total = 0.0
+    for key, info in evaluator.deep_reasoning_dimensions.items():
+        if key in disabled_keys:
+            info["weight"] = 0.0
+        else:
+            total += info["weight"]
+
+    if total <= 0:
+        return
+
+    for key, info in evaluator.deep_reasoning_dimensions.items():
+        if key not in disabled_keys:
+            info["weight"] = info["weight"] / total
+
+
+def run_ablation_study():
+    """鎵цablation study瀹為獙锛屾瘮杈冧笉鍚岃瘎浼伴厤缃€?""
+    global last_ablation_results, last_saved_session_path
+
+    if not EVALUATOR_ENABLED:
+        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍚敤"}, 400
+
+    if game_evaluator is None:
+        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍒濆鍖栵紝璇峰厛寮€濮嬫父鎴?}, 400
+
+    dialogue_history = get_dialogue_history_snapshot()
+    if not dialogue_history:
+        return {"status": "error", "message": "鏆傛棤瀵硅瘽鍘嗗彶锛屾棤娉曟墽琛宎blation study"}, 400
+
+    subject_id = getattr(game_evaluator, "test_subject_id", 7)
+
+    baseline_evaluator, baseline_stats = prepare_evaluator_from_history(dialogue_history, subject_id)
+    baseline_result = baseline_evaluator.calculate_comprehensive_score(include_deep_reasoning=True)
+    baseline_score = extract_overall_score(baseline_result, True)
+
+    experiments = []
+
+    def record_experiment(name, description, evaluator_builder, include_deep_reasoning):
+        evaluator = evaluator_builder()
+        result = evaluator.calculate_comprehensive_score(include_deep_reasoning=include_deep_reasoning)
+        score = extract_overall_score(result, include_deep_reasoning)
+        delta = None
+        if baseline_score is not None and score is not None:
+            delta = score - baseline_score
+        experiments.append({
+            "name": name,
+            "description": description,
+            "score": score,
+            "delta": delta,
+            "include_deep_reasoning": include_deep_reasoning,
+            "raw_result": result
+        })
+
+    def base_builder():
+        evaluator, _ = prepare_evaluator_from_history(dialogue_history, subject_id)
+        return evaluator
+
+    # Baseline already computed
+    experiments.append({
+        "name": "Baseline (Deep Reasoning Enabled)",
+        "description": "褰撳墠閰嶇疆锛屽寘鍚繁搴︽帹鐞嗙淮搴?,
+        "score": baseline_score,
+        "delta": 0,
+        "include_deep_reasoning": True,
+        "raw_result": baseline_result
+    })
+
+    # No deep reasoning (traditional only)
+    record_experiment(
+        "Ablation: Disable Deep Reasoning",
+        "浠呬繚鐣欎紶缁熺淮搴︼紝鍏抽棴鎵€鏈夋繁搴︽帹鐞嗘寚鏍?,
+        base_builder,
+        include_deep_reasoning=False
     )
-    game_state["total_players"] = len(PLAYERS)
 
+    # Disable combinatorial reasoning
+    def builder_without_combinatorial():
+        evaluator, _ = prepare_evaluator_from_history(dialogue_history, subject_id)
+        normalize_deep_weights(evaluator, disabled_keys={"combinatorial_reasoning"})
+        return evaluator
 
-def build_bilingual_reasoning_guidance(round_num):
-    """Return bilingual deep-reasoning reminders for the evaluation subject."""
-    return (
-        "\n[Deep Reasoning Guidance]\n"
-        "- 鎻愬嚭鑷冲皯涓ょ粍鍙兘鐨勭嫾闃熺粍鍚堬紝鍙紩鐢?C(12,4)=495 绛夌粍鍚堟暟瀛︼紝骞惰鏄庝繚鐣?鎺掗櫎鐞嗙敱銆俓n"
-        "- Provide probability/Bayesian updates, e.g., 'If Player 2 is real seer, P(Player 10 is wolf) ~0.8; otherwise ~0.3'.\n"
-        "- 鎸囧嚭鏈疆鏂板鐨勪俊鎭紙绁ㄥ瀷銆佸璺炽€佸姝荤瓑锛夊苟鎻忚堪浣犵殑鎼滅储鎴栧壀鏋濈瓥鐣ャ€俓n"
-        "- State your final alignment judgement and intended vote target, e.g., 'Final vote target: Player X'.\n"
+    record_experiment(
+        "Ablation: Remove Combinatorial Reasoning",
+        "娣卞害鎺ㄧ悊鏉冮噸涓幓闄ょ粍鍚堟帹鐞嗙淮搴︼紝鍏朵粬缁村害閲嶆柊褰掍竴鍖?,
+        builder_without_combinatorial,
+        include_deep_reasoning=True
     )
 
+    # Disable complexity handling
+    def builder_without_complexity():
+        evaluator, _ = prepare_evaluator_from_history(dialogue_history, subject_id)
+        normalize_deep_weights(evaluator, disabled_keys={"complexity_handling"})
+        return evaluator
 
-def build_bilingual_vote_guidance():
-    """Return bilingual voting guidance for the evaluation subject."""
-    return (
-        "\n[Deep Reasoning Voting Guidance]\n"
-        "- Summarise in 1-2 sentences how vote patterns, role claims, and probabilities lead to your choice.\n"
-        "- Output format:\n"
-        "  ANALYSIS(CN): ...\n"
-        "  ANALYSIS(EN): ...\n"
-        "  FINAL VOTE: Player X\n"
+    record_experiment(
+        "Ablation: Remove Complexity Handling",
+        "娣卞害鎺ㄧ悊鏉冮噸涓幓闄ゅ鏉傚害澶勭悊缁村害锛屼互璇勪及璇ユ寚鏍囪础鐚?,
+        builder_without_complexity,
+        include_deep_reasoning=True
     )
+
+    # Emphasize traditional metrics (increase weighting ratio)
+    def builder_traditional_focus():
+        evaluator, _ = prepare_evaluator_from_history(dialogue_history, subject_id)
+        for info in evaluator.deep_reasoning_dimensions.values():
+            info["weight"] *= 0.5
+        normalize_deep_weights(evaluator, disabled_keys=set())
+        return evaluator
+
+    record_experiment(
+        "Ablation: Reduce Deep Reasoning Weight",
+        "灏嗘繁搴︽帹鐞嗙淮搴︽潈閲嶆暣浣撳噺鍗婂悗閲嶆柊褰掍竴锛岃瀵熶紶缁熺淮搴﹀崰姣旀彁鍗囩殑褰卞搷",
+        builder_traditional_focus,
+        include_deep_reasoning=True
+    )
+
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    last_ablation_results = {
+        "timestamp": timestamp,
+        "subject_id": subject_id,
+        "baseline": {
+            "score": baseline_score,
+            "raw_result": baseline_result,
+            "stats": baseline_stats
+        },
+        "experiments": experiments
+    }
+
+    if last_saved_session_path and os.path.isdir(last_saved_session_path):
+        try:
+            with open(os.path.join(last_saved_session_path, "ablation_results.json"), "w", encoding="utf-8") as f:
+                json.dump(last_ablation_results, f, ensure_ascii=False, indent=2)
+        except Exception as exc:
+            print(f"[SESSION_EXPORT] Failed to persist ablation results: {exc}")
+
+    try:
+        dialogue_queue.put({
+            "type": "status",
+            "message": "Ablation study completed"
+        })
+    except Exception:
+        pass
+
+    return {
+        "status": "ok",
+        "timestamp": timestamp,
+        "subject_id": subject_id,
+        "baseline": last_ablation_results["baseline"],
+        "experiments": experiments
+    }
 
 # Prompt鍚庣紑 - 瑕佹眰妯″瀷浣跨敤OUTPUT鍜孍ND鏍囪
 OUTPUT_FORMAT_INSTRUCTION = """
-OUTPUT FORMAT (mandatory):
-- You may reason privately first, but the final message must follow the structure below.
 
-OUTPUT: <final answer or decision>
+銆愭牸寮忚姹?- 蹇呴』閬靛畧銆?
+浣犲彲浠ュ厛鎬濊€冨拰鎺ㄧ悊锛屼絾鏈€缁堝繀椤绘寜鐓т互涓嬫牸寮忚緭鍑猴細
+
+OUTPUT: [浣犵殑鏈€缁堢瓟妗?鍐崇瓥]
 END
 
-Rules:
-1. Only the content after 'OUTPUT:' is shared with other players.
-2. Always finish with the token END on its own line.
-3. If END is missing, the statement is considered invalid and must be regenerated.
+瑙勫垯璇存槑锛?
+1. 浣犲彲浠ュ湪OUTPUT鍓嶈嚜鐢辨€濊€冿紙杩欓儴鍒嗕笉浼氳鍏紑锛?
+2. OUTPUT: 鍚庨潰鍐欎綘鐨勬渶缁堝彂瑷€锛堣繖閮ㄥ垎浼氳鍏朵粬鐜╁鐪嬪埌锛?
+3. 蹇呴』浠?END 鏍囪缁撴潫
+4. 濡傛灉娌℃湁END鏍囪锛屼綘鐨勫彂瑷€灏嗚瑙嗕负鏃犳晥锛岄渶瑕侀噸鏂扮敓鎴?
 
-Example:
-Reasoning: Based on last night's deaths... Player 5's logic contains contradictions...
-OUTPUT: Player 5 is likely a wolf; I recommend voting for them.
+绀轰緥锛?
+鎬濊€冿細鏍规嵁鏄ㄦ櫄鐨勬浜℃儏鍐靛垎鏋?..Player 5鐨勫彂瑷€閫昏緫鏈夐棶棰?..
+OUTPUT: 鎴戣涓?Player 5 鏄嫾浜猴紝寤鸿鎶曚粬
 END"""
 
 # LLM閰嶇疆 - 鏀寔涓ょ粍API閰嶇疆
@@ -813,6 +1272,8 @@ HTML_TEMPLATE = r"""
             <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">馃И 娴嬭瘯ULS++鐞嗚В</button>
             <button onclick="nextDay()" id="btn-next" disabled>鈴笍 涓嬩竴澶?/button>
             <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;" disabled>馃搳 鏄剧ず璇勪及</button>
+            <button onclick="runAblation()" id="btn-ablation" style="background: #8E24AA; color: white;" disabled>馃И Ablation Study</button>
+            <button onclick="exportGameData()" id="btn-export-session" style="background: #607D8B; color: white;" disabled>馃梻锔?瀵煎嚭瀵瑰眬鏁版嵁</button>
             <button onclick="toggleLanguage()" id="btn-lang">馃寪 English</button>
             <button onclick="clearAll()" id="btn-clear">馃棏锔?娓呯┖</button>
         </div>
@@ -1124,6 +1585,10 @@ HTML_TEMPLATE = r"""
         function startGame() {
             document.getElementById('btn-start').disabled = true;
             document.getElementById('btn-stop').disabled = false;
+            const exportBtn = document.getElementById('btn-export-session');
+            if (exportBtn) exportBtn.disabled = true;
+            const ablBtn = document.getElementById('btn-ablation');
+            if (ablBtn) ablBtn.disabled = true;
 
             fetch('/api/start', {method: 'POST'})
                 .then(response => response.json())
@@ -1464,6 +1929,32 @@ HTML_TEMPLATE = r"""
                 });
         }
 
+        function exportGameData() {
+            fetch('/api/export_last_session')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.message || '瀵煎嚭澶辫触');
+                        });
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `werewolf_session_${Date.now()}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    alert('瀵煎嚭澶辫触锛? + error.message);
+                });
+        }
+
         function displayEvaluationModal(evaluation) {
             const modal = document.createElement('div');
             modal.id = 'eval-modal';
@@ -1539,6 +2030,104 @@ HTML_TEMPLATE = r"""
             document.body.appendChild(modal);
         }
 
+        function exportGameData() {
+            fetch('/api/export_last_session')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.message || '瀵煎嚭澶辫触'); });
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `werewolf_session_${Date.now()}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    alert('瀵煎嚭澶辫触锛? + error.message);
+                });
+        }
+
+        function runAblation() {
+            const btn = document.getElementById('btn-ablation');
+            if (btn) btn.disabled = true;
+
+            fetch('/api/run_ablation', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        displayAblationModal(data);
+                    } else {
+                        alert('Ablation鎵ц澶辫触锛? + (data.message || '鏈煡閿欒'));
+                    }
+                })
+                .catch(error => {
+                    alert('Ablation鎵ц澶辫触锛? + error.message);
+                })
+                .finally(() => {
+                    if (btn) btn.disabled = false;
+                });
+        }
+
+        function displayAblationModal(result) {
+            const modal = document.createElement('div');
+            modal.id = 'ablation-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+
+            const rows = (result.experiments || []).map(exp => {
+                const delta = typeof exp.delta === 'number' ? exp.delta.toFixed(2) : '鈥?;
+                const score = typeof exp.score === 'number' ? exp.score.toFixed(2) : '鈥?;
+                const badge = exp.name === 'Baseline (Deep Reasoning Enabled)' ? '<span style="background:#4CAF50;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;margin-left:8px;">Baseline</span>' : '';
+                return `
+                    <tr>
+                        <td style="padding:8px 12px; border-bottom:1px solid #eee; font-weight:bold;">${exp.name}${badge}</td>
+                        <td style="padding:8px 12px; border-bottom:1px solid #eee;">${exp.description || ''}</td>
+                        <td style="padding:8px 12px; border-bottom:1px solid #eee; text-align:center;">${score}</td>
+                        <td style="padding:8px 12px; border-bottom:1px solid #eee; text-align:center; color:${exp.delta >= 0 ? '#4CAF50' : '#f44336'};">${delta}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 960px; max-height: 90vh; overflow-y: auto; width: 95%;">
+                    <h2 style="color: #333; margin-top: 0;">馃И Ablation Study Results</h2>
+                    <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+                        娴嬭瘯鐜╁: Player ${result.subject_id} | 鏃堕棿: ${result.timestamp || ''}
+                    </p>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+                        <thead>
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding:10px 12px; text-align:left; width: 20%;">瀹為獙鍚嶇О</th>
+                                <th style="padding:10px 12px; text-align:left;">閰嶇疆鎻忚堪</th>
+                                <th style="padding:10px 12px; text-align:center; width: 12%;">寰楀垎</th>
+                                <th style="padding:10px 12px; text-align:center; width: 12%;">涓嶣aseline宸紓</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button onclick="closeAblationModal()" style="background: #607D8B; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">鍏抽棴</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeAblationModal() {
+            const modal = document.getElementById('ablation-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
         function generateDimensionScores(scores) {
             const dimensions = {
                 'information_extraction': '淇℃伅鎻愬彇鑳藉姏',
@@ -1551,11 +2140,11 @@ HTML_TEMPLATE = r"""
 
             let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
 
-            for (const [key, name] of Object.entries(dimensions)) {
-                const score = scores[key]?.score || 0;
-                const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
+        for (const [key, name] of Object.entries(dimensions)) {
+            const score = scores[key]?.score || 0;
+            const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
 
-                html += `
+            html += `
                     <div style="border: 2px solid ${color}; border-radius: 8px; padding: 15px;">
                         <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">${name}</div>
                         <div style="font-size: 32px; font-weight: bold; color: ${color};">${score}<span style="font-size: 18px;">/100</span></div>
@@ -1572,6 +2161,34 @@ HTML_TEMPLATE = r"""
 
             html += '</div>';
             return html;
+        }
+
+        window.generateDeepReasoningScores = function(metrics) {
+            if (!metrics) return '<p style="color: #999;">娣卞害鎺ㄧ悊鏁版嵁涓嶅彲鐢?/p>';
+
+            let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
+
+            for (const [key, value] of Object.entries(metrics)) {
+                const score = value.score || value.composite_score || 0;
+                const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
+                const displayName = value.name || key;
+                const details = value.details || value.description || '';
+
+                html += `
+                    <div style="border: 2px solid ${color}; border-radius: 8px; padding: 15px;">
+                        <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">${displayName}</div>
+                        <div style="font-size: 32px; font-weight: bold; color: ${color};">${score.toFixed ? score.toFixed(1) : score}<span style="font-size: 18px;">/100</span></div>
+                        ${details ? `<div style="margin-top: 10px; font-size: 12px; color: #666;">${details}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            return html;
+        };
+
+        function generateDeepReasoningScores(metrics) {
+            return window.generateDeepReasoningScores(metrics);
         }
 
         function closeEvalModal() {
@@ -1705,11 +2322,24 @@ HTML_TEMPLATE = r"""
                         }, 2000);  // 寤惰繜2绉掕嚜鍔ㄧ户缁?
                     }
                 } else if (data.type === 'token_update') {
-                    // 鏇存柊token缁熻
                     document.getElementById('total-tokens').textContent = data.total_tokens;
-
                     // 鍙€夛細鏄剧ず姣忎釜鐜╁鐨則oken浣跨敤鎯呭喌
                     // console.log('Player tokens:', data.player_tokens);
+                } else if (data.type === 'session_saved') {
+                    const exportBtn = document.getElementById('btn-export-session');
+                    if (exportBtn) {
+                        exportBtn.disabled = false;
+                    }
+                    const ablationBtn = document.getElementById('btn-ablation');
+                    if (ablationBtn) {
+                        ablationBtn.disabled = false;
+                    }
+                    if (data.message) {
+                        document.getElementById('status').textContent = '鐘舵€侊細' + data.message;
+                    }
+                    if (data.analysis) {
+                        console.log('[SESSION] analysis summary:', data.analysis);
+                    }
                 }
             };
 
@@ -1763,10 +2393,10 @@ def extract_message_text(field):
 def call_llm(prompt, player_id):
     """璋冪敤LLM API骞惰窡韪猼oken浣跨敤"""
     global total_tokens_used, player_tokens_used
-    
+
     api_base = None
     model = None
-
+    
     try:
         # 娉ㄩ噴鎺塼oken闄愬埗妫€鏌?- 鍏佽鐜╁鑷敱鍙戣█
         # if player_id >= 0:  # player_id == -1 琛ㄧず绯荤粺娑堟伅
@@ -1777,12 +2407,12 @@ def call_llm(prompt, player_id):
 
         # 鏍规嵁鐜╁ID閫夋嫨API閰嶇疆: Player 1 = 娴嬭瘯妯″瀷, 鍏朵粬鐜╁ = NPC妯″瀷
         if player_id == 1:
-            api_base = LLM_CONFIG['test_api_base']
-            model = LLM_CONFIG['test_model']
+            api_base = LLM_CONFIG.get('test_api_base', 'http://localhost:8080')
+            model = LLM_CONFIG.get('test_model', 'default')
             print(f"[LLM] Player {player_id} 浣跨敤娴嬭瘯妯″瀷: {api_base}")
         else:
-            api_base = LLM_CONFIG['npc_api_base']
-            model = LLM_CONFIG['npc_model']
+            api_base = LLM_CONFIG.get('npc_api_base', 'http://localhost:8080')
+            model = LLM_CONFIG.get('npc_model', 'default')
             print(f"[LLM] Player {player_id} 浣跨敤NPC妯″瀷: {api_base}")
 
         # 鍦╬rompt鍚庢坊鍔燨UTPUT鏍煎紡鎸囧紩
@@ -1792,77 +2422,75 @@ def call_llm(prompt, player_id):
         payload = {
             "model": model,
             "messages": [{"role": "user", "content": full_prompt}],
-            "temperature": LLM_CONFIG["temperature"]
+            "temperature": LLM_CONFIG.get("temperature", 0.7)
             # 绉婚櫎 max_tokens 闄愬埗锛岃妯″瀷鑷敱杈撳嚭
         }
 
-        print(f"[LLM] Calling API for Player {player_id}...")
+        print(f"[LLM] ===== Calling API for Player {player_id} =====")
         print(f"[LLM]   URL: {url}")
         print(f"[LLM]   Model: {model}")
         print(f"[LLM]   Prompt (first 100 chars): {prompt[:100]}...")
 
-        # 澧炲姞杩炴帴娴嬭瘯
-        try:
-            test_response = requests.get(f"{api_base}/health", timeout=5)
-            print(f"[LLM] API Health Check: {test_response.status_code}")
-        except Exception as health_e:
-            print(f"[LLM] 鈿狅笍  API Health Check Failed: {health_e}")
-            print(f"[LLM] API鏈嶅姟鍙兘鏈惎鍔紝璇风‘淇?{api_base} 鍙闂?)
-
         response = requests.post(url, json=payload, timeout=30)
         response.raise_for_status()
-        
-        print(f"[LLM] API Response Status: {response.status_code}")
 
         result = response.json()
-        print(f"[LLM] Response received for Player {player_id}")
-        print(f"[LLM]   Full response: {json.dumps(result, ensure_ascii=False, indent=2)[:1000]}...")
+        print(f"[LLM] 鉁?Response received for Player {player_id}")
 
         # 鎻愬彇鍐呭锛氫紭鍏堜娇鐢╟ontent锛堟渶缁堢粨璁猴級锛屽鏋滀负绌哄垯浠巖easoning_content鎻愬彇
         message = result["choices"][0]["message"]
-        raw_content = extract_message_text(message.get("content"))
-        reasoning_content = extract_message_text(message.get("reasoning_content"))
+        raw_content = extract_message_text(message.get("content", ""))
+        reasoning_content = extract_message_text(message.get("reasoning_content", ""))
 
         # 鍚堝苟鎵€鏈夊唴瀹圭敤浜庢彁鍙?
         full_response = raw_content
         if not full_response and reasoning_content:
             full_response = reasoning_content
 
-        print(f"[LLM] Full response from Player {player_id} (length: {len(full_response)}):")
-        print(f"[LLM] {full_response[:500]}..." if len(full_response) > 500 else f"[LLM] {full_response}")
+        print(f"[LLM] Full response length: {len(full_response)}")
+        print(f"[LLM] First 300 chars: {full_response[:300]}")
+        if len(full_response) > 300:
+            print(f"[LLM] Last 200 chars: ...{full_response[-200:]}")
 
         # 涓ユ牸楠岃瘉 OUTPUT: 鍜?END 鏍囪
         import re
 
-        # 妫€鏌ユ槸鍚﹀寘鍚?OUTPUT: 鍜?END
-        pattern = re.compile(r'(?i)OUTPUT\s*(?:[:\uFF1A]\s*)?(.*?)(?:\bEND\b|$)', re.DOTALL)
-        has_output_match = pattern.search(full_response)
-        has_output = has_output_match is not None
-        has_end = re.search(r'\bEND\b', full_response, re.IGNORECASE) is not None
+        # 澶氱pattern鏉ュ鐞嗕笉鍚屾牸寮?
+        patterns = [
+            (r'(?i)OUTPUT\s*[:\uFF1A]\s*(.*?)\s*END', 'OUTPUT: ... END'),
+            (r'(?i)output\s*:\s*(.*?)\s*end', 'output: ... end (lowercase)'),
+            (r'(?i)銆愯緭鍑恒€慭s*(.*?)\s*END', '銆愯緭鍑恒€?.. END'),
+        ]
+        
+        content = None
+        for pattern, desc in patterns:
+            match = re.search(pattern, full_response, re.DOTALL)
+            if match:
+                content = match.group(1).strip()
+                print(f"[LLM] 鉁?Matched pattern: {desc}")
+                print(f"[LLM] Extracted: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Extracted: '{content}'")
+                break
 
-        if has_output and has_end:
-            content = has_output_match.group(1).strip()
-            if content:
-                print(f"[LLM] [OK] Valid format detected for Player {player_id}")
-                print(f"[LLM] Extracted content: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Extracted content: '{content}'")
+        if not content:
+            # Fallback: 灏濊瘯鎵惧埌鏈€闀跨殑杩炵画闈炵┖琛?
+            print(f"[LLM] 鈿狅笍  No standard pattern matched, using fallback")
+            lines = full_response.split('\n')
+            meaningful_lines = [line.strip() for line in lines if line.strip() and not line.strip().startswith('#')]
+            
+            # 璺宠繃鎻愮ず/鎬濊€冪殑琛?
+            content_lines = []
+            for line in meaningful_lines:
+                if not any(keyword in line for keyword in ['鎬濊€?, 'THINK', '銆?, '```']):
+                    content_lines.append(line)
+            
+            if content_lines:
+                content = ' '.join(content_lines)
+                if len(content) > 500:
+                    content = content[:500]
+                print(f"[LLM] Fallback content: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Fallback content: '{content}'")
             else:
-                print(f"[LLM] [WARN] OUTPUT/END present but content empty for Player {player_id}")
-                content = ""
-        else:
-            print(f"[LLM] [WARN] Invalid format for Player {player_id}:")
-            print(f"[LLM]   Has OUTPUT: {bool(has_output)}")
-            print(f"[LLM]   Has END: {bool(has_end)}")
-
-            if has_output:
-                content = has_output_match.group(1).strip()
-                if len(content) > 200:
-                    content = content[:200] + "..."
-                print(f"[LLM] Using OUTPUT content (no END found): '{content[:100]}...'" if len(content) > 100 else f"[LLM] Using OUTPUT content: '{content}'")
-            else:
-                trimmed = full_response[-200:] if len(full_response) > 200 else full_response
-                content = trimmed or ""
-                print(f"[LLM] No OUTPUT found, using fallback extraction")
-
+                content = full_response[-300:] if len(full_response) > 300 else full_response
+                print(f"[LLM] Final fallback: using last portion")
 
         # 鑾峰彇token浣跨敤閲?
         usage = result.get("usage", {})
@@ -1877,7 +2505,8 @@ def call_llm(prompt, player_id):
                 player_tokens_used[player_id] = 0
             player_tokens_used[player_id] += total_tokens
 
-        print(f"[LLM] Player {player_id}: {content[:50]}... (tokens: {total_tokens}, total: {total_tokens_used})")
+        print(f"[LLM] 鉁?Player {player_id} final output: {content[:50]}... (tokens: {total_tokens}, total: {total_tokens_used})")
+        print(f"[LLM] ===== End Player {player_id} =====\n")
 
         # 鍙戦€乼oken缁熻鍒板墠绔?
         dialogue_queue.put({
@@ -1886,34 +2515,48 @@ def call_llm(prompt, player_id):
             "player_tokens": dict(player_tokens_used)
         })
 
-        return content
+        return content if content else f"[Player {player_id} 鍙戣█鍐呭鏃犳硶瑙ｆ瀽]"
 
-    except requests.exceptions.ConnectionError as ce:
-        print(f"[LLM] 鉂?杩炴帴閿欒 - API鏈嶅姟鏈惎鍔ㄦ垨鏃犳硶璁块棶")
-        print(f"[LLM]   URL: {api_base}/v1/chat/completions")
-        print(f"[LLM]   Error: {ce}")
-        print(f"[LLM]   瑙ｅ喅鏂规: 璇峰惎鍔?LLM API 鏈嶅姟")
-        return f"[Player {player_id} - API鏈嶅姟鏈惎鍔╙"
-    except requests.exceptions.Timeout as te:
-        print(f"[LLM] 鈴憋笍  璇锋眰瓒呮椂 - API 鍝嶅簲澶參")
-        print(f"[LLM]   Error: {te}")
-        return f"[Player {player_id} - 璇锋眰瓒呮椂]"
-    except requests.exceptions.HTTPError as he:
-        print(f"[LLM] 馃敶 HTTP閿欒")
-        print(f"[LLM]   Status: {he.response.status_code}")
-        print(f"[LLM]   Response: {he.response.text[:500]}")
-        return f"[Player {player_id} - HTTP閿欒{he.response.status_code}]"
+    except requests.exceptions.Timeout:
+        print(f"[LLM] 鉁?TIMEOUT for Player {player_id} - API server not responding (timeout=30s)")
+        if api_base:
+            print(f"[LLM]   Tried URL: {api_base}/v1/chat/completions")
+        return f"[Player {player_id} 鏃犳硶杩炴帴 - 瓒呮椂]"
+    
+    except requests.exceptions.ConnectionError as e:
+        print(f"[LLM] 鉁?CONNECTION ERROR for Player {player_id}")
+        if api_base:
+            print(f"[LLM]   API Base: {api_base}")
+        print(f"[LLM]   Error: {e}")
+        return f"[Player {player_id} 鏃犳硶杩炴帴]"
+    
+    except json.JSONDecodeError as e:
+        print(f"[LLM] 鉁?JSON DECODE ERROR for Player {player_id}")
+        print(f"[LLM]   Error: {e}")
+        try:
+            print(f"[LLM]   Response text: {response.text[:500]}")
+        except:
+            pass
+        return f"[Player {player_id} 鍝嶅簲鏍煎紡閿欒]"
+    
+    except KeyError as e:
+        print(f"[LLM] 鉁?KEY ERROR for Player {player_id} - response structure mismatch")
+        print(f"[LLM]   Missing key: {e}")
+        try:
+            print(f"[LLM]   Response structure: {json.dumps(result, ensure_ascii=False, indent=2)[:500]}")
+        except:
+            pass
+        return f"[Player {player_id} 鍝嶅簲缁撴瀯閿欒]"
+    
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
-        print(f"[LLM] Error for Player {player_id}:")
-        print(f"  Error Type: {type(e).__name__}")
-        print(f"  Error Message: {e}")
-        if api_base:
-            print(f"  API URL: {api_base}/v1/chat/completions")
-        if model:
-            print(f"  Model: {model}")
-        print(f"  Full Traceback:\n{error_details}")
+        print(f"[LLM] 鉁?UNEXPECTED ERROR for Player {player_id}:")
+        print(f"[LLM]   Error Type: {type(e).__name__}")
+        print(f"[LLM]   Error Message: {e}")
+        print(f"[LLM]   API URL: {api_base}/v1/chat/completions" if api_base else "[LLM]   API URL: [not set]")
+        print(f"[LLM]   Model: {model}" if model else "[LLM]   Model: [not set]")
+        print(f"[LLM]   Traceback:\n{error_details}")
         return f"[Player {player_id} 鏆傛椂鏃犳硶鍙戣█]"
 
 def first_night_werewolf_discussion():
@@ -2050,7 +2693,6 @@ def night_phase(day_num):
     椤哄簭锛氱嫾浜鸿鍔?鈫?瀹堝崼 鈫?棰勮█瀹?鈫?濂冲帆 鈫?缁撶畻姝讳骸
     """
     global guard_last_target, witch_save_available, witch_poison_available, daily_statistics
-    sync_game_state(phase="night", round_num=day_num)
     print(f"\n[NIGHT {day_num}] Starting...")
 
     # 鍒濆鍖栨湰澶滅粺璁?
@@ -2064,6 +2706,17 @@ def night_phase(day_num):
         "game_ended": False,
         "winner": None
     }
+    module_plan_a = active_difficulty_plan.get("A_鍙岄瀵硅烦") if isinstance(active_difficulty_plan, dict) else None
+    module_plan_b = active_difficulty_plan.get("B_濂冲帆瀹堝崼鍐茬獊") if isinstance(active_difficulty_plan, dict) else None
+    module_meta = active_difficulty_plan.get("_meta", {}) if isinstance(active_difficulty_plan, dict) else {}
+    override_wolf_target_id = None
+    if day_num == 1:
+        if module_plan_b and module_plan_b.get("night1_actions"):
+            override_wolf_target_id = module_plan_b["night1_actions"].get("wolf_kill")
+        if override_wolf_target_id is None and module_plan_a:
+            override_wolf_target_id = module_plan_a.get("real_seer", {}).get("n1_check")
+        if override_wolf_target_id is None:
+            override_wolf_target_id = module_meta.get("wolf_target_id")
 
     dialogue_queue.put({
         "type": "phase",
@@ -2141,14 +2794,25 @@ def night_phase(day_num):
             time.sleep(1)
 
         # 鐙间汉鍐冲畾鍑绘潃鐩爣
-        wolves_target = random.choice(alive_non_wolves)['id']
+        chosen_target = None
+        if override_wolf_target_id is not None:
+            chosen_target = next((p for p in alive_non_wolves if p['id'] == override_wolf_target_id), None)
+
+        if chosen_target is None:
+            chosen_target = random.choice(alive_non_wolves)
+
+        wolves_target = chosen_target['id']
         night_stats["night_actions"]["wolf_target"] = wolves_target
+
+        decision_text = "馃惡 鐙间汉鍐冲畾鍒€ Player {}".format(wolves_target)
+        if override_wolf_target_id == wolves_target:
+            decision_text = f"馃惡 鐙间汉鎸夐毦搴﹀墽鏈攣瀹?Player {wolves_target} 涓哄垁鍙?
 
         dialogue_queue.put({
             "type": "dialogue",
             "player_id": -1,
             "phase": f"绗瑊day_num}澶?鐙间汉",
-            "content": f"馃惡 鐙间汉鍐冲畾鍒€ Player {wolves_target}",
+            "content": decision_text,
             "panel": "werewolf"
         })
 
@@ -2165,6 +2829,14 @@ def night_phase(day_num):
         guard = next((p for p in PLAYERS if p['role'] == '瀹堝崼' and p['alive']), None)
 
         if guard:
+            planned_guard_target = None
+            if day_num == 1 and module_plan_b and module_plan_b.get("night1_actions"):
+                planned_guard_target = module_plan_b["night1_actions"].get("guard_protect")
+                if planned_guard_target is not None:
+                    target_alive = next((p for p in PLAYERS if p['id'] == planned_guard_target and p['alive']), None)
+                    if target_alive is None:
+                        planned_guard_target = None
+
             dialogue_queue.put({
                 "type": "status",
                 "message": "馃洝锔?瀹堝崼璇风潄鐪?
@@ -2257,6 +2929,21 @@ END"""
                         "panel": "god"
                     })
 
+            if day_num == 1 and planned_guard_target is not None and guard_target != planned_guard_target:
+                target_alive = next((p for p in PLAYERS if p['id'] == planned_guard_target and p['alive']), None)
+                if target_alive:
+                    guard_target = planned_guard_target
+                    guard_last_target = guard_target
+                    night_stats["night_actions"]["guard_target"] = guard_target
+
+                    dialogue_queue.put({
+                        "type": "dialogue",
+                        "player_id": guard['id'],
+                        "phase": f"绗瑊day_num}澶?瀹堝崼",
+                        "content": f"[鍓ф湰璋冩暣] 瀹堝崼鏀逛负瀹堟姢 Player {guard_target}",
+                        "panel": "god"
+                    })
+
             dialogue_queue.put({
                 "type": "status",
                 "message": "瀹堝崼璇烽棴鐪?
@@ -2336,6 +3023,25 @@ END"""
                 "content": f"[鍐崇瓥] {seer_decision}\n\n[楠屼汉缁撴灉] Player {target['id']} 鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆俓n\n[鎬濊€僝 {result_thought}",
                 "panel": "god"
             })
+            if day_num == 1 and module_plan_a and module_plan_a.get("real_seer", {}).get("player_id") == seer['id']:
+                desired_target = module_plan_a["real_seer"].get("n1_check")
+                desired_result = module_plan_a["real_seer"].get("n1_result", "濂戒汉")
+                existing_check = night_stats["night_actions"].get("seer_check", {})
+                if desired_target is not None and (existing_check.get("target") != desired_target or existing_check.get("result") != desired_result):
+                    target_alive = next((p for p in PLAYERS if p['id'] == desired_target and p['alive']), None)
+                    if target_alive:
+                        night_stats["night_actions"]["seer_check"] = {
+                            "target": desired_target,
+                            "result": desired_result
+                        }
+                        script_summary = module_plan_a["real_seer"].get("speech_details", "")
+                        dialogue_queue.put({
+                            "type": "dialogue",
+                            "player_id": seer['id'],
+                            "phase": f"绗瑊day_num}澶?棰勮█瀹?,
+                            "content": f"[鍓ф湰鏍℃] 璋冩暣楠屼汉鐩爣涓?Player {desired_target} -> {desired_result}\n[鐧藉ぉ鎻愮ず] {script_summary}",
+                            "panel": "god"
+                        })
 
         dialogue_queue.put({
             "type": "status",
@@ -2451,12 +3157,46 @@ END"""
                                 "panel": "god"
                             })
 
+        if day_num == 1 and module_plan_b and module_plan_b.get("night1_actions"):
+            scripted_actions = module_plan_b["night1_actions"]
+            desired_save = scripted_actions.get("witch_save")
+            desired_poison = scripted_actions.get("witch_poison")
+
+            if desired_save is not None and not witch_save and desired_save == wolves_target:
+                witch_save = True
+                witch_save_available = False
+                used_medicine_this_night = True
+                night_stats["night_actions"]["witch_save"] = desired_save
+
+                dialogue_queue.put({
+                    "type": "dialogue",
+                    "player_id": witch['id'],
+                    "phase": f"绗瑊day_num}澶?濂冲帆",
+                    "content": f"[鍓ф湰瑙ｈ嵂] 鎸夐璁炬晳涓?Player {desired_save}",
+                    "panel": "god"
+                })
+
+            if desired_poison is not None and (witch_poison_target is None or witch_poison_target != desired_poison):
+                target_alive = next((p for p in PLAYERS if p['id'] == desired_poison and p['alive']), None)
+                if target_alive:
+                    witch_poison_target = desired_poison
+                    witch_poison_available = False
+                    night_stats["night_actions"]["witch_poison"] = witch_poison_target
+
+                    dialogue_queue.put({
+                        "type": "dialogue",
+                        "player_id": witch['id'],
+                        "phase": f"绗瑊day_num}澶?濂冲帆",
+                        "content": f"[鍓ф湰姣掕嵂] 棰勮姣掓潃 Player {witch_poison_target}",
+                        "panel": "god"
+                    })
+
         if not witch_save and witch_poison_target is None:
             dialogue_queue.put({
                 "type": "dialogue",
                 "player_id": witch['id'],
                 "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": "[涓嶄娇鐢ㄨ嵂] 濂冲帆閫夋嫨鏈洖鍚堜笉浣跨敤鑽?,
+                "content": "[涓嶄娇鐢ㄨ嵂] 濂冲帆閫夋嫨鏈洖鍚堜笉浣跨敤鑽€?,
                 "panel": "god"
             })
 
@@ -2504,7 +3244,6 @@ def dawn_phase(night_deaths, day_num):
     娉ㄦ剰锛氫笉鍏竷姝昏€呰韩浠斤紙鍙叕甯冨彿鐮侊級
     """
     global sheriff_player_id
-    sync_game_state(phase="dawn", round_num=day_num)
     print(f"\n[DAWN {day_num}] Processing night deaths...")
 
     dialogue_queue.put({
@@ -2603,64 +3342,16 @@ def dawn_phase(night_deaths, day_num):
                 # 绠€鍖栫増锛氬姝诲彲浠ュ紑鏋?
                 alive_players = [p for p in PLAYERS if p['alive']]
                 if alive_players:
-                    # 鐚庝汉鎬濊€冨苟鍐冲畾灏勬潃鐩爣
-                    alive_list = ', '.join([f"Player {p['id']}" for p in alive_players])
-
-                    hunter_shoot_prompt = f"""鐙间汉鏉€娓告垙 - 鐚庝汉寮€鏋妧鑳?
-浣犳槸Player {player_id}锛岃鑹诧細鐚庝汉銆?
-浣犲湪澶滄櫄琚嚮鏉€浜嗭紝鐜板湪鍙互鍙戝姩鐚庝汉鎶€鑳姐€愬紑鏋甫璧颁竴涓帺瀹躲€戙€?
-
-褰撳墠瀛樻椿鐜╁锛歿alive_list}
-
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾灏勬潃璋侊細
-1. 濡傛灉浣犺涓烘煇涓帺瀹舵槸鐙间汉锛屽簲璇ヤ紭鍏堝皠鏉€
-2. 鑰冭檻涔嬪墠鐨勫彂瑷€銆佹姇绁ㄨ涓恒€侀瑷€瀹堕獙浜虹瓑淇℃伅
-3. 鍋氬嚭瀵瑰ソ浜洪樀钀ユ渶鏈夊埄鐨勯€夋嫨
-
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
-
-OUTPUT: 鎴戝喅瀹氬皠鏉€ Player X锛屽洜涓篬绠€鐭悊鐢盷
-END"""
-
-                    hunter_response = call_llm(hunter_shoot_prompt, player_id)
-
-                    # 瑙ｆ瀽灏勬潃鐩爣
-                    import re
-                    match = re.search(r'Player (\d+)', hunter_response)
-                    if match:
-                        target_id = int(match.group(1))
-                        # 楠岃瘉鐩爣鏄惁瀛樻椿
-                        if target_id in [p['id'] for p in alive_players]:
-                            target = PLAYERS[target_id]
-                        else:
-                            # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
-                            target = random.choice(alive_players)
-                            print(f"[WARN] Hunter (night) target {target_id} invalid, random choice: {target['id']}")
-                    else:
-                        # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
-                        target = random.choice(alive_players)
-                        print(f"[WARN] Cannot parse hunter (night) target, random choice: {target['id']}")
-
+                    target = random.choice(alive_players)
                     hunter_shot_targets.append(target['id'])
 
                     dialogue_queue.put({
                         "type": "dialogue",
                         "player_id": player_id,
                         "phase": f"绗瑊day_num}澶╅粠鏄?鐚庝汉",
-                        "content": f"馃徆 鐚庝汉鎶€鑳藉彂鍔紒{hunter_response}\n\n鐚庝汉寮€鏋甫璧?Player {target['id']}",
+                        "content": f"馃徆 鐚庝汉锛圥layer {player_id}锛夊姝诲紑鏋甫璧?Player {target['id']}",
                         "panel": "day"
                     })
-
-    # 澶勭悊鐚庝汉寮€鏋繛閿佹浜?
-    if hunter_shot_targets:
-        for target_id in hunter_shot_targets:
-            PLAYERS[target_id]['alive'] = False
-
-            dialogue_queue.put({
-                "type": "death",
-                "player_id": target_id
-            })
 
         time.sleep(1.5)
 
@@ -2704,15 +3395,30 @@ def sheriff_election_before_n1():
 
         player = PLAYERS[candidate_id]
 
-        prompt = f"""鐙间汉鏉€ - 寮€灞€璀﹂暱绔為€夈€?
+        scripted_response = None
+        if 'scripted_plan_a' in locals() and scripted_plan_a:
+            if candidate_id == scripted_real_seer:
+                scripted_response = scripted_plan_a["real_seer"].get("speech_details", "")
+            elif candidate_id == scripted_fake_seer:
+                scripted_response = scripted_plan_a["fake_seer"].get("speech_details", "")
+
+        if scripted_response:
+            response = scripted_response
+            if candidate_id not in seer_claims:
+                seer_claims.append(candidate_id)
+        else:
+            prompt = f"""鐙间汉鏉€ - 璀﹂暱绔為€?
 浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆?
 
 璇峰彂琛ㄧ珵閫夋紨璇达紝璇存槑浣犱负浠€涔堥€傚悎褰撹闀裤€?
 閲嶈锛氫笉瑕佹毚闇蹭綘鐨勭湡瀹炶韩浠斤紒
 
 璇风敤2-3鍙ヨ瘽绔為€夈€傜敤涓枃銆?""
+            response = call_llm(prompt, player['id'])
 
-        response = call_llm(prompt, player['id'])
+            if "鎴戞槸棰勮█瀹? in response or "棰勮█瀹? in response:
+                if candidate_id not in seer_claims:
+                    seer_claims.append(candidate_id)
 
         dialogue_queue.put({
             "type": "dialogue",
@@ -2870,7 +3576,6 @@ NO text. NO explanation. ONLY the header line."""
     print(f"[SHERIFF] Player {sheriff_id} elected. Seer claims: {seer_claims}")
 
 def day_discussion_and_voting(round_num):
-    sync_game_state(phase="day", round_num=round_num)
     """鐧藉ぉ璁ㄨ鍜屾姇绁紙澶滄宸茬粡鍦╠awn_phase澶勭悊杩囷紝杩欓噷鍙仛鐧藉ぉ鍙戣█鍜屾姇绁級"""
     print(f"\n[DAY] Round {round_num} discussion and voting...")
 
@@ -2957,17 +3662,18 @@ Example: PV:3|SUS:3@4.6,5@3.7,7@2.1|EV:+205,-118|CL:S+4@N2
 
 NO text. NO explanation. ONLY the header line."""
         else:
-            # Normal mode: natural language speech with reasoning context
-            prompt = f"""Werewolf Day {round_num} Discussion
-You are Player {player['id']} ({player['role']}). {sheriff_info}
+            # 姝ｅ父妯″紡锛氳嚜鐒惰瑷€ + 鍘嗗彶鍙戣█涓婁笅鏂?
+            prompt = f"""鐙间汉鏉€ - 绗瑊round_num}澶╄璁恒€?
+浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆倇sheriff_info}
 
-{instruction}{history_context}{additional_guidance}
+{instruction}{history_context}
 
-Requirements:
-1. Analyse previous speeches and identify contradictions or vote-pattern signals.
-2. Link your role to an explicit reasoning chain and describe information gain.
-3. State your alignment judgement and intended vote target.
-4. Keep it within 2-3 sentences; concise bilingual (CN/EN) keywords are welcome."""
+瑕佹眰锛?
+1. 浠旂粏鍒嗘瀽涔嬪墠鐜╁鐨勫彂瑷€锛屾壘鍑洪€昏緫婕忔礊
+2. 鏍规嵁浣犵殑瑙掕壊鍜岀瓥鐣ヨ繘琛屾帹鐞?
+3. 缁欏嚭浣犵殑鍒ゆ柇鍜屾姇绁ㄥ€惧悜
+4. 绠€鐭彂瑷€锛?-3鍙ワ級銆傜敤涓枃銆?""
+
         response = call_llm(prompt, player['id'])
 
         # 灏嗗彂瑷€瀛樺叆鍏叡璁板繂姹?(浣跨敤鏂扮殑MemoryPool API)
@@ -3028,9 +3734,7 @@ Requirements:
             elif voter['role'] in ['濂冲帆', '鐚庝汉', '瀹堝崼']:
                 vote_instruction = "浣犳槸绁炶亴锛屾姇绁ㄧ粰鍙戣█鏈€鍙枒銆侀€昏緫鏈夋紡娲炵殑鐜╁銆?
             else:
-                vote_instruction = "你是村民，投票给发言最可疑、逻辑有漏洞的玩家。"
-            if voter['id'] == TEST_SUBJECT_ID:
-                vote_instruction += build_bilingual_vote_guidance()
+                vote_instruction = "浣犳槸鏉戞皯锛屾姇绁ㄧ粰鍙戣█鏈€鍙枒銆侀€昏緫鏈夋紡娲炵殑鐜╁銆?
 
             vote_prompt = f"""鐙间汉鏉€ - 绗瑊round_num}澶╂姇绁ㄥ喅绛?
 浣犳槸Player {voter['id']}锛岃鑹诧細{voter['role']}銆?
@@ -3577,6 +4281,36 @@ def check_win_condition():
 
     return (None, None, None)
 
+
+def finalize_game(winner, reason="", details=""):
+    """缁撴潫瀵瑰眬鏃剁粺涓€澶勭悊鏀跺熬閫昏緫"""
+    global is_running
+
+    victory_faction = '鐙间汉' if winner == 'werewolves' else '鏉戞皯'
+    status_message = f'馃帀 娓告垙缁撴潫 - {victory_faction}闃佃惀鑳滃埄'
+
+    if winner == 'werewolves':
+        content = f"馃惡 鐙间汉闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason or ''}{details or ''}"
+    else:
+        content = f"馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason or ''}{details or ''}"
+
+    dialogue_queue.put({
+        "type": "status",
+        "message": status_message
+    })
+    dialogue_queue.put({
+        "type": "dialogue",
+        "player_id": -1,
+        "phase": "娓告垙缁撴潫",
+        "content": content,
+        "panel": "day"
+    })
+
+    save_game_session(winner, reason or "", details or "")
+    display_game_summary()
+    is_running = False
+
+
 def game_loop():
     """
     瀹屾暣娓告垙寰幆
@@ -3601,20 +4335,9 @@ def game_loop():
         # 鎵ц绗竴澶滐紙鍖呭惈瀹屾暣鐨勫鏅氶樁娈碉級
         night_deaths = night_phase(1)
 
-        if night_deaths is None:  # 鐙间汉鍏ㄧ伃
-            dialogue_queue.put({
-                "type": "status",
-                "message": "馃帀 娓告垙缁撴潫 - 鏉戞皯闃佃惀鑳滃埄锛?
-            })
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": -1,
-                "phase": "娓告垙缁撴潫",
-                "content": "馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛佹墍鏈夌嫾浜哄凡琚嚮鏉€銆?,
-                "panel": "day"
-            })
-            display_game_summary()
-            is_running = False
+        if night_deaths is None:
+            reason = "鎵€鏈夌嫾浜哄凡琚嚮鏉€"
+            finalize_game('villagers', reason, '')
             return
 
         # 榛庢槑闃舵
@@ -3630,33 +4353,7 @@ def game_loop():
         winner, reason, details = check_win_condition()
         print(f"[DEBUG GAME_LOOP] Day {day_num} - Check win condition BEFORE day: winner={winner}, reason={reason}")
         if winner:
-            dialogue_queue.put({
-                "type": "status",
-                "message": f"馃帀 娓告垙缁撴潫 - {'鐙间汉' if winner == 'werewolves' else '鏉戞皯'}闃佃惀鑳滃埄锛?
-            })
-
-            panel = "day"
-            if winner == 'werewolves':
-                content = f"馃惡 鐙间汉闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
-                    "content": content,
-                    "panel": panel
-                })
-            else:
-                content = f"馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
-                    "content": content,
-                    "panel": panel
-                })
-
-            display_game_summary()
-            is_running = False
+            finalize_game(winner, reason, details)
             break
 
         # 鐧藉ぉ璁ㄨ鎶曠エ
@@ -3666,33 +4363,7 @@ def game_loop():
         winner, reason, details = check_win_condition()
         print(f"[DEBUG GAME_LOOP] Day {day_num} - Check win condition AFTER day: winner={winner}, reason={reason}")
         if winner:
-            dialogue_queue.put({
-                "type": "status",
-                "message": f"馃帀 娓告垙缁撴潫 - {'鐙间汉' if winner == 'werewolves' else '鏉戞皯'}闃佃惀鑳滃埄锛?
-            })
-
-            panel = "day"
-            if winner == 'werewolves':
-                content = f"馃惡 鐙间汉闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
-                    "content": content,
-                    "panel": panel
-                })
-            else:
-                content = f"馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛乗n\n鑳滃埄鍘熷洜: {reason}{details}"
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": "娓告垙缁撴潫",
-                    "content": content,
-                    "panel": panel
-                })
-
-            display_game_summary()
-            is_running = False
+            finalize_game(winner, reason, details)
             break
 
         # 澶滄櫄闃舵
@@ -3701,26 +4372,86 @@ def game_loop():
         # 鎵ц瀹屾暣鐨勫鏅氶樁娈?
         night_deaths = night_phase(day_num)
 
-        if night_deaths is None:  # 鐙间汉鍏ㄧ伃
-            dialogue_queue.put({
-                "type": "status",
-                "message": "馃帀 娓告垙缁撴潫 - 鏉戞皯闃佃惀鑳滃埄锛?
-            })
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": -1,
-                "phase": "娓告垙缁撴潫",
-                "content": "馃懆鈥嶐煂?鏉戞皯闃佃惀鑾疯儨锛佹墍鏈夌嫾浜哄凡琚嚮鏉€銆?,
-                "panel": "day"
-            })
-            display_game_summary()
-            is_running = False
+        if night_deaths is None:
+            reason = "鎵€鏈夌嫾浜哄凡琚嚮鏉€"
+            finalize_game('villagers', reason, '')
             break
 
         # 榛庢槑闃舵
         dawn_phase(night_deaths, day_num)
 
         time.sleep(2)
+
+@app.route('/api/test_llm_simple', methods=['POST', 'GET'])
+def test_llm_simple():
+    """娴嬭瘯鏈€绠€鍗曠殑LLM璋冪敤 - 璇婃柇API杩炴帴闂"""
+    print("[TEST_LLM] Starting simple LLM test...")
+    
+    api_base = None
+    response = None
+    
+    try:
+        api_base = LLM_CONFIG.get('npc_api_base', 'http://localhost:8080')
+        model = LLM_CONFIG.get('npc_model', 'default')
+        
+        print(f"[TEST_LLM] Using API: {api_base}")
+        print(f"[TEST_LLM] Using model: {model}")
+        
+        # 绠€鍗曠殑娴嬭瘯prompt
+        simple_prompt = "璇风敤OUTPUT鍜孍ND鏍囪鍥炵瓟锛?+1绛変簬鍑?\n\nOUTPUT: "
+        
+        url = f"{api_base}/v1/chat/completions"
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": simple_prompt}],
+            "temperature": 0.1,
+            "max_tokens": 100
+        }
+        
+        print(f"[TEST_LLM] Sending request to {url}")
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        
+        result = response.json()
+        print(f"[TEST_LLM] Response received! Status: {response.status_code}")
+        
+        message = result.get("choices", [{}])[0].get("message", {})
+        content = message.get("content", "")
+        
+        print(f"[TEST_LLM] Raw content: {content[:200]}")
+        
+        return {
+            "status": "鉁?鎴愬姛",
+            "api_base": api_base,
+            "model": model,
+            "response_status": response.status_code,
+            "response_content": content[:300],
+            "full_response": json.dumps(result, ensure_ascii=False)[:500]
+        }
+        
+    except requests.exceptions.Timeout:
+        error_msg = f"瓒呮椂: API鏈嶅姟鍦?0绉掑唴鏈搷搴?
+        print(f"[TEST_LLM] 鉁?{error_msg}")
+        return {"status": "鉁?澶辫触", "error": error_msg, "api_base": api_base or "鏈幏鍙?}, 504
+    
+    except requests.exceptions.ConnectionError as e:
+        error_msg = f"鏃犳硶杩炴帴: {str(e)[:200]}"
+        print(f"[TEST_LLM] 鉁?{error_msg}")
+        return {"status": "鉁?澶辫触", "error": error_msg, "api_base": api_base or "鏈幏鍙?}, 503
+    
+    except json.JSONDecodeError as e:
+        error_msg = f"JSON瑙ｆ瀽閿欒: {str(e)}"
+        if response:
+            error_msg += f" | Response: {response.text[:200]}"
+        print(f"[TEST_LLM] 鉁?{error_msg}")
+        return {"status": "鉁?澶辫触", "error": error_msg}, 400
+    
+    except Exception as e:
+        import traceback
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        print(f"[TEST_LLM] 鉁?{error_msg}")
+        print(f"[TEST_LLM] Traceback: {traceback.format_exc()}")
+        return {"status": "鉁?澶辫触", "error": error_msg, "traceback": traceback.format_exc()[:500]}, 500
 
 @app.route('/')
 def index():
@@ -3748,7 +4479,7 @@ def start():
     global is_running, seer_claims, sheriff_player_id, sheriff_candidates, game_state
     global guard_last_target, witch_save_available, witch_poison_available, daily_statistics
     global waiting_for_next_day, auto_mode, total_tokens_used, player_tokens_used, public_memory_pool
-    global game_evaluator
+    global game_evaluator, difficulty_plan_summary, activated_modules
 
     print(f"[DEBUG /api/start] Called. is_running={is_running}, auto_mode={auto_mode}")
 
@@ -3770,18 +4501,14 @@ def start():
 
         # 鍒濆鍖栬瘎浼板櫒 (榛樿璇勪及Player 7)
         if EVALUATOR_ENABLED:
-            game_evaluator = EnhancedReasoningEvaluator(test_subject_id=TEST_SUBJECT_ID)
+            game_evaluator = EnhancedReasoningEvaluator(test_subject_id=7)
             print("[INFO] Enhanced game evaluator initialized for Player 7")
 
         game_state = {
             "phase": "night",
             "round": 0,
             "dead_players": [],
-            "night_actions": {},
-            "players": [],
-            "wolf_num": 0,
-            "alive_players": len(PLAYERS),
-            "total_players": len(PLAYERS)
+            "night_actions": {}
         }
 
         for player in PLAYERS:
@@ -3792,7 +4519,23 @@ def start():
             dialogue_queue.get()
 
         clear_dialogue_history()
-        sync_game_state(phase="night", round_num=0)
+
+        if DIFFICULTY_MODULES_ENABLED:
+            activated_modules = activate_modules(current_difficulty, game_state)
+            generate_difficulty_module_plan()
+        else:
+            activated_modules = []
+            difficulty_plan_summary = []
+
+        if difficulty_plan_summary:
+            summary_lines = "\n".join([f"鈥?{line}" for line in difficulty_plan_summary])
+            dialogue_queue.put({
+                "type": "dialogue",
+                "player_id": -1,
+                "phase": "闅惧害妯″潡",
+                "content": f"馃敡 闅惧害妯″潡鍓ф湰宸插姞杞?({current_difficulty})锛歕n{summary_lines}",
+                "panel": "day"
+            })
 
         print("[DEBUG /api/start] Creating game thread...")
         thread = threading.Thread(target=game_loop, daemon=True)
@@ -3847,7 +4590,7 @@ def set_uls_mode():
 
 @app.route('/api/set_difficulty', methods=['POST'])
 def set_difficulty():
-    global current_difficulty, activated_modules
+    global current_difficulty, activated_modules, active_difficulty_plan, difficulty_plan_summary
     data = app.current_request.get_json() if hasattr(app, 'current_request') else None
 
     if not data:
@@ -3862,17 +4605,27 @@ def set_difficulty():
         activated_modules = activate_modules(difficulty_level, game_state)
         config = get_difficulty_config(difficulty_level)
         print(f"[DIFFICULTY] Activated {config['name']}: {config['modules']}")
+        generate_difficulty_module_plan()
     else:
         activated_modules = []
+        active_difficulty_plan = {"_meta": {}}
+        difficulty_plan_summary = []
 
-    return {"status": "ok", "difficulty": current_difficulty, "activated_modules": activated_modules}
+    return {
+        "status": "ok",
+        "difficulty": current_difficulty,
+        "activated_modules": activated_modules,
+        "plan_summary": difficulty_plan_summary
+    }
 
 @app.route('/api/get_difficulty_info', methods=['GET'])
 def get_difficulty_info():
     return {
         "difficulty": current_difficulty,
         "activated_modules": activated_modules,
-        "modules_enabled": DIFFICULTY_MODULES_ENABLED
+        "modules_enabled": DIFFICULTY_MODULES_ENABLED,
+        "plan_summary": difficulty_plan_summary,
+        "meta": active_difficulty_plan.get("_meta", {})
     }
 
 @app.route('/api/get_llm_config', methods=['GET'])
@@ -4054,16 +4807,16 @@ def test_evaluation():
 
     # 鍒濆鍖栬瘎浼板櫒(濡傛灉杩樻病鏈?
     if game_evaluator is None:
-        game_evaluator = EnhancedReasoningEvaluator(test_subject_id=TEST_SUBJECT_ID)
+        game_evaluator = EnhancedReasoningEvaluator(test_subject_id=7)
 
     # 娉ㄥ叆娴嬭瘯鏁版嵁鍒癲ialogue_queue
     test_dialogues = [
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Combinatorial reasoning: C(12,4)=495 but only wolf teams {2,5,10} or {2,5,11} align with the counter-claims, so I focus on those lines.", "round": 1, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Bayesian update: if Player 2 is real seer, posterior P(Player 10 is wolf) ~0.8; if fake it drops to ~0.3, so I side with Player 2.", "round": 1, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "ANALYSIS: Player 3 mirrors Player 5's vote trail, signalling a pack. FINAL VOTE: Player 3", "round": 1, "phase": "voting"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Information gain: the night kill on Player 4 shows the witch saved nobody and the guard missed, so I elevate seats never targeted.", "round": 2, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "Complexity handling: prune the remaining wolf combinations down to {2,5,10} and {2,6,10}; prioritise players appearing in over 70% of viable lines.", "round": 2, "phase": "day"},
-        {"type": "dialogue", "player_id": TEST_SUBJECT_ID, "content": "ANALYSIS: Vote entropy peaks at Player 6 after the counter-claim. FINAL VOTE: Player 6", "round": 2, "phase": "voting"},
+        {"type": "dialogue", "player_id": 7, "content": "鎴戣涓篜layer 2鏄湡棰勮█瀹?鍥犱负浠栫殑鍙戣█閫昏緫娓呮櫚", "round": 1, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "Player 3鐨勬姇绁ㄦā寮忓緢鍙枒,浠栨€绘槸璺熼殢Player 5鎶曠エ", "round": 1, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "馃棾锔?鎶曠エ缁?Player 3", "round": 1, "phase": "voting"},
+        {"type": "dialogue", "player_id": 7, "content": "鏍规嵁姒傜巼璁?濡傛灉Player 2鏄湡棰勮█瀹?閭ｄ箞Player 5鏄嫾鐨勬鐜囨槸80%", "round": 2, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "鎴戦渶瑕侀噸鏂拌€冭檻,Player 5鏄ㄥぉ鐨勫彂瑷€鍏跺疄鏈夐亾鐞?, "round": 2, "phase": "day"},
+        {"type": "dialogue", "player_id": 7, "content": "馃棾锔?鎶曠エ缁?Player 6", "round": 2, "phase": "voting"},
     ]
 
     # 娓呯┖鐜版湁闃熷垪骞舵坊鍔犳祴璇曟暟鎹?
@@ -4177,6 +4930,46 @@ def export_evaluation():
     except Exception as e:
         return {"status": "error", "message": str(e)}, 500
 
+
+@app.route('/api/run_ablation', methods=['POST'])
+def api_run_ablation():
+    """鎵цablation study瀹為獙骞惰繑鍥炵粨鏋溿€?""
+    result = run_ablation_study()
+    if isinstance(result, tuple):
+        data, status = result
+        return data, status
+    return result
+
+
+@app.route('/api/get_last_session_summary', methods=['GET'])
+def get_last_session_summary():
+    """杩斿洖鏈€杩戜竴娆′繚瀛樼殑瀵瑰眬鎽樿銆?""
+    if not last_saved_session_path or not os.path.isdir(last_saved_session_path):
+        return {"status": "error", "message": "鏆傛棤瀵瑰眬鏁版嵁鍙鍑?}, 400
+
+    return {
+        "status": "ok",
+        "session_dir": os.path.basename(last_saved_session_path),
+        "analysis": last_session_analysis
+    }
+
+
+@app.route('/api/export_last_session', methods=['GET'])
+def export_last_session():
+    """灏嗘渶杩戠殑瀵瑰眬鏁版嵁鎵撳寘涓嬭浇銆?""
+    if not last_saved_session_path or not os.path.isdir(last_saved_session_path):
+        return {"status": "error", "message": "鏆傛棤瀵瑰眬鏁版嵁鍙鍑?}, 400
+
+    base_name = os.path.basename(last_saved_session_path)
+    zip_base_path = os.path.join(SESSION_EXPORT_DIR, base_name)
+
+    try:
+        zip_path = shutil.make_archive(zip_base_path, 'zip', last_saved_session_path)
+        download_name = f"{base_name}.zip"
+        return send_file(zip_path, as_attachment=True, download_name=download_name)
+    except Exception as exc:
+        return {"status": "error", "message": f"瀵煎嚭澶辫触: {exc}"}, 500
+
 @app.route('/api/stream')
 def stream():
     def generate():
@@ -4207,3 +5000,8 @@ if __name__ == '__main__':
     print("="*70)
 
     app.run(host='127.0.0.1', port=5005, debug=False)
+
+
+
+
+

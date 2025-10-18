@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Werewolf Game Analysis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        h1, h2, h3 { 
+            color: #333; 
+        }
+        .card { 
+            background: #ffffff; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .player-card {
+            border-left: 5px solid #ccc;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .werewolf { border-left-color: #ff5252; }
+        .villager { border-left-color: #4caf50; }
+        .witch { border-left-color: #9c27b0; }
+        .seer { border-left-color: #2196f3; }
+        .hunter { border-left-color: #ff9800; }
+        
+        .status-alive { color: #4caf50; font-weight: bold; }
+        .status-dead { color: #f44336; font-weight: bold; }
+        
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .metrics-table th {
+            background: #f2f2f2;
+            text-align: left;
+            padding: 8px;
+        }
+        .metrics-table td {
+            border-top: 1px solid #eee;
+            padding: 8px;
+        }
+        
+        .winner-villagers { color: #4caf50; font-weight: bold; }
+        .winner-werewolves { color: #f44336; font-weight: bold; }
+        
+        .header-section {
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .header-section h1 {
+            color: white;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>Werewolf Game Analysis</h1>
+            <p>Interactive dashboard for analyzing game outcomes and player metrics</p>
+        </div>
+        
+        <div class="card">
+            <h2>Game Summary</h2>
+            <div id="gameSummary">Loading...</div>
+        </div>
+        
+        <div class="card">
+            <h2>Player Analysis</h2>
+            <div id="playerAnalysis">Loading...</div>
+        </div>
+        
+        <div class="card">
+            <h2>Game Timeline</h2>
+            <div id="gameTimeline">
+                <p>Round data not available in this version. Check the full game report for details.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format date-time strings
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr || dateTimeStr === 'Unknown') return 'Unknown';
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString();
+        }
+        
+        // Load game summary
+        fetch('/api/game_summary')
+            .then(response => response.json())
+            .then(data => {
+                const summaryEl = document.getElementById('gameSummary');
+                if (data.error) {
+                    summaryEl.innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    const winnerClass = data.winner === 'villagers' ? 'winner-villagers' : 'winner-werewolves';
+                    summaryEl.innerHTML = `
+                        <p><strong>Game ID:</strong> ${data.game_id}</p>
+                        <p><strong>Start Time:</strong> ${formatDateTime(data.start_time)}</p>
+                        <p><strong>End Time:</strong> ${formatDateTime(data.end_time)}</p>
+                        <p><strong>Total Rounds:</strong> ${data.total_rounds}</p>
+                        <p><strong>Winner:</strong> <span class="${winnerClass}">${data.winner.toUpperCase()}</span></p>
+                        <p><strong>Nash Equilibrium Score:</strong> ${parseFloat(data.final_nash_score).toFixed(2)}</p>
+                        <p><strong>Werewolf Advantage:</strong> ${parseFloat(data.final_werewolf_advantage).toFixed(2)}</p>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('gameSummary').innerHTML = `<p>Error loading game summary: ${error}</p>`;
+            });
+        
+        // Load player data
+        fetch('/api/players')
+            .then(response => response.json())
+            .then(data => {
+                const playerEl = document.getElementById('playerAnalysis');
+                if (data.error) {
+                    playerEl.innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    let playersHtml = '';
+                    
+                    Object.entries(data).forEach(([playerId, playerData]) => {
+                        const roleClass = playerData.role.toLowerCase();
+                        const statusClass = playerData.final_status === 'alive' ? 'status-alive' : 'status-dead';
+                        const metrics = playerData.metrics;
+                        
+                        playersHtml += `
+                            <div class="player-card ${roleClass}">
+                                <h3>Player ${playerId} - ${playerData.role.toUpperCase()}</h3>
+                                <p>Status: <span class="${statusClass}">${playerData.final_status.toUpperCase()}</span></p>
+                                <p>Outcome: ${metrics.final_outcome === 'won' ? '🏆 Won' : '❌ Lost'}</p>
+                                
+                                <h4>Performance Metrics</h4>
+                                <table class="metrics-table">
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Rounds Survived</td>
+                                        <td>${metrics.rounds_survived}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Statements</td>
+                                        <td>${metrics.total_statements}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Avg Statement Length</td>
+                                        <td>${parseFloat(metrics.avg_statement_length).toFixed(1)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Deception Attempts</td>
+                                        <td>${metrics.deception_attempts}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Successful Deceptions</td>
+                                        <td>${metrics.successful_deceptions}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Consistency Score</td>
+                                        <td>${parseFloat(metrics.consistency_score).toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Team Alignment Score</td>
+                                        <td>${parseFloat(metrics.team_alignment_score).toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Optimal Vote Ratio</td>
+                                        <td>${parseFloat(metrics.optimal_vote_ratio).toFixed(2)}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        `;
+                    });
+                    
+                    playerEl.innerHTML = playersHtml;
+                }
+            })
+            .catch(error => {
+                document.getElementById('playerAnalysis').innerHTML = `<p>Error loading player data: ${error}</p>`;
+            });
+    </script>
+</body>
+</html>
+        

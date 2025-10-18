@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圆形布局测试 - Circular Layout Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        /* Circular table layout */
+        .circular-table-container {
+            position: relative;
+            width: 100%;
+            min-height: 700px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        /* Center table */
+        .center-table {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 8px solid #654321;
+            z-index: 1;
+        }
+
+        .center-table-text {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Player bubble */
+        .player-bubble {
+            position: absolute;
+            width: 140px;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid #ddd;
+        }
+
+        .player-bubble:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            z-index: 100;
+        }
+
+        .player-bubble.werewolf {
+            border-color: #f44336;
+            background: linear-gradient(135deg, #fff 0%, #ffebee 100%);
+        }
+
+        .player-bubble.villager {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #fff 0%, #e8f5e9 100%);
+        }
+
+        .player-bubble.special {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #fff 0%, #fff3e0 100%);
+        }
+
+        .player-bubble.speaking {
+            animation: speaking-pulse 1.5s infinite;
+            border-width: 4px;
+        }
+
+        @keyframes speaking-pulse {
+            0%, 100% {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+            50% {
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+                transform: scale(1.08);
+            }
+        }
+
+        .player-bubble-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .player-bubble-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .player-bubble-emoji {
+            font-size: 18px;
+        }
+
+        .player-bubble-dialog {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+            max-height: 80px;
+            overflow: hidden;
+        }
+
+        .player-bubble-meta {
+            margin-top: 6px;
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .speech-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            animation: bounce 0.6s infinite;
+        }
+
+        .player-bubble.speaking .speech-indicator {
+            display: flex;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 圆形布局测试页面</h1>
+
+        <div class="info-box">
+            <h3>测试说明</h3>
+            <p>这是一个独立的测试页面，用于验证圆形布局功能是否正常工作。</p>
+            <ul>
+                <li>点击"生成13个玩家"按钮创建玩家</li>
+                <li>点击"模拟发言"让随机玩家发言（带动画效果）</li>
+                <li>点击任意玩家气泡查看详情</li>
+            </ul>
+        </div>
+
+        <div class="test-buttons">
+            <button class="btn" onclick="createPlayers()">生成13个玩家</button>
+            <button class="btn" onclick="simulateSpeech()">模拟发言</button>
+            <button class="btn" onclick="clearAll()">清空</button>
+        </div>
+
+        <div class="circular-table-container" id="circular-table-container">
+            <!-- Center table -->
+            <div class="center-table">
+                <div class="center-table-text">
+                    🐺<br>Werewolf<br>Game
+                </div>
+            </div>
+            <!-- Player bubbles will be added here -->
+        </div>
+    </div>
+
+    <script>
+        // Test data
+        const testPlayers = [
+            { id: 0, role: 'werewolf', emoji: '🐺', type: 'werewolf' },
+            { id: 1, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 2, role: 'seer', emoji: '👁️', type: 'special' },
+            { id: 3, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 4, role: 'werewolf', emoji: '🐺', type: 'werewolf' },
+            { id: 5, role: 'witch', emoji: '🧪', type: 'special' },
+            { id: 6, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 7, role: 'hunter', emoji: '🏹', type: 'special' },
+            { id: 8, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 9, role: 'werewolf', emoji: '🐺', type: 'werewolf' },
+            { id: 10, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 11, role: 'villager', emoji: '👨‍🌾', type: 'villager' },
+            { id: 12, role: 'villager', emoji: '👨‍🌾', type: 'villager' }
+        ];
+
+        const testStatements = [
+            "I think player 3 is suspicious...",
+            "We should trust the seer's information.",
+            "I believe player 7 is telling the truth.",
+            "Let's vote for player 5.",
+            "I'm innocent, trust me!",
+            "The werewolves are trying to deceive us.",
+            "I checked player 2 last night, they're good.",
+            "We need to work together as villagers.",
+            "I have a special role, listen to me.",
+            "Player 8's behavior is very strange."
+        ];
+
+        function createPlayers() {
+            const container = document.getElementById('circular-table-container');
+
+            // Remove existing bubbles
+            const existingBubbles = container.querySelectorAll('.player-bubble');
+            existingBubbles.forEach(bubble => bubble.remove());
+
+            const numPlayers = testPlayers.length;
+            const radius = 280;
+            const centerX = container.offsetWidth / 2;
+            const centerY = 350;
+
+            testPlayers.forEach((player, index) => {
+                // Calculate position
+                const angle = (index / numPlayers) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                // Create bubble
+                const bubble = document.createElement('div');
+                bubble.className = `player-bubble ${player.type}`;
+                bubble.style.left = `${x - 70}px`;
+                bubble.style.top = `${y - 60}px`;
+                bubble.dataset.playerId = player.id;
+
+                bubble.innerHTML = `
+                    <div class="speech-indicator">💬</div>
+                    <div class="player-bubble-header">
+                        <span class="player-bubble-name">Player ${player.id}</span>
+                        <span class="player-bubble-emoji">${player.emoji}</span>
+                    </div>
+                    <div class="player-bubble-dialog">
+                        等待发言...
+                    </div>
+                    <div class="player-bubble-meta">
+                        <span>Round 1</span>
+                        <span>0 发言</span>
+                    </div>
+                `;
+
+                bubble.onclick = () => {
+                    alert(`Player ${player.id} (${player.role})\n点击查看完整对话历史`);
+                };
+
+                container.appendChild(bubble);
+            });
+
+            console.log(`✅ 成功创建 ${numPlayers} 个玩家气泡！`);
+        }
+
+        function simulateSpeech() {
+            const bubbles = document.querySelectorAll('.player-bubble');
+            if (bubbles.length === 0) {
+                alert('请先生成玩家！');
+                return;
+            }
+
+            // Random player speaks
+            const randomIndex = Math.floor(Math.random() * bubbles.length);
+            const bubble = bubbles[randomIndex];
+            const playerId = bubble.dataset.playerId;
+            const player = testPlayers[playerId];
+
+            // Random statement
+            const statement = testStatements[Math.floor(Math.random() * testStatements.length)];
+
+            // Update bubble content
+            const dialogDiv = bubble.querySelector('.player-bubble-dialog');
+            dialogDiv.textContent = statement;
+
+            // Add speaking animation
+            bubble.classList.add('speaking');
+            setTimeout(() => {
+                bubble.classList.remove('speaking');
+            }, 3000);
+
+            // Update speech count
+            const metaSpan = bubble.querySelector('.player-bubble-meta span:last-child');
+            const currentCount = parseInt(metaSpan.textContent.match(/\d+/)[0]);
+            metaSpan.textContent = `${currentCount + 1} 发言`;
+
+            console.log(`💬 Player ${playerId} (${player.role}) 发言: ${statement.substring(0, 30)}...`);
+        }
+
+        function clearAll() {
+            const container = document.getElementById('circular-table-container');
+            const bubbles = container.querySelectorAll('.player-bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            console.log('🗑️ 已清空所有玩家');
+        }
+
+        // Auto-create players on load
+        window.addEventListener('load', () => {
+            console.log('🎮 圆形布局测试页面已加载');
+            console.log('👉 点击"生成13个玩家"按钮开始测试');
+        });
+    </script>
+</body>
+</html>

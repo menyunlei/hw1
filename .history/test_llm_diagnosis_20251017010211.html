@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>LLM 诊断工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .output {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status-ok {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .status-error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .status-warn {
+            color: #FF9800;
+            font-weight: bold;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        .info-box p {
+            margin: 5px 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 LLM API 诊断工具</h1>
+        
+        <div class="info-box">
+            <h3>📋 说明</h3>
+            <p>✓ 此工具用于诊断 LLM API 连接问题</p>
+            <p>✓ 点击下面的按钮测试简单的 API 调用</p>
+            <p>✓ 查看控制台输出了解详细的调试信息</p>
+        </div>
+
+        <div class="section">
+            <h2>🧪 测试简单 LLM 调用</h2>
+            <p>测试最基础的 API 连接和模型响应：</p>
+            <button onclick="testLLM()">🚀 测试 LLM</button>
+            <button onclick="clearOutput()">🗑️ 清空输出</button>
+            <div class="output" id="output">等待测试...</div>
+        </div>
+
+        <div class="section">
+            <h2>📊 诊断步骤</h2>
+            <ol>
+                <li><strong>网络连接检查：</strong> 验证能否连接到 API 服务</li>
+                <li><strong>模型加载检查：</strong> 验证模型是否正确加载</li>
+                <li><strong>API 格式检查：</strong> 验证响应格式是否正确</li>
+                <li><strong>OUTPUT 标记检查：</strong> 验证能否提取 OUTPUT 标记内容</li>
+            </ol>
+        </div>
+
+        <div class="section" style="background: #fff3e0; border-left-color: #FF9800;">
+            <h2>⚠️ 常见问题</h2>
+            <ul>
+                <li><strong>超时 (504)：</strong> API 服务未启动或响应缓慢</li>
+                <li><strong>无法连接 (503)：</strong> API 地址或端口错误</li>
+                <li><strong>JSON 解析错误 (400)：</strong> API 返回格式不正确</li>
+                <li><strong>响应结构错误：</strong> API 版本不兼容</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let className = '';
+            if (type === 'ok') className = 'status-ok';
+            else if (type === 'error') className = 'status-error';
+            else if (type === 'warn') className = 'status-warn';
+            
+            const line = `[${timestamp}] <span class="${className}">${message}</span>`;
+            
+            if (output.textContent === '等待测试...') {
+                output.innerHTML = line;
+            } else {
+                output.innerHTML += '\n' + line;
+            }
+            
+            // 自动滚动到底部
+            output.scrollTop = output.scrollHeight;
+            
+            console.log(message);
+        }
+
+        function clearOutput() {
+            document.getElementById('output').textContent = '清空...';
+            setTimeout(() => {
+                document.getElementById('output').textContent = '准备测试...';
+            }, 500);
+        }
+
+        async function testLLM() {
+            log('🚀 开始测试 LLM API...', 'info');
+            log('');
+            
+            try {
+                log('📡 发送请求到 /api/test_llm_simple...', 'info');
+                
+                const response = await fetch('/api/test_llm_simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`📊 HTTP 状态码: ${response.status}`, 'info');
+                
+                const data = await response.json();
+                
+                log('');
+                log('=== 测试结果 ===', 'info');
+                
+                if (data.status && data.status.includes('成功')) {
+                    log('✓ API 连接成功！', 'ok');
+                } else {
+                    log('✗ API 返回错误', 'error');
+                }
+                
+                log(`状态: ${data.status}`, data.status.includes('成功') ? 'ok' : 'error');
+                log(`API Base: ${data.api_base || '未获取'}`);
+                log(`Model: ${data.model || '未获取'}`);
+                
+                if (data.response_status) {
+                    log(`Response Status: ${data.response_status}`, 'ok');
+                }
+                
+                if (data.error) {
+                    log(`错误信息: ${data.error}`, 'error');
+                }
+                
+                if (data.response_content) {
+                    log('');
+                    log('=== 模型响应 ===', 'info');
+                    log(data.response_content);
+                }
+                
+                if (data.traceback) {
+                    log('');
+                    log('=== 错误追踪 ===', 'error');
+                    log(data.traceback);
+                }
+                
+                log('');
+                log('✓ 诊断完成！', 'ok');
+                
+            } catch (error) {
+                log(`✗ 客户端错误: ${error.message}`, 'error');
+                log('可能原因:', 'warn');
+                log('1. 服务器未启动或已关闭');
+                log('2. 网络连接问题');
+                log('3. CORS 配置问题');
+            }
+        }
+
+        // 页面加载时的初始化
+        window.addEventListener('load', () => {
+            log('🟢 诊断工具已加载，点击"测试 LLM"开始诊断', 'ok');
+        });
+    </script>
+</body>
+</html>

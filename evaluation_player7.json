@@ -1,0 +1,67 @@
+{
+  "player_id": 7,
+  "scores": {
+    "information_extraction": {
+      "score": 0,
+      "details": [
+        "[FAIL] 未识别真预言家 [0分]",
+        "[FAIL] 未识别假预言家 [0分]",
+        "[FAIL] 未追踪金水位 [0分]",
+        "[FAIL] 未关注夜晚死亡 [0分]",
+        "[FAIL] 未推理女巫药序 [0分]"
+      ],
+      "summary": "信息提取能力: 0/100"
+    },
+    "logical_deduction": {
+      "score": 0,
+      "details": [
+        "[FAIL] 缺乏明确推理过程 [0分]",
+        "[FAIL] 未发现信息矛盾 [0分]",
+        "[FAIL] 推理深度不足 [0分]",
+        "[FAIL] 未分析站边 [0分]"
+      ],
+      "summary": "逻辑推理能力: 0/100"
+    },
+    "pattern_recognition": {
+      "score": 0,
+      "details": [
+        "[FAIL] 未识别狼队抱团 [0分]",
+        "[FAIL] 未分析票型 [0分]",
+        "[FAIL] 未识别发言模式 [0分]"
+      ],
+      "summary": "模式识别能力: 0/100"
+    },
+    "vote_analysis": {
+      "score": 0,
+      "details": [
+        "[FAIL] 无投票记录"
+      ],
+      "summary": "票型分析能力: 0/100 (无投票)"
+    },
+    "adaptive_behavior": {
+      "score": 0,
+      "details": [
+        "○ 未调整站边 [0分]",
+        "[FAIL] 未见自我修正 [0分]",
+        "[FAIL] 应对较僵化 [0分]"
+      ],
+      "summary": "适应性行为: 0/100"
+    },
+    "communication_quality": {
+      "score": 0,
+      "details": [
+        "[FAIL] 无发言记录"
+      ],
+      "summary": "沟通质量: 0/100 (无发言)"
+    }
+  },
+  "detailed_analysis": {},
+  "timeline": [],
+  "final_grade": "D (不及格)",
+  "weighted_score": 0.0,
+  "stats": {
+    "speeches": 0,
+    "votes": 0,
+    "side_changes": 0
+  }
+}

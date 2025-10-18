@@ -1,0 +1,544 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>狼人杀 - 4对话框版本</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            transition: background 1s;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-info {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .circle-area {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .player-circle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: white;
+            border: 3px solid;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .player-circle.hidden {
+            opacity: 0.3;
+            filter: brightness(0.5);
+        }
+
+        .player-circle.dead {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .player-circle.speaking {
+            animation: pulse 1s infinite;
+            border-width: 5px;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+        }
+
+        .player-circle.sheriff::after {
+            content: '🎖️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .player-name {
+            font-size: 9px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .dialogue-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid;
+        }
+
+        .panel-header.werewolf {
+            border-bottom-color: #f44336;
+            color: #f44336;
+        }
+
+        .panel-header.god {
+            border-bottom-color: #2196F3;
+            color: #2196F3;
+        }
+
+        .panel-header.day {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .panel-header.statistics {
+            border-bottom-color: #FF9800;
+            color: #FF9800;
+        }
+
+        .panel-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .dialogue-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .dialogue-player {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .dialogue-content {
+            color: #333;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .dialogue-meta {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="night">
+    <div class="container">
+        <h1>🎮 狼人杀 - 4对话框版本</h1>
+
+        <div class="status-info" id="status">
+            状态：等待开始
+        </div>
+
+        <div class="controls">
+            <button onclick="startGame()" id="btn-start">▶️ 开始游戏</button>
+            <button onclick="stopGame()" id="btn-stop" disabled>⏹️ 停止</button>
+            <button onclick="clearAll()">🗑️ 清空</button>
+        </div>
+
+        <div class="circle-area">
+            <div class="circle-container" id="circle-container">
+                <div class="center-circle">
+                    🐺<br>狼人杀
+                </div>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="dialogue-panel">
+                <div class="panel-header werewolf">🐺 夜晚 - 狼人对话</div>
+                <div class="panel-output" id="werewolf-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待狼人行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header god">✨ 夜晚 - 神职行动</div>
+                <div class="panel-output" id="god-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待神职行动...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header day">☀️ 白天 - 讨论投票</div>
+                <div class="panel-output" id="day-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待白天讨论...
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-panel">
+                <div class="panel-header statistics">📊 实时统计</div>
+                <div class="panel-output" id="statistics-output">
+                    <div style="color: #999; text-align: center; padding: 20px;">
+                        等待游戏开始...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const players = [{"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 0, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 1, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#f44336", "emoji": "\ud83d\udc3a", "id": 2, "role": "\u72fc\u4eba"}, {"alive": true, "color": "#d32f2f", "emoji": "\ud83d\udc51", "id": 3, "role": "\u72fc\u738b"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 4, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 5, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 6, "role": "\u6751\u6c11"}, {"alive": true, "color": "#4CAF50", "emoji": "\ud83d\udc68\u200d\ud83c\udf3e", "id": 7, "role": "\u6751\u6c11"}, {"alive": true, "color": "#2196F3", "emoji": "\ud83d\udc41\ufe0f", "id": 8, "role": "\u9884\u8a00\u5bb6"}, {"alive": true, "color": "#9C27B0", "emoji": "\ud83e\uddea", "id": 9, "role": "\u5973\u5deb"}, {"alive": true, "color": "#FF9800", "emoji": "\ud83c\udff9", "id": 10, "role": "\u730e\u4eba"}, {"alive": true, "color": "#00BCD4", "emoji": "\ud83d\udee1\ufe0f", "id": 11, "role": "\u5b88\u536b"}];
+        let eventSource = null;
+        let currentPhase = 'night';
+
+        function createCircle() {
+            const container = document.getElementById('circle-container');
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = Math.min(centerX, centerY) - 50;
+
+            players.forEach((player, index) => {
+                const angle = (index / players.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                const div = document.createElement('div');
+                div.className = 'player-circle';
+                div.id = 'player-' + player.id;
+                div.style.left = (x - 30) + 'px';
+                div.style.top = (y - 30) + 'px';
+                div.style.borderColor = player.color;
+                div.innerHTML = player.emoji + '<div class="player-name">P' + player.id + '</div>';
+
+                container.appendChild(div);
+            });
+        }
+
+        function setPhase(phase) {
+            currentPhase = phase;
+            document.body.className = phase;
+        }
+
+        function hidePlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('hidden');
+        }
+
+        function showPlayer(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.remove('hidden');
+        }
+
+        function markDead(playerId) {
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('dead');
+        }
+
+        function highlightPlayer(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('speaking');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('speaking');
+        }
+
+        function updateSheriff(playerId) {
+            document.querySelectorAll('.player-circle').forEach(el => {
+                el.classList.remove('sheriff');
+            });
+
+            const player = document.getElementById('player-' + playerId);
+            if (player) player.classList.add('sheriff');
+        }
+
+        function addDialogue(data) {
+            // 根据对话类型路由到不同的面板
+            let outputId;
+
+            if (data.panel === 'werewolf') {
+                outputId = 'werewolf-output';
+            } else if (data.panel === 'god') {
+                outputId = 'god-output';
+            } else if (data.panel === 'statistics') {
+                outputId = 'statistics-output';
+            } else {
+                outputId = 'day-output';
+            }
+
+            const output = document.getElementById(outputId);
+
+            if (output.innerHTML.includes('等待')) {
+                output.innerHTML = '';
+            }
+
+            const item = document.createElement('div');
+            item.className = 'dialogue-item';
+
+            if (data.player_id === -1) {
+                item.style.borderLeftColor = '#667eea';
+                item.style.background = '#f0f4ff';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'dialogue-content';
+                contentDiv.style.fontWeight = 'bold';
+                contentDiv.style.color = '#667eea';
+                contentDiv.style.whiteSpace = 'pre-wrap';  // 保留换行和空格
+                contentDiv.textContent = data.content;
+
+                item.appendChild(contentDiv);
+                output.insertBefore(item, output.firstChild);
+                return;
+            }
+
+            const player = players[data.player_id];
+            item.style.borderLeftColor = player.color;
+
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'dialogue-player';
+            playerDiv.style.color = player.color;
+
+            // 只在狼人/神职面板显示角色，白天面板不显示
+            if (data.panel === 'werewolf' || data.panel === 'god') {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id + ' (' + player.role + ')';
+            } else {
+                playerDiv.textContent = player.emoji + ' Player ' + player.id;
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'dialogue-content';
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'dialogue-meta';
+            metaDiv.textContent = (data.phase || '') + ' | ' + new Date().toLocaleTimeString();
+
+            item.appendChild(playerDiv);
+            item.appendChild(contentDiv);
+            item.appendChild(metaDiv);
+
+            output.insertBefore(item, output.firstChild);
+
+            // Typewriter effect
+            const text = data.content;
+            let index = 0;
+
+            function typeChar() {
+                if (index < text.length) {
+                    contentDiv.textContent += text[index];
+                    index++;
+                    setTimeout(typeChar, 20);
+                }
+            }
+
+            typeChar();
+        }
+
+        function startGame() {
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+
+            fetch('/api/start', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Started:', data);
+                    startEventStream();
+                });
+        }
+
+        function stopGame() {
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+
+            fetch('/api/stop', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+                });
+        }
+
+        function clearAll() {
+            document.getElementById('werewolf-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待狼人行动...</div>';
+            document.getElementById('god-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待神职行动...</div>';
+            document.getElementById('day-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待白天讨论...</div>';
+            document.getElementById('statistics-output').innerHTML = '<div style="color: #999; text-align: center; padding: 20px;">等待游戏开始...</div>';
+        }
+
+        function startEventStream() {
+            if (eventSource) eventSource.close();
+
+            eventSource = new EventSource('/api/stream');
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'phase') {
+                    setPhase(data.phase);
+                    if (data.phase === 'night') {
+                        players.forEach((p, i) => {
+                            if (!['狼人', '狼王'].includes(p.role)) {
+                                hidePlayer(i);
+                            }
+                        });
+                    } else {
+                        players.forEach((p, i) => showPlayer(i));
+                    }
+                } else if (data.type === 'dialogue') {
+                    if (data.player_id === -1 && data.content.includes('当选警长')) {
+                        const match = data.content.match(/Player (\d+)/);
+                        if (match) {
+                            updateSheriff(parseInt(match[1]));
+                        }
+                    }
+                    if (data.player_id >= 0) {
+                        highlightPlayer(data.player_id);
+                    }
+                    addDialogue(data);
+                } else if (data.type === 'status') {
+                    document.getElementById('status').textContent = '状态：' + data.message;
+                } else if (data.type === 'death') {
+                    markDead(data.player_id);
+                }
+            };
+
+            eventSource.onerror = function() {
+                console.error('EventSource error');
+                eventSource.close();
+            };
+        }
+
+        window.addEventListener('load', () => {
+            createCircle();
+        });
+
+        window.addEventListener('resize', () => {
+            document.getElementById('circle-container').innerHTML = '<div class="center-circle">🐺<br>狼人杀</div>';
+            createCircle();
+        });
+    </script>
+</body>
+</html>

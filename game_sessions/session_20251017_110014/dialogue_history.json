@@ -1,0 +1,2841 @@
+[
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "难度模块",
+    "content": "🔧 难度模块剧本已加载 (地狱)：\n• A模块：真预P8 VS 悍跳P3，金水P7，查杀P5\n• B模块：夜刀P5，守卫守P7，女巫毒P11\n• C模块：首日制造P8 vs P3平票，票型=P7,P8 | P0,P1\n• D模块：狼王目标P8，猎人倒钩瞄准P9",
+    "panel": "day"
+  },
+  {
+    "type": "phase",
+    "phase": "night"
+  },
+  {
+    "type": "status",
+    "message": "🌙 第1夜"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜",
+    "content": "🌙 天黑请闭眼...",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "🐺 狼人请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜-狼人",
+    "content": "🐺 狼人请睁眼，认识队友。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 350,
+    "player_tokens": {
+      "0": 350
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第1夜-狼人",
+    "content": "建议先观察，但如果需要行动，可以考虑投 Player 4。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 728,
+    "player_tokens": {
+      "0": 350,
+      "1": 378
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第1夜-狼人",
+    "content": "建议今晚杀死Player 4。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 1093,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第1夜-狼人",
+    "content": "建议先观察，但如果要行动，可以考虑击杀 Player 4，他看起来比较活跃。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 1431,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 3,
+    "phase": "第1夜-狼人",
+    "content": "建议优先考虑击杀 Player 4，感觉他可能是个关键人物。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜-狼人",
+    "content": "🐺 狼人按难度剧本锁定 Player 5 为刀口",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "狼人请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "🛡️ 守卫请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜-守卫",
+    "content": "🛡️ 守卫请睁眼。第一夜空守，不守护任何人。",
+    "panel": "god"
+  },
+  {
+    "type": "dialogue",
+    "player_id": 11,
+    "phase": "第1夜-守卫",
+    "content": "[空守] 守卫第一夜空守",
+    "panel": "god"
+  },
+  {
+    "type": "dialogue",
+    "player_id": 11,
+    "phase": "第1夜-守卫",
+    "content": "[剧本调整] 守卫改为守护 Player 7",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "守卫请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "👁️ 预言家请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜-预言家",
+    "content": "👁️ 预言家请睁眼，选择一个玩家查验。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 1902,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338,
+      "8": 471
+    }
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 2146,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338,
+      "8": 715
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第1夜-预言家",
+    "content": "[决策] 我决定验证 Player 5，因为在警上的发言中，他表现得非常主动，这可能是为了掩盖自己的身份。\n\n[验人结果] Player 5 是好人。\n\n[思考] 建议大家多听听Player 5的意见，他在昨晚的讨论中提出了很多有价值的点。",
+    "panel": "god"
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第1夜-预言家",
+    "content": "[剧本校正] 调整验人目标为 Player 5 -> 狼人\n[白天提示] N1我验到5号是狼，给7号发金水。验5是因为他位置靠后，容易藏狼。",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "预言家请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "🧪 女巫请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1夜-女巫",
+    "content": "🧪 女巫请睁眼。今晚 Player 5 被狼人击杀。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 2417,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338,
+      "8": 715,
+      "9": 271
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第1夜-女巫",
+    "content": "[剧本毒药] 预设毒杀 Player 11",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "女巫请闭眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天",
+    "content": "📊 第1天 实时统计\n===================================\n\n🌙 夜晚行动:\n  🐺 狼刀: Player 5\n  🛡️ 守卫: Player 7\n  👁️ 验人: P5 → 狼人\n  🧪 毒药: Player 11\n\n💀 夜晚死亡: P5, P11\n\n===================================\n📈 存活: 🐺4 vs 👨‍🌾8",
+    "panel": "statistics"
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第1天黎明"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天黎明",
+    "content": "💀 昨晚死亡：Player 5, Player 11（夜死无遗言）",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 5
+  },
+  {
+    "type": "death",
+    "player_id": 11
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "🎖️ 警长竞选"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 竞选警长的玩家: Player 4, Player 8, Player 1, Player 0",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 2796,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338,
+      "8": 715,
+      "9": 271,
+      "4": 379
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:10:V",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 3173,
+    "player_tokens": {
+      "0": 350,
+      "1": 378,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 271,
+      "4": 379
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "警长竞选",
+    "content": "CL:S+5@N1|CHK:8:V",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 3543,
+    "player_tokens": {
+      "0": 350,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 271,
+      "4": 379
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:1:W",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 3890,
+    "player_tokens": {
+      "0": 697,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 271,
+      "4": 379
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:6:V",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ Player 4 当选警长！",
+    "panel": "day"
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "🎖️ 警长竞选"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 竞选警长的玩家: Player 10, Player 7, Player 9, Player 0, Player 2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 4272,
+    "player_tokens": {
+      "0": 697,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 271,
+      "4": 379,
+      "10": 382
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:4:W",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 4614,
+    "player_tokens": {
+      "0": 697,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 271,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:6:V",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 4958,
+    "player_tokens": {
+      "0": 697,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 615,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:5:V",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 5305,
+    "player_tokens": {
+      "0": 1044,
+      "1": 748,
+      "2": 365,
+      "3": 338,
+      "8": 1092,
+      "9": 615,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:7:W",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 5655,
+    "player_tokens": {
+      "0": 1044,
+      "1": 748,
+      "2": 715,
+      "3": 338,
+      "8": 1092,
+      "9": 615,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "警长竞选",
+    "content": "CL:S+4@N1|CHK:10:V",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ Player 0 当选警长！",
+    "panel": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第1天讨论"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 警长决定发言顺序：Player 0, Player 8, Player 4, Player 10, Player 2, Player 7, Player 1, Player 9, Player 6, Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 6248,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 715,
+      "3": 338,
+      "8": 1092,
+      "9": 615,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第1天讨论",
+    "content": "PV:1|SUS:5@3.5,6@3.2,9@2.8|EV:+101,-105|CL:W+2@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 6807,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 715,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 379,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第1天讨论",
+    "content": "PV:9|SUS:5@3.2,6@2.8,8@2.5|EV:+101,-103",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 7345,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 715,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 917,
+      "10": 382,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第1天讨论",
+    "content": "PV:5|SUS:7@0.0",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 7900,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 715,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 917,
+      "10": 937,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第1天讨论",
+    "content": "PV:0|SUS:0@5.0,3@3.5,6@3.0|CL:H-1@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 8471,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 1286,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 917,
+      "10": 937,
+      "7": 342
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第1天讨论",
+    "content": "PV:3|SUS:5@3.5,6@3.0,11@2.5|EV:+101,-104|CL:W+2@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 9035,
+    "player_tokens": {
+      "0": 1637,
+      "1": 748,
+      "2": 1286,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 917,
+      "10": 937,
+      "7": 906
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第1天讨论",
+    "content": "PV:4|SUS:5@2.5,6@2.0,7@1.5|EV:+101,-102|CL:S+2@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 9595,
+    "player_tokens": {
+      "0": 1637,
+      "1": 1308,
+      "2": 1286,
+      "3": 338,
+      "8": 1651,
+      "9": 615,
+      "4": 917,
+      "10": 937,
+      "7": 906
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第1天讨论",
+    "content": "PV:2|ALT:6|SUS:6@0.0,1@2.5,3@2.0|EV:+101,-102|CL:W+3@N1|CF:4.0|RK:3.0 END",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 10158,
+    "player_tokens": {
+      "0": 1637,
+      "1": 1308,
+      "2": 1286,
+      "3": 338,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第1天讨论",
+    "content": "PV:10|SUS:5@3.2,7@2.9,9@2.5|EV:+101,-103|CL:W+2@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 10722,
+    "player_tokens": {
+      "0": 1637,
+      "1": 1308,
+      "2": 1286,
+      "3": 338,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第1天讨论",
+    "content": "PV:7|SUS:3@3.5,5@3.2,9@2.8|EV:+102,-105|CL:S+2@N1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 11313,
+    "player_tokens": {
+      "0": 1637,
+      "1": 1308,
+      "2": 1286,
+      "3": 929,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 3,
+    "phase": "第1天讨论",
+    "content": "PV:4|SUS:3@4.5,5@4.0,9@3.5|EV:+203,-117|CL:Gd+4@N1",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票阶段，请所有玩家投票。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 12034,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1308,
+      "2": 1286,
+      "3": 929,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 12596,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1286,
+      "3": 929,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 13264,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 929,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 13955,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 1651,
+      "9": 1178,
+      "4": 917,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 3,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 6",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 14652,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 1651,
+      "9": 1178,
+      "4": 1614,
+      "10": 937,
+      "7": 906,
+      "6": 564
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 15317,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 1651,
+      "9": 1178,
+      "4": 1614,
+      "10": 937,
+      "7": 906,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 15959,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 1651,
+      "9": 1178,
+      "4": 1614,
+      "10": 937,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 16635,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 2327,
+      "9": 1178,
+      "4": 1614,
+      "10": 937,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 17317,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 937,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 17998,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1620,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第1天投票",
+    "content": "🗳️ 投票给 Player 3",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天投票",
+    "content": "📊 投票结果：\n  Player 1: 2票 (P6, P9)\n  Player 3: 7票 (P0, P1, P2, P4, P7, P8, P10)\n  Player 6: 1票 (P3)",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天投票",
+    "content": "🗳️ Player 3 得票最多，被处决。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天投票",
+    "content": "💬 Player 3 请发表遗言。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 18315,
+    "player_tokens": {
+      "0": 2358,
+      "1": 1870,
+      "2": 1954,
+      "3": 1937,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 3,
+    "phase": "第1天-遗言",
+    "content": "[遗言] 我其实是预言家，昨晚查到Player 7是狼人，大家一定要小心，不要让他蒙混过关。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天投票",
+    "content": "⚰️ Player 3 (狼人) 被投票处决。",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 3
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第1天统计",
+    "content": "📊 第1天统计信息 📊\n----------------------------------------\n🌙 夜晚行动:\n  🐺 狼人刀: Player 5\n  🛡️ 守卫守: Player 7\n  👁️ 预言家验: Player 5 (狼人)\n  🧪 女巫毒: Player 11\n  💀 夜晚死亡: Player 5, Player 11\n  🗳️ 白天处决: Player 3 (狼人)\n----------------------------------------\n📈 当前存活: 狼人 3 人 | 好人 6 人\n✅ 游戏继续",
+    "panel": "statistics"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "自动模式",
+    "content": "⏩ 自动模式：3秒后自动进入下一天",
+    "panel": "day"
+  },
+  {
+    "type": "phase",
+    "phase": "night"
+  },
+  {
+    "type": "status",
+    "message": "🌙 第2夜"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2夜",
+    "content": "🌙 天黑请闭眼...",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "🐺 狼人请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2夜-狼人",
+    "content": "🐺 狼人请睁眼，认识队友。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 18640,
+    "player_tokens": {
+      "0": 2683,
+      "1": 1870,
+      "2": 1954,
+      "3": 1937,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第2夜-狼人",
+    "content": "建议投 Player 4，他的自信可能是在掩饰。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 19026,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 1954,
+      "3": 1937,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第2夜-狼人",
+    "content": "建议今晚击杀Player 8。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 19352,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 2327,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第2夜-狼人",
+    "content": "建议今晚投Player 6，他的发言很强势，可能是关键人物。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2夜-狼人",
+    "content": "🐺 狼人决定刀 Player 7",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "狼人请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "👁️ 预言家请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2夜-预言家",
+    "content": "👁️ 预言家请睁眼，选择一个玩家查验。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 19803,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 2778,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 20053,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 3028,
+      "9": 1860,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第2夜-预言家",
+    "content": "[决策] 我决定验证 Player 1，因为他警上的发言和投票行为都显得很可疑。\n\n[验人结果] Player 1 是狼人。\n\n[思考] 大家注意观察Player 1的行为和发言，看看是否有异常，我们可以从细节中找出破绽。",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "预言家请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "🧪 女巫请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2夜-女巫",
+    "content": "🧪 女巫请睁眼。今晚 Player 7 被狼人击杀。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 20332,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 3028,
+      "9": 2139,
+      "4": 1614,
+      "10": 1618,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第2夜-女巫",
+    "content": "[使用解药] 救了 Player 7",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "女巫请闭眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天",
+    "content": "📊 第2天 实时统计\n===================================\n\n🌙 夜晚行动:\n  🐺 狼刀: Player 7\n  👁️ 验人: P1 → 狼人\n  🧪 解药: Player 7\n\n🎉 平安夜\n\n===================================\n📈 存活: 🐺3 vs 👨‍🌾6",
+    "panel": "statistics"
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第2天黎明"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天黎明",
+    "content": "🎉 昨晚是平安夜，无人死亡。",
+    "panel": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第2天讨论"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 警长决定发言顺序：Player 10, Player 0, Player 8, Player 2, Player 4, Player 7, Player 6, Player 9, Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 20892,
+    "player_tokens": {
+      "0": 2683,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 3028,
+      "9": 2139,
+      "4": 1614,
+      "10": 2178,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第2天讨论",
+    "content": "PV:9|SUS:5@3.5,7@3.0,12@2.5|EV:+201,-117|CL:H+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 21456,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 3028,
+      "9": 2139,
+      "4": 1614,
+      "10": 2178,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第2天讨论",
+    "content": "PV:1|SUS:1@5.0,3@3.5,7@2.5|EV:+201,-101|CL:W-2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 22017,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2280,
+      "3": 1937,
+      "8": 3589,
+      "9": 2139,
+      "4": 1614,
+      "10": 2178,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第2天讨论",
+    "content": "PV:0|SUS:0@5.0,4@3.5,7@2.5|EV:+101,-103|CL:S+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 22585,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2139,
+      "4": 1614,
+      "10": 2178,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第2天讨论",
+    "content": "PV:3|SUS:5@4.2,6@3.8,9@2.5|EV:+210,-105|CL:W+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 23148,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2139,
+      "4": 2177,
+      "10": 2178,
+      "7": 1548,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第2天讨论",
+    "content": "PV:5|SUS:0@5.0,3@3.5,8@2.5|EV:+101,-102|CL:S+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 23712,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2139,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1229
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第2天讨论",
+    "content": "PV:8|SUS:5@3.5,2@3.0,7@2.5|EV:+203,-117|CL:S+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 24304,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2139,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第2天讨论",
+    "content": "PV:7|SUS:3@4.2,9@3.8,6@3.5|EV:+201,-117|CL:S+3@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 24869,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2256,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第2天讨论",
+    "content": "PV:10|SUS:6@3.5,8@3.2,3@2.8|EV:+101,-103|CL:W+2@N2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 25429,
+    "player_tokens": {
+      "0": 3247,
+      "1": 2816,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第2天讨论",
+    "content": "PV:2|ALT:2|SUS:2@5.0,1@1.0,3@0.5|EV:+101,-202|CL:W+3@N2|CF:4.5|RK:3.5 END",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票阶段，请所有玩家投票。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 26113,
+    "player_tokens": {
+      "0": 3931,
+      "1": 2816,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 26970,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 2848,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 7",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 27616,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2177,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 28255,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2816,
+      "10": 2178,
+      "7": 2112,
+      "6": 1821
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 28882,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2816,
+      "10": 2178,
+      "7": 2112,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 29522,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 3589,
+      "9": 2704,
+      "4": 2816,
+      "10": 2178,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 30230,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 4297,
+      "9": 2704,
+      "4": 2816,
+      "10": 2178,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 30927,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 4297,
+      "9": 3401,
+      "4": 2816,
+      "10": 2178,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 31584,
+    "player_tokens": {
+      "0": 3931,
+      "1": 3673,
+      "2": 3494,
+      "3": 1937,
+      "8": 4297,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第2天投票",
+    "content": "🗳️ 投票给 Player 1",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天投票",
+    "content": "📊 投票结果：\n  Player 1: 7票 (P2, P4, P6, P7, P8, P9, P10)\n  Player 2: 1票 (P0)\n  Player 7: 1票 (P1)",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天投票",
+    "content": "🗳️ Player 1 得票最多，被处决。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天投票",
+    "content": "💬 Player 1 请发表遗言。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 31963,
+    "player_tokens": {
+      "0": 3931,
+      "1": 4052,
+      "2": 3494,
+      "3": 1937,
+      "8": 4297,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 1,
+    "phase": "第2天-遗言",
+    "content": "[遗言] 我在死前想说，昨晚的讨论中，Player 3的发言似乎有些可疑，大家可能需要注意一下他的行为和言论，虽然我不知道真相，但希望我的死能带来一些有价值的线索。同时，我也想提醒大家，狼人可能已经混入了大家之中，需要小心观察。希望我的牺牲不会白费。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天投票",
+    "content": "⚰️ Player 1 (狼人) 被投票处决。",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 1
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第2天统计",
+    "content": "📊 第2天统计信息 📊\n----------------------------------------\n🌙 夜晚行动:\n  🐺 狼人刀: Player 7\n  👁️ 预言家验: Player 1 (狼人)\n  🧪 女巫救: Player 7\n  🎉 夜晚平安夜\n  🗳️ 白天处决: Player 1 (狼人)\n----------------------------------------\n📈 当前存活: 狼人 2 人 | 好人 6 人\n✅ 游戏继续",
+    "panel": "statistics"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "自动模式",
+    "content": "⏩ 自动模式：3秒后自动进入下一天",
+    "panel": "day"
+  },
+  {
+    "type": "phase",
+    "phase": "night"
+  },
+  {
+    "type": "status",
+    "message": "🌙 第3夜"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3夜",
+    "content": "🌙 天黑请闭眼...",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "🐺 狼人请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3夜-狼人",
+    "content": "🐺 狼人请睁眼，认识队友。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 32277,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3494,
+      "3": 1937,
+      "8": 4297,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第3夜-狼人",
+    "content": "建议今晚投 Player 6，他的行为有些可疑。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 32615,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 4297,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第3夜-狼人",
+    "content": "建议今晚击杀 Player 4。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3夜-狼人",
+    "content": "🐺 狼人决定刀 Player 9",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "狼人请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "👁️ 预言家请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3夜-预言家",
+    "content": "👁️ 预言家请睁眼，选择一个玩家查验。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 33066,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 4748,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 33315,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 4997,
+      "9": 3401,
+      "4": 2816,
+      "10": 2835,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第3夜-预言家",
+    "content": "[决策] 我决定验证 Player 2，因为他警上的发言和后续的行为都显得非常可疑。\n\n[验人结果] Player 2 是狼人。\n\n[思考] 昨晚我做了一个重要的验证，发现Player 2的行为非常可疑，建议大家多关注他的发言。",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "预言家请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "🧪 女巫请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3夜-女巫",
+    "content": "🧪 女巫请睁眼。今晚 Player 9 被狼人击杀。",
+    "panel": "god"
+  },
+  {
+    "type": "dialogue",
+    "player_id": 9,
+    "phase": "第3夜-女巫",
+    "content": "[不使用药] 女巫选择本回合不使用药。",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "女巫请闭眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天",
+    "content": "📊 第3天 实时统计\n===================================\n\n🌙 夜晚行动:\n  🐺 狼刀: Player 9\n  👁️ 验人: P2 → 狼人\n\n💀 夜晚死亡: P9\n\n===================================\n📈 存活: 🐺2 vs 👨‍🌾6",
+    "panel": "statistics"
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第3天黎明"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天黎明",
+    "content": "💀 昨晚死亡：Player 9（夜死无遗言）",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 9
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第3天讨论"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 警长决定发言顺序：Player 10, Player 8, Player 4, Player 7, Player 2, Player 0, Player 6",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 33883,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 4997,
+      "9": 3401,
+      "4": 2816,
+      "10": 3403,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第3天讨论",
+    "content": "PV:11|SUS:3@3.5,7@3.0,8@0.5|EV:+203,-117|CL:H-2@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 34459,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 2816,
+      "10": 3403,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第3天讨论",
+    "content": "PV:7|SUS:5@3.5,6@3.2,11@2.8|EV:+102,-104|CL:S+2@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 35044,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 2752,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第3天讨论",
+    "content": "PV:5|SUS:3@4.2,7@3.8,9@2.5|EV:+102,-108|CL:S+3@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 35606,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 3832,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第3天讨论",
+    "content": "PV:8|SUS:3@3.5,7@3.2,4@2.8|EV:+201,-103|CL:S+2@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 36180,
+    "player_tokens": {
+      "0": 4245,
+      "1": 4052,
+      "2": 4406,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第3天讨论",
+    "content": "PV:3|SUS:5@3.5,8@3.2,9@2.8|EV:+102,-104|CL:W+2@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 36750,
+    "player_tokens": {
+      "0": 4815,
+      "1": 4052,
+      "2": 4406,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 2448
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第3天讨论",
+    "content": "PV:1|SUS:4@3.5,9@3.2,7@2.8|EV:+203,-117|CL:W+2@N3",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 37343,
+    "player_tokens": {
+      "0": 4815,
+      "1": 4052,
+      "2": 4406,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 3041
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第3天讨论",
+    "content": "PV:7|SUS:3@4.2,9@3.8,5@2.5|EV:+210,-105|CL:S+3@N3",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票阶段，请所有玩家投票。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 37967,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 4406,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 3041
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 38623,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 3401,
+      "10": 3403,
+      "7": 3314,
+      "6": 3041
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 39315,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 4093,
+      "10": 3403,
+      "7": 3314,
+      "6": 3041
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 0",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 39968,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 4093,
+      "10": 3403,
+      "7": 3314,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 6,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 0",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 40591,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 5573,
+      "9": 3401,
+      "4": 4093,
+      "10": 3403,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 41250,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 6232,
+      "9": 3401,
+      "4": 4093,
+      "10": 3403,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 0",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 41919,
+    "player_tokens": {
+      "0": 5439,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 6232,
+      "9": 3401,
+      "4": 4093,
+      "10": 4072,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第3天投票",
+    "content": "🗳️ 投票给 Player 7",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天投票",
+    "content": "📊 投票结果：\n  Player 0: 3票 (P4, P6, P8)\n  Player 4: 3票 (P0, P2, P7)\n  Player 7: 1票 (P10)",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天投票",
+    "content": "🗳️ Player 0 得票最多，被处决。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天投票",
+    "content": "💬 Player 0 请发表遗言。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 42211,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5062,
+      "3": 1937,
+      "8": 6232,
+      "9": 3401,
+      "4": 4093,
+      "10": 4072,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 0,
+    "phase": "第3天-遗言",
+    "content": "[遗言] 我真的不是狼人，我觉得真正的威胁是Player 3，大家一定要小心。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天投票",
+    "content": "⚰️ Player 0 (狼人) 被投票处决。",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 0
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第3天统计",
+    "content": "📊 第3天统计信息 📊\n----------------------------------------\n🌙 夜晚行动:\n  🐺 狼人刀: Player 9\n  👁️ 预言家验: Player 2 (狼人)\n  💀 夜晚死亡: Player 9\n  🗳️ 白天处决: Player 0 (狼人)\n----------------------------------------\n📈 当前存活: 狼人 1 人 | 好人 5 人\n✅ 游戏继续",
+    "panel": "statistics"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "自动模式",
+    "content": "⏩ 自动模式：3秒后自动进入下一天",
+    "panel": "day"
+  },
+  {
+    "type": "phase",
+    "phase": "night"
+  },
+  {
+    "type": "status",
+    "message": "🌙 第4夜"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4夜",
+    "content": "🌙 天黑请闭眼...",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "🐺 狼人请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4夜-狼人",
+    "content": "🐺 狼人请睁眼，认识队友。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 42516,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 6232,
+      "9": 3401,
+      "4": 4093,
+      "10": 4072,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第4夜-狼人",
+    "content": "建议今晚优先解决 Player 6，感觉他对我们有威胁。",
+    "panel": "werewolf"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4夜-狼人",
+    "content": "🐺 狼人决定刀 Player 6",
+    "panel": "werewolf"
+  },
+  {
+    "type": "status",
+    "message": "狼人请闭眼"
+  },
+  {
+    "type": "status",
+    "message": "👁️ 预言家请睁眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4夜-预言家",
+    "content": "👁️ 预言家请睁眼，选择一个玩家查验。",
+    "panel": "god"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 42951,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 6667,
+      "9": 3401,
+      "4": 4093,
+      "10": 4072,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 43199,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 6915,
+      "9": 3401,
+      "4": 4093,
+      "10": 4072,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第4夜-预言家",
+    "content": "[决策] 我决定验证 Player 2，因为他的发言和投票行为都显示出一些异常，可能是狼人。\n\n[验人结果] Player 2 是狼人。\n\n[思考] 大家请注意观察Player 2的行为和发言，我有理由相信他是狼人。",
+    "panel": "god"
+  },
+  {
+    "type": "status",
+    "message": "预言家请闭眼"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天",
+    "content": "📊 第4天 实时统计\n===================================\n\n🌙 夜晚行动:\n  🐺 狼刀: Player 6\n  👁️ 验人: P2 → 狼人\n\n💀 夜晚死亡: P6\n\n===================================\n📈 存活: 🐺1 vs 👨‍🌾5",
+    "panel": "statistics"
+  },
+  {
+    "type": "phase",
+    "phase": "day"
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第4天黎明"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天黎明",
+    "content": "💀 昨晚死亡：Player 6（夜死无遗言）",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 6
+  },
+  {
+    "type": "status",
+    "message": "☀️ 第4天讨论"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "警长竞选",
+    "content": "🎖️ 警长决定发言顺序：Player 10, Player 4, Player 8, Player 2, Player 7",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 43768,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 6915,
+      "9": 3401,
+      "4": 4093,
+      "10": 4641,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第4天讨论",
+    "content": "PV:7|SUS:3@3.5,9@3.2,5@2.8|EV:+201,-117|CL:H+3@N4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 44315,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 6915,
+      "9": 3401,
+      "4": 4640,
+      "10": 4641,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第4天讨论",
+    "content": "PV:2|SUS:2@5.0|EV:+201|CL:S+4@N4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 44877,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5367,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 4640,
+      "10": 4641,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第4天讨论",
+    "content": "PV:2|SUS:2@5.0,5@3.5,8@3.0|EV:+201,-102|CL:S+4@N4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 45441,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5931,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 4640,
+      "10": 4641,
+      "7": 3937,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第4天讨论",
+    "content": "PV:3|SUS:4@4.2,10@3.8,5@2.9|EV:+203,-109|CL:W+3@N4",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 46002,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 5931,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 4640,
+      "10": 4641,
+      "7": 4498,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第4天讨论",
+    "content": "PV:2|SUS:2@5.0,5@3.5,9@2.5|EV:+101,-102|CL:S+4@N4",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票阶段，请所有玩家投票。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 46638,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6567,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 4640,
+      "10": 4641,
+      "7": 4498,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票给 Player 10",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 47285,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6567,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 5287,
+      "10": 4641,
+      "7": 4498,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 4,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票给 Player 10",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 47889,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6567,
+      "3": 1937,
+      "8": 7477,
+      "9": 3401,
+      "4": 5287,
+      "10": 4641,
+      "7": 5102,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 7,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票给 Player 2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 48489,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6567,
+      "3": 1937,
+      "8": 8077,
+      "9": 3401,
+      "4": 5287,
+      "10": 4641,
+      "7": 5102,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 8,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票给 Player 2",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 49099,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6567,
+      "3": 1937,
+      "8": 8077,
+      "9": 3401,
+      "4": 5287,
+      "10": 5251,
+      "7": 5102,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 10,
+    "phase": "第4天投票",
+    "content": "🗳️ 投票给 Player 2",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天投票",
+    "content": "📊 投票结果：\n  Player 2: 3票 (P7, P8, P10)\n  Player 10: 2票 (P2, P4)",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天投票",
+    "content": "🗳️ Player 2 得票最多，被处决。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天投票",
+    "content": "💬 Player 2 请发表遗言。",
+    "panel": "day"
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 49440,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 6908,
+      "3": 1937,
+      "8": 8077,
+      "9": 3401,
+      "4": 5287,
+      "10": 5251,
+      "7": 5102,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第4天-遗言",
+    "content": "[遗言] 哈哈，你们真是太聪明了，竟然这么快就发现了我是狼王。不过，我想提醒大家，真正的危险还没有过去，Player 4和Player 7的言行非常可疑，希望你们能谨慎考虑。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天投票",
+    "content": "⚰️ Player 2 (狼王) 被投票处决。",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 2
+  },
+  {
+    "type": "token_update",
+    "total_tokens": 49889,
+    "player_tokens": {
+      "0": 5731,
+      "1": 4052,
+      "2": 7357,
+      "3": 1937,
+      "8": 8077,
+      "9": 3401,
+      "4": 5287,
+      "10": 5251,
+      "7": 5102,
+      "6": 3694
+    }
+  },
+  {
+    "type": "dialogue",
+    "player_id": 2,
+    "phase": "第4天-狼王",
+    "content": "👑 狼王技能发动！我决定带走 Player 4，因为他的行为模式最符合预言家。",
+    "panel": "day"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天-狼王",
+    "content": "💥 狼王带走 Player 4 (村民)",
+    "panel": "day"
+  },
+  {
+    "type": "death",
+    "player_id": 4
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "第4天统计",
+    "content": "📊 第4天统计信息 📊\n----------------------------------------\n🌙 夜晚行动:\n  🐺 狼人刀: Player 6\n  👁️ 预言家验: Player 2 (狼人)\n  💀 夜晚死亡: Player 6\n  🗳️ 白天处决: Player 2 (狼王)\n----------------------------------------\n📈 当前存活: 狼人 0 人 | 好人 3 人\n⚠️ 触发游戏结束条件: 狼人全灭",
+    "panel": "statistics"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "自动模式",
+    "content": "⏩ 自动模式：3秒后自动进入下一天",
+    "panel": "day"
+  },
+  {
+    "type": "status",
+    "message": "🎉 游戏结束 - 村民阵营胜利"
+  },
+  {
+    "type": "dialogue",
+    "player_id": -1,
+    "phase": "游戏结束",
+    "content": "👨‍🌾 村民阵营获胜！\n\n胜利原因: 所有狼人已被消灭\n\n存活好人: Player 7 (村民), Player 8 (预言家), Player 10 (猎人)",
+    "panel": "day"
+  }
+]

@@ -33,12 +33,18 @@ except ImportError as e:
     DIFFICULTY_MODULES_ENABLED = False
 
 # 瀵煎叆鎺ㄧ悊鑳藉姏璇勪及鍣?(Reasoning Evaluator)
+EVALUATOR_ENABLED = False
+EVALUATOR_IMPORT_ERROR = None
 try:
     from enhanced_reasoning_evaluator import EnhancedReasoningEvaluator
     EVALUATOR_ENABLED = True
     print("[INFO] Enhanced Reasoning Evaluator loaded successfully")
-except ImportError as e:
-    print(f"[WARNING] Enhanced Reasoning Evaluator not found: {e}")
+except Exception as e:
+    EVALUATOR_IMPORT_ERROR = str(e)
+    print(f"[WARNING] Enhanced Reasoning Evaluator import failed: {e}")
+    print(f"[WARNING] Detailed error: {type(e).__name__}")
+    import traceback
+    traceback.print_exc()
     EVALUATOR_ENABLED = False
 
 # ========================================================================
@@ -329,6 +335,7 @@ class DialogueRecordingQueue(Queue):
 
         if isinstance(item, dict):
             processed_item = copy.deepcopy(item)
+
             if "round" not in processed_item:
                 processed_item["round"] = game_state.get("round", 0)
             if "phase" not in processed_item:
@@ -366,9 +373,9 @@ ELECTION_BEFORE_N1 = False     # 鏄惁寮€灞€鐧藉ぉ鍏堜笂璀︼�
 dialogue_queue = DialogueRecordingQueue()
 is_running = False
 waiting_for_next_day = False  # 鏄惁鍦ㄧ瓑寰呯敤鎴风偣鍑讳笅涓€澶?
-auto_mode = False  # 鏄惁鑷姩妯″紡锛堣嚜鍔ㄦ挱鏀炬父鎴忥級
-uls_mode = False  # 鏄惁浣跨敤ULS鐭ご閮ㄦā寮?
-current_difficulty = "鍩虹"  # 榛樿闅惧害绾у埆
+auto_mode = True  # 鏄惁鑷姩妯″紡锛堣嚜鍔ㄦ挱鏀炬父鎴忥級
+uls_mode = True  # 鏄惁浣跨敤ULS鐭ご閮ㄦā寮?
+current_difficulty = "鍦扮嫳"  # 榛樿闅惧害绾у埆
 activated_modules = []  # 褰撳墠婵€娲荤殑妯″潡鍒楄〃
 seer_claims = []
 sheriff_player_id = None
@@ -396,10 +403,14 @@ vote_tie_situations = []  # [{"round": N, "tied_players": [X, Y], "sheriff_decis
 badge_transfer_history = []  # [{"from": X, "to": Y, "round": N, "reason": "death/voluntary"}]
 
 game_state = {
-    "phase": "night",  # 娓告垙浠庡鏅氬紑濮?
+    "phase": "night",
     "round": 0,
     "dead_players": [],
-    "night_actions": {}
+    "night_actions": {},
+    "players": [],
+    "wolf_num": 0,
+    "alive_players": 0,
+    "total_players": 0
 }
 
 # 姣忔棩缁熻璁板綍
@@ -431,7 +442,7 @@ TEST_SUBJECT_ID = 7
 
 
 def sync_game_state(phase=None, round_num=None):
-    """Keep exported game_state structure updated for evaluators."""
+    """Keep the exported game_state structure in sync for evaluators."""
     global game_state
 
     if phase is not None:
@@ -451,18 +462,18 @@ def sync_game_state(phase=None, round_num=None):
 
 
 def build_bilingual_reasoning_guidance(round_num):
-    """Return bilingual deep-reasoning reminders for the evaluation subject."""
+    """Return deep reasoning reminders for the evaluation subject."""
     return (
         "\n[Deep Reasoning Guidance]\n"
-        "- 鎻愬嚭鑷冲皯涓ょ粍鍙兘鐨勭嫾闃熺粍鍚堬紝鍙紩鐢?C(12,4)=495 绛夌粍鍚堟暟瀛︼紝骞惰鏄庝繚鐣?鎺掗櫎鐞嗙敱銆俓n"
+        "- Mention at least two plausible wolf-team combinations (use combinatorics such as C(12,4)=495) and explain why each is viable or eliminated.\n"
         "- Provide probability/Bayesian updates, e.g., 'If Player 2 is real seer, P(Player 10 is wolf) ~0.8; otherwise ~0.3'.\n"
-        "- 鎸囧嚭鏈疆鏂板鐨勪俊鎭紙绁ㄥ瀷銆佸璺炽€佸姝荤瓑锛夊苟鎻忚堪浣犵殑鎼滅储鎴栧壀鏋濈瓥鐣ャ€俓n"
-        "- State your final alignment judgement and intended vote target, e.g., 'Final vote target: Player X'.\n"
+        "- Highlight new information from this round (vote pattern, counter-claims, night deaths) and describe the search/pruning strategy for the next steps.\n"
+        "- Conclude with your alignment judgement and intended vote target, e.g., 'Final vote target: Player X'.\n"
     )
 
 
 def build_bilingual_vote_guidance():
-    """Return bilingual voting guidance for the evaluation subject."""
+    """Return voting-stage reminders for the evaluation subject."""
     return (
         "\n[Deep Reasoning Voting Guidance]\n"
         "- Summarise in 1-2 sentences how vote patterns, role claims, and probabilities lead to your choice.\n"
@@ -532,6 +543,223 @@ LLM_CONFIG = load_llm_config()
 MAX_TOKENS_PER_PLAYER = 5000  # 姣忎釜鐜╁鏈€澶oken鏁?
 total_tokens_used = 0  # 鎬籺oken浣跨敤閲?
 player_tokens_used = {}  # 姣忎釜鐜╁鐨則oken浣跨敤閲?{player_id: tokens}
+
+def validate_uls_code(uls_code):
+    """
+    楠岃瘉ULS++浠ｇ爜鏍煎紡鏄惁姝ｇ‘
+
+    杩斿洖:
+        dict: {"valid": bool, "errors": [], "parsed": {...}}
+    """
+    import re
+
+    errors = []
+    parsed = {}
+
+    # 蹇呴』鍖呭惈PV:锛堟姇绁級
+    if 'PV:' not in uls_code:
+        errors.append("缂哄皯蹇呴渶鐨凱V:锛堟姇绁級瀛楁")
+        return {"valid": False, "errors": errors, "parsed": parsed}
+
+    # 瑙ｆ瀽鍚勪釜瀛楁
+    try:
+        # 瑙ｆ瀽PV锛圥rimary Vote锛?
+        pv_match = re.search(r'PV:(\d+)', uls_code)
+        if pv_match:
+            parsed['primary_vote'] = int(pv_match.group(1))
+        else:
+            errors.append("PV鏍煎紡涓嶆纭?)
+
+        # 瑙ｆ瀽SUS锛圫uspicion锛?
+        sus_match = re.search(r'SUS:([^|]+)', uls_code)
+        if sus_match:
+            sus_str = sus_match.group(1)
+            suspicions = []
+            for sus_item in sus_str.split(','):
+                if '@' in sus_item:
+                    seat, score = sus_item.split('@')
+                    suspicions.append({"seat": int(seat.strip()), "score": float(score.strip())})
+            parsed['suspicions'] = suspicions
+
+        # 瑙ｆ瀽EV锛圗vidence锛?
+        ev_match = re.search(r'EV:([^|]+)', uls_code)
+        if ev_match:
+            ev_str = ev_match.group(1)
+            evidences = [int(e.strip()) for e in ev_str.split(',') if e.strip()]
+            parsed['evidences'] = evidences
+
+        # 瑙ｆ瀽CL锛圕laim锛?
+        cl_match = re.search(r'CL:([^|]+)', uls_code)
+        if cl_match:
+            parsed['claim'] = cl_match.group(1)
+
+        # 鏍煎紡鍩烘湰姝ｇ‘
+        is_valid = len(errors) == 0 and 'primary_vote' in parsed
+
+        return {"valid": is_valid, "errors": errors, "parsed": parsed}
+
+    except Exception as e:
+        errors.append(f"瑙ｆ瀽閿欒: {str(e)}")
+        return {"valid": False, "errors": errors, "parsed": parsed}
+
+def call_llm_two_phase(prompt, player_id):
+    """
+    涓ら樁娈礚LM璋冪敤锛氭€濊€冮樁娈?+ 杈撳嚭闃舵
+
+    杩斿洖:
+        dict: {"thinking": "鎬濊€冭繃绋?, "uls_code": "PV:3|...", "tokens": int, "valid": bool}
+    """
+    global total_tokens_used, player_tokens_used
+
+    try:
+        # 閫夋嫨API閰嶇疆
+        if player_id == 1:
+            api_base = LLM_CONFIG['test_api_base']
+            model = LLM_CONFIG['test_model']
+        else:
+            api_base = LLM_CONFIG['npc_api_base']
+            model = LLM_CONFIG['npc_model']
+
+        url = f"{api_base}/v1/chat/completions"
+
+        # ============ 闃舵1锛氭€濊€冮樁娈?============
+        thinking_prompt = prompt + """
+
+**THINKING PHASE (鎬濊€冮樁娈?:**
+璇峰厛鍒嗘瀽褰撳墠灞€鍔匡紝杩涜娣卞害鎺ㄧ悊銆備綘鍙互锛?
+- 鍒椾妇鍙兘鐨勭嫾闃熺粍鍚堬紙缁勫悎鏁板锛?
+- 璁＄畻鍚勭帺瀹舵槸鐙肩殑姒傜巼锛堣礉鍙舵柉鎺ㄧ悊锛?
+- 鍒嗘瀽鍙戣█鐭涚浘鍜岄€昏緫婕忔礊
+- 鎬濊€冩渶浼樼瓥鐣?
+
+涓嶉渶瑕佽緭鍑轰换浣曠壒瀹氭牸寮忥紝鑷敱鎬濊€冨嵆鍙€?""
+
+        print(f"[TWO-PHASE] Player {player_id} - Phase 1: Thinking...")
+
+        thinking_payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": thinking_prompt}],
+            "temperature": 0.9,  # 楂樻俯搴︼紝榧撳姳鎺㈢储鎬ф€濊€?
+            "max_tokens": 800    # 瓒冲鐨則oken杩涜娣卞害鎺ㄧ悊
+        }
+
+        thinking_response = requests.post(url, json=thinking_payload, timeout=45)
+        thinking_response.raise_for_status()
+        thinking_result = thinking_response.json()
+
+        thinking_message = thinking_result["choices"][0]["message"]
+        thinking_content = (thinking_message.get("content") or "").strip()
+        if not thinking_content:
+            thinking_content = (thinking_message.get("reasoning_content") or "").strip()
+
+        print(f"[TWO-PHASE] Player {player_id} - Thinking complete ({len(thinking_content)} chars)")
+        print(f"[TWO-PHASE] Thinking preview: {thinking_content[:200]}...")
+
+        # ============ 闃舵2锛氳緭鍑洪樁娈?============
+        output_prompt = f"""Based on your previous thinking:
+{thinking_content}
+
+**OUTPUT PHASE (杈撳嚭闃舵):**
+Now output ONLY a strict ULS++ format line. NO explanation, NO text.
+
+Format:
+PV:<seat>[|ALT:<seat>][|SUS:<seat@score>,<seat@score>,<seat@score>][|EV:<卤id>,<卤id>][|CL:<role><卤><str>@N<round>]
+
+Example: PV:3|SUS:3@4.6,5@3.7,7@2.1|EV:+205,-118|CL:S+4@N2
+
+Output ONLY the ULS++ line:"""
+
+        print(f"[TWO-PHASE] Player {player_id} - Phase 2: Generating ULS++ output...")
+
+        output_payload = {
+            "model": model,
+            "messages": [
+                {"role": "user", "content": thinking_prompt},
+                {"role": "assistant", "content": thinking_content},
+                {"role": "user", "content": output_prompt}
+            ],
+            "temperature": 0.1,  # 浣庢俯搴︼紝纭繚鏍煎紡涓ユ牸
+            "max_tokens": 150    # 鍙渶瑕佷竴琛孶LS++浠ｇ爜
+        }
+
+        output_response = requests.post(url, json=output_payload, timeout=30)
+        output_response.raise_for_status()
+        output_result = output_response.json()
+
+        output_message = output_result["choices"][0]["message"]
+        uls_code = (output_message.get("content") or "").strip()
+        if not uls_code:
+            uls_code = (output_message.get("reasoning_content") or "").strip()
+
+        # 鎻愬彇绾疷LS++浠ｇ爜锛堝彲鑳芥贩鏈夊叾浠栨枃瀛楋級
+        import re
+        lines = uls_code.split('\n')
+        uls_line = None
+        for line in lines:
+            line = line.strip()
+            if any(marker in line for marker in ['PV:', 'CL:', 'N:', 'SUS:', 'EV:']):
+                uls_line = line
+                break
+
+        if uls_line:
+            uls_code = uls_line
+        else:
+            # 濡傛灉娌℃湁鎵惧埌锛屼娇鐢ㄧ涓€琛岄潪绌鸿
+            for line in lines:
+                if line.strip():
+                    uls_code = line.strip()
+                    break
+
+        print(f"[TWO-PHASE] Player {player_id} - ULS++ code: {uls_code}")
+
+        # ========== 楠岃瘉ULS++鏍煎紡 ==========
+        validation = validate_uls_code(uls_code)
+        if validation["valid"]:
+            print(f"[TWO-PHASE] Player {player_id} - ULS++ validation: PASSED")
+            print(f"[TWO-PHASE] Parsed data: {validation['parsed']}")
+        else:
+            print(f"[TWO-PHASE] Player {player_id} - ULS++ validation: FAILED")
+            print(f"[TWO-PHASE] Errors: {validation['errors']}")
+
+        # 缁熻token
+        thinking_tokens = thinking_result.get("usage", {}).get("total_tokens", 0)
+        output_tokens = output_result.get("usage", {}).get("total_tokens", 0)
+        total_tokens = thinking_tokens + output_tokens
+
+        total_tokens_used += total_tokens
+        if player_id >= 0:
+            if player_id not in player_tokens_used:
+                player_tokens_used[player_id] = 0
+            player_tokens_used[player_id] += total_tokens
+
+        print(f"[TWO-PHASE] Player {player_id} - Total tokens: {total_tokens} (thinking: {thinking_tokens}, output: {output_tokens})")
+
+        # 鍙戦€乼oken缁熻鍒板墠绔?
+        dialogue_queue.put({
+            "type": "token_update",
+            "total_tokens": total_tokens_used,
+            "player_tokens": dict(player_tokens_used)
+        })
+
+        return {
+            "thinking": thinking_content,
+            "uls_code": uls_code,
+            "tokens": total_tokens,
+            "valid": validation["valid"],
+            "parsed": validation["parsed"]
+        }
+
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"[TWO-PHASE] Error for Player {player_id}:")
+        print(f"  {type(e).__name__}: {e}")
+        print(f"  Traceback:\n{error_details}")
+        return {
+            "thinking": f"[Error: {str(e)}]",
+            "uls_code": "PV:1|SUS:1@0.0",
+            "tokens": 0
+        }
 
 HTML_TEMPLATE = r"""
 <!DOCTYPE html>
@@ -812,7 +1040,7 @@ HTML_TEMPLATE = r"""
             <button onclick="switchVersion('T1')" id="btn-version-t1" style="background: #4CAF50; color: white;">馃 T1鐗堟湰(褰撳墠)</button>
             <button onclick="testULSUnderstanding()" style="background: #2196F3; color: white;">馃И 娴嬭瘯ULS++鐞嗚В</button>
             <button onclick="nextDay()" id="btn-next" disabled>鈴笍 涓嬩竴澶?/button>
-            <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;" disabled>馃搳 鏄剧ず璇勪及</button>
+            <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white;">馃搳 鏄剧ず璇勪及</button>
             <button onclick="toggleLanguage()" id="btn-lang">馃寪 English</button>
             <button onclick="clearAll()" id="btn-clear">馃棏锔?娓呯┖</button>
         </div>
@@ -927,8 +1155,8 @@ HTML_TEMPLATE = r"""
         const players = {{ players | tojson }};
         let eventSource = null;
         let currentPhase = 'night';
-        let autoMode = false;  // 榛樿鎵嬪姩妯″紡
-        let ulsMode = false;  // 榛樿闈濽LS妯″紡
+        let autoMode = true;  // 榛樿鑷姩妯″紡
+        let ulsMode = true;  // 榛樿ULS妯″紡
         let currentLang = 'zh';  // 榛樿涓枃
 
         // 缈昏瘧瀛楀吀
@@ -1101,24 +1329,51 @@ HTML_TEMPLATE = r"""
             metaDiv.textContent = (data.phase || '') + ' | ' + new Date().toLocaleTimeString();
 
             item.appendChild(playerDiv);
-            item.appendChild(contentDiv);
-            item.appendChild(metaDiv);
 
-            output.insertBefore(item, output.firstChild);
+            // ========== ULS++妯″紡鐗规畩澶勭悊 ==========
+            if (data.uls_mode && data.thinking) {
+                // 鍒涘缓鎬濊€冮潰鏉匡紙鍙姌鍙狅級
+                const thinkingContainer = document.createElement('details');
+                thinkingContainer.style.cssText = 'margin: 8px 0; background: rgba(255, 255, 255, 0.05); border-radius: 5px; padding: 8px;';
 
-            // Typewriter effect
-            const text = data.content;
-            let index = 0;
+                const thinkingSummary = document.createElement('summary');
+                thinkingSummary.style.cssText = 'cursor: pointer; font-weight: bold; color: #4a90e2; font-size: 13px;';
+                thinkingSummary.innerHTML = '馃 鎬濊€冭繃绋?(Thinking Process) - 鐐瑰嚮灞曞紑';
 
-            function typeChar() {
-                if (index < text.length) {
-                    contentDiv.textContent += text[index];
-                    index++;
-                    setTimeout(typeChar, 20);
+                const thinkingContent = document.createElement('div');
+                thinkingContent.style.cssText = 'margin-top: 8px; padding: 10px; background: rgba(0, 0, 0, 0.1); border-radius: 4px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #ccc;';
+                thinkingContent.textContent = data.thinking;
+
+                thinkingContainer.appendChild(thinkingSummary);
+                thinkingContainer.appendChild(thinkingContent);
+                item.appendChild(thinkingContainer);
+
+                // ULS++浠ｇ爜鏄剧ず锛堥珮浜級
+                const ulsCodeDiv = document.createElement('div');
+                ulsCodeDiv.style.cssText = 'margin: 8px 0; padding: 12px; background: rgba(76, 175, 80, 0.15); border: 2px solid #4CAF50; border-radius: 6px; font-family: "Courier New", monospace; font-size: 14px; font-weight: bold; color: #4CAF50;';
+                ulsCodeDiv.innerHTML = '<div style="font-size: 11px; color: #81C784; margin-bottom: 4px;">馃摑 ULS++ CODE:</div>' + data.content;
+                item.appendChild(ulsCodeDiv);
+            } else {
+                // 姝ｅ父妯″紡锛氱洿鎺ユ樉绀哄唴瀹?
+                item.appendChild(contentDiv);
+
+                // Typewriter effect
+                const text = data.content;
+                let index = 0;
+
+                function typeChar() {
+                    if (index < text.length) {
+                        contentDiv.textContent += text[index];
+                        index++;
+                        setTimeout(typeChar, 20);
+                    }
                 }
+
+                typeChar();
             }
 
-            typeChar();
+            item.appendChild(metaDiv);
+            output.insertBefore(item, output.firstChild);
         }
 
         function startGame() {
@@ -1456,12 +1711,54 @@ HTML_TEMPLATE = r"""
                     if (data.status === 'ok') {
                         displayEvaluationModal(data.evaluation);
                     } else {
-                        alert('璇勪及鏁版嵁涓嶅彲鐢細' + (data.message || '鏈煡閿欒'));
+                        // 鏄剧ず璇︾粏閿欒淇℃伅
+                        displayErrorModal(data.message, data.debug_info);
                     }
                 })
                 .catch(error => {
-                    alert('鑾峰彇璇勪及澶辫触: ' + error.message);
+                    displayErrorModal('缃戠粶璇锋眰澶辫触: ' + error.message, {error_type: 'Network Error'});
                 });
+        }
+
+        function displayErrorModal(message, debug_info) {
+            const modal = document.createElement('div');
+            modal.id = 'error-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center;';
+
+            let debug_html = '';
+            if (debug_info) {
+                debug_html = `
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 15px; border-left: 4px solid #ff9800;">
+                        <strong>璋冭瘯淇℃伅:</strong>
+                        <pre style="margin: 10px 0; white-space: pre-wrap; word-wrap: break-word; font-size: 12px;">
+${JSON.stringify(debug_info, null, 2)}
+                        </pre>
+                    </div>
+                `;
+            }
+
+            const content = `
+                <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%;">
+                    <h2 style="color: #d32f2f; margin-top: 0;">鉂?璇勪及澶辫触</h2>
+                    <div style="background: #ffebee; padding: 15px; border-radius: 5px; border-left: 4px solid #d32f2f; margin-bottom: 20px;">
+                        <p style="margin: 0; color: #c62828; white-space: pre-wrap; word-wrap: break-word;">
+${message}
+                        </p>
+                    </div>
+                    ${debug_html}
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="closeErrorModal()" style="background: #d32f2f; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px;">鍏抽棴</button>
+                    </div>
+                </div>
+            `;
+
+            modal.innerHTML = content;
+            document.body.appendChild(modal);
+        }
+
+        function closeErrorModal() {
+            const modal = document.getElementById('error-modal');
+            if (modal) modal.remove();
         }
 
         function displayEvaluationModal(evaluation) {
@@ -1574,6 +1871,34 @@ HTML_TEMPLATE = r"""
             return html;
         }
 
+        // 鏄惧紡瀹氫箟骞舵寕杞藉埌 window 瀵硅薄锛岀‘淇濆嚱鏁板湪鎵€鏈変綔鐢ㄥ煙涓彲鐢?
+        window.generateDeepReasoningScores = function(metrics) {
+            if (!metrics) return '<p style="color: #999;">娣卞害鎺ㄧ悊鏁版嵁涓嶅彲鐢?/p>';
+
+            let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">';
+
+            for (const [key, value] of Object.entries(metrics)) {
+                const score = value.score || 0;
+                const color = score >= 80 ? '#4CAF50' : score >= 60 ? '#FF9800' : '#f44336';
+
+                html += `
+                    <div style="border: 2px solid ${color}; border-radius: 8px; padding: 15px;">
+                        <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">${key}</div>
+                        <div style="font-size: 32px; font-weight: bold; color: ${color};">${score}<span style="font-size: 18px;">/100</span></div>
+                        ${value.details ? `<div style="margin-top: 10px; font-size: 12px; color: #666;">${value.details}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            return html;
+        };
+
+        // 鍚屾椂淇濈暀鍑芥暟澹版槑褰㈠紡浠ユ敮鎸佸嚱鏁版彁鍗?
+        function generateDeepReasoningScores(metrics) {
+            return window.generateDeepReasoningScores(metrics);
+        }
+
         function closeEvalModal() {
             const modal = document.getElementById('eval-modal');
             if (modal) {
@@ -1595,7 +1920,7 @@ HTML_TEMPLATE = r"""
         }
 
         // 闅惧害閫夋嫨鍣?
-        let currentDifficulty = '鍩虹';
+        let currentDifficulty = '鍦扮嫳';
 
         function setDifficulty(level) {
             currentDifficulty = level;
@@ -1721,6 +2046,17 @@ HTML_TEMPLATE = r"""
 
         window.addEventListener('load', () => {
             createCircle();
+
+            // 璇婃柇锛氭鏌ュ嚱鏁版槸鍚︽纭姞杞?
+            console.log('[璇婃柇] generateDeepReasoningScores 鍑芥暟鐘舵€?',
+                typeof window.generateDeepReasoningScores,
+                typeof generateDeepReasoningScores);
+
+            if (typeof generateDeepReasoningScores === 'undefined') {
+                console.error('[閿欒] generateDeepReasoningScores 鍑芥暟鏈畾涔夛紒');
+            } else {
+                console.log('[鎴愬姛] generateDeepReasoningScores 鍑芥暟宸插姞杞?);
+            }
         });
 
         window.addEventListener('resize', () => {
@@ -1732,40 +2068,9 @@ HTML_TEMPLATE = r"""
 </html>
 """
 
-def extract_message_text(field):
-    """Normalize chat completion content into a single string."""
-    if field is None:
-        return ""
-
-    if isinstance(field, str):
-        return field.strip()
-
-    if isinstance(field, list):
-        parts = []
-        for item in field:
-            text = extract_message_text(item)
-            if text:
-                parts.append(text)
-        return "\n".join(parts).strip()
-
-    if isinstance(field, dict):
-        parts = []
-        for key in ("text", "content", "value"):
-            if key in field:
-                text = extract_message_text(field[key])
-                if text:
-                    parts.append(text)
-        return "\n".join(parts).strip()
-
-    return str(field).strip()
-
-
 def call_llm(prompt, player_id):
     """璋冪敤LLM API骞惰窡韪猼oken浣跨敤"""
     global total_tokens_used, player_tokens_used
-    
-    api_base = None
-    model = None
 
     try:
         # 娉ㄩ噴鎺塼oken闄愬埗妫€鏌?- 鍏佽鐜╁鑷敱鍙戣█
@@ -1786,1202 +2091,74 @@ def call_llm(prompt, player_id):
             print(f"[LLM] Player {player_id} 浣跨敤NPC妯″瀷: {api_base}")
 
         # 鍦╬rompt鍚庢坊鍔燨UTPUT鏍煎紡鎸囧紩
-        full_prompt = prompt + OUTPUT_FORMAT_INSTRUCTION
-
-        url = f"{api_base}/v1/chat/completions"
-        payload = {
-            "model": model,
-            "messages": [{"role": "user", "content": full_prompt}],
-            "temperature": LLM_CONFIG["temperature"]
-            # 绉婚櫎 max_tokens 闄愬埗锛岃妯″瀷鑷敱杈撳嚭
-        }
-
-        print(f"[LLM] Calling API for Player {player_id}...")
-        print(f"[LLM]   URL: {url}")
-        print(f"[LLM]   Model: {model}")
-        print(f"[LLM]   Prompt (first 100 chars): {prompt[:100]}...")
-
-        # 澧炲姞杩炴帴娴嬭瘯
-        try:
-            test_response = requests.get(f"{api_base}/health", timeout=5)
-            print(f"[LLM] API Health Check: {test_response.status_code}")
-        except Exception as health_e:
-            print(f"[LLM] 鈿狅笍  API Health Check Failed: {health_e}")
-            print(f"[LLM] API鏈嶅姟鍙兘鏈惎鍔紝璇风‘淇?{api_base} 鍙闂?)
-
-        response = requests.post(url, json=payload, timeout=30)
-        response.raise_for_status()
-        
-        print(f"[LLM] API Response Status: {response.status_code}")
-
-        result = response.json()
-        print(f"[LLM] Response received for Player {player_id}")
-        print(f"[LLM]   Full response: {json.dumps(result, ensure_ascii=False, indent=2)[:1000]}...")
-
-        # 鎻愬彇鍐呭锛氫紭鍏堜娇鐢╟ontent锛堟渶缁堢粨璁猴級锛屽鏋滀负绌哄垯浠巖easoning_content鎻愬彇
-        message = result["choices"][0]["message"]
-        raw_content = extract_message_text(message.get("content"))
-        reasoning_content = extract_message_text(message.get("reasoning_content"))
-
-        # 鍚堝苟鎵€鏈夊唴瀹圭敤浜庢彁鍙?
-        full_response = raw_content
-        if not full_response and reasoning_content:
-            full_response = reasoning_content
-
-        print(f"[LLM] Full response from Player {player_id} (length: {len(full_response)}):")
-        print(f"[LLM] {full_response[:500]}..." if len(full_response) > 500 else f"[LLM] {full_response}")
-
-        # 涓ユ牸楠岃瘉 OUTPUT: 鍜?END 鏍囪
-        import re
-
-        # 妫€鏌ユ槸鍚﹀寘鍚?OUTPUT: 鍜?END
-        pattern = re.compile(r'(?i)OUTPUT\s*(?:[:\uFF1A]\s*)?(.*?)(?:\bEND\b|$)', re.DOTALL)
-        has_output_match = pattern.search(full_response)
-        has_output = has_output_match is not None
-        has_end = re.search(r'\bEND\b', full_response, re.IGNORECASE) is not None
-
-        if has_output and has_end:
-            content = has_output_match.group(1).strip()
-            if content:
-                print(f"[LLM] [OK] Valid format detected for Player {player_id}")
-                print(f"[LLM] Extracted content: '{content[:100]}...'" if len(content) > 100 else f"[LLM] Extracted content: '{content}'")
-            else:
-                print(f"[LLM] [WARN] OUTPUT/END present but content empty for Player {player_id}")
-                content = ""
-        else:
-            print(f"[LLM] [WARN] Invalid format for Player {player_id}:")
-            print(f"[LLM]   Has OUTPUT: {bool(has_output)}")
-            print(f"[LLM]   Has END: {bool(has_end)}")
-
-            if has_output:
-                content = has_output_match.group(1).strip()
-                if len(content) > 200:
-                    content = content[:200] + "..."
-                print(f"[LLM] Using OUTPUT content (no END found): '{content[:100]}...'" if len(content) > 100 else f"[LLM] Using OUTPUT content: '{content}'")
-            else:
-                trimmed = full_response[-200:] if len(full_response) > 200 else full_response
-                content = trimmed or ""
-                print(f"[LLM] No OUTPUT found, using fallback extraction")
-
-
-        # 鑾峰彇token浣跨敤閲?
-        usage = result.get("usage", {})
-        prompt_tokens = usage.get("prompt_tokens", 0)
-        completion_tokens = usage.get("completion_tokens", 0)
-        total_tokens = usage.get("total_tokens", prompt_tokens + completion_tokens)
-
-        # 鏇存柊缁熻
-        total_tokens_used += total_tokens
-        if player_id >= 0:
-            if player_id not in player_tokens_used:
-                player_tokens_used[player_id] = 0
-            player_tokens_used[player_id] += total_tokens
-
-        print(f"[LLM] Player {player_id}: {content[:50]}... (tokens: {total_tokens}, total: {total_tokens_used})")
-
-        # 鍙戦€乼oken缁熻鍒板墠绔?
-        dialogue_queue.put({
-            "type": "token_update",
-            "total_tokens": total_tokens_used,
-            "player_tokens": dict(player_tokens_used)
-        })
-
-        return content
-
-    except requests.exceptions.ConnectionError as ce:
-        print(f"[LLM] 鉂?杩炴帴閿欒 - API鏈嶅姟鏈惎鍔ㄦ垨鏃犳硶璁块棶")
-        print(f"[LLM]   URL: {api_base}/v1/chat/completions")
-        print(f"[LLM]   Error: {ce}")
-        print(f"[LLM]   瑙ｅ喅鏂规: 璇峰惎鍔?LLM API 鏈嶅姟")
-        return f"[Player {player_id} - API鏈嶅姟鏈惎鍔╙"
-    except requests.exceptions.Timeout as te:
-        print(f"[LLM] 鈴憋笍  璇锋眰瓒呮椂 - API 鍝嶅簲澶參")
-        print(f"[LLM]   Error: {te}")
-        return f"[Player {player_id} - 璇锋眰瓒呮椂]"
-    except requests.exceptions.HTTPError as he:
-        print(f"[LLM] 馃敶 HTTP閿欒")
-        print(f"[LLM]   Status: {he.response.status_code}")
-        print(f"[LLM]   Response: {he.response.text[:500]}")
-        return f"[Player {player_id} - HTTP閿欒{he.response.status_code}]"
-    except Exception as e:
-        import traceback
-        error_details = traceback.format_exc()
-        print(f"[LLM] Error for Player {player_id}:")
-        print(f"  Error Type: {type(e).__name__}")
-        print(f"  Error Message: {e}")
-        if api_base:
-            print(f"  API URL: {api_base}/v1/chat/completions")
-        if model:
-            print(f"  Model: {model}")
-        print(f"  Full Traceback:\n{error_details}")
-        return f"[Player {player_id} 鏆傛椂鏃犳硶鍙戣█]"
-
-def first_night_werewolf_discussion():
-    """绗竴澶?- 鐙间汉璁ㄨ锛氬垁璋併€佺瓥鐣ャ€佽皝涓婅"""
-    global sheriff_candidates
-    print("\n[FIRST NIGHT] Werewolf discussion...")
-
-    dialogue_queue.put({
-        "type": "phase",
-        "phase": "night"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "馃寵 绗?澶?- 鐙间汉璁ㄨ"
-    })
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": "馃寵 澶╅粦璇烽棴鐪?.. 鐙间汉璇风潄鐪硷紝璁よ瘑褰兼銆?,
-        "panel": "werewolf"
-    })
-
-    werewolves = [p for p in PLAYERS if p['role'] in ['鐙间汉', '鐙肩帇']]
-    alive_non_wolves = [p for p in PLAYERS if p['role'] not in ['鐙间汉', '鐙肩帇']]
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃惡 鐙间汉闃佃惀锛歿', '.join([f'Player {w['id']}' for w in werewolves])}",
-        "panel": "werewolf"
-    })
-
-    time.sleep(1)
-
-    # 鐙间汉璁ㄨ锛氬垁璋併€佽皝涓婅
-    for wolf in werewolves:
-        if not is_running:
-            break
-
-        if uls_mode:
-            # ULS++ L0妯″紡锛氱嫾浜哄闂磋鍔?
-            seat = wolf['id'] + 1
-            teammate_seats = ', '.join([f"seat {w['id']+1}" for w in werewolves if w['id'] != wolf['id']])
-            target_seats = ', '.join([f"seat {p['id']+1}" for p in alive_non_wolves])
-
-            prompt = f"""Werewolf ULS++ L0 NIGHT Phase - Night 1 Wolf Discussion
-You are seat {seat}, role: {wolf['role']} (wolf team).
-Teammates: {teammate_seats}
-
-**CRITICAL: L0 Mode - ONE line header ONLY, NO free text:**
-
-Format: N:<seat>[|ELC:JOIN|ELC:PASS]
-
-**L0 Constraints:**
-- N:<seat> = Kill target (seats 1-12)
-- ELC:JOIN or ELC:PASS (election - whether to run for sheriff)
-- Available targets: {target_seats}
-
-Example: N:8|ELC:JOIN
-
-NO text. NO explanation. ONLY the header line."""
-        else:
-            # 姝ｅ父妯″紡
-            prompt = f"""鐙间汉鏉€娓告垙 - 绗?澶滐紝鐙间汉鍐呴儴璁ㄨ銆?
-浣犳槸Player {wolf['id']}锛岃鑹瞷wolf['role']}锛堢嫾浜洪樀钀ワ級銆?
-
-闃熷弸锛歿', '.join([f"Player {w['id']}" for w in werewolves if w['id'] != wolf['id']])}
-
-绗竴澶滆璁洪噸鐐癸細
-1. 寤鸿鍒€鎺夊摢涓帺瀹讹紵锛堝彲閫夌洰鏍囷細{', '.join([f"Player {p['id']}" for p in alive_non_wolves])}锛?
-2. 寤鸿鍝釜鐙间汉涓婅绔為€夛紵
-
-璇风畝鐭彂瑷€锛?-3鍙ワ級銆傜敤涓枃銆?""
-
-        response = call_llm(prompt, wolf['id'])
-
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": wolf['id'],
-            "phase": "绗?澶?鐙间汉璁ㄨ",
-            "content": response,
-            "panel": "werewolf"
-        })
-
-        time.sleep(1.5)
-
-    # 鐙间汉鍐冲畾鍒€浜哄拰璋佷笂璀?
-    kill_target = random.choice(alive_non_wolves)
-    game_state['night_actions']['werewolf_kill'] = kill_target['id']
-
-    # 闅忔満閫夋嫨1-2涓嫾浜轰笂璀?+ 鍏朵粬闅忔満鐜╁
-    num_wolf_candidates = random.randint(1, 2)
-    wolf_candidates = random.sample([w['id'] for w in werewolves], num_wolf_candidates)
-
-    # 鍔犱笂1-2涓ソ浜轰篃涓婅
-    good_guys = [p['id'] for p in PLAYERS if p['role'] not in ['鐙间汉', '鐙肩帇']]
-    num_good_candidates = random.randint(1, 2)
-    good_candidates = random.sample(good_guys, num_good_candidates)
-
-    sheriff_candidates = wolf_candidates + good_candidates
-    random.shuffle(sheriff_candidates)
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃惡 鐙间汉鍐冲畾锛氬垁 Player {kill_target['id']}",
-        "panel": "werewolf"
-    })
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "绗?澶?鐙间汉",
-        "content": f"馃搵 鐙间汉鍐冲畾涓婅鍚嶅崟锛歿', '.join([f'Player {c}' for c in wolf_candidates])}",
-        "panel": "werewolf"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "鐙间汉璇烽棴鐪?
-    })
-
-    time.sleep(2)
-    return kill_target['id']
-
-def night_phase(day_num):
-    """
-    瀹屾暣澶滄櫄闃舵
-    椤哄簭锛氱嫾浜鸿鍔?鈫?瀹堝崼 鈫?棰勮█瀹?鈫?濂冲帆 鈫?缁撶畻姝讳骸
-    """
-    global guard_last_target, witch_save_available, witch_poison_available, daily_statistics
-    sync_game_state(phase="night", round_num=day_num)
-    print(f"\n[NIGHT {day_num}] Starting...")
-
-    # 鍒濆鍖栨湰澶滅粺璁?
-    night_stats = {
-        "day": day_num,
-        "night_actions": {},
-        "night_deaths": [],
-        "day_execution": None,
-        "alive_werewolves": 0,
-        "alive_villagers": 0,
-        "game_ended": False,
-        "winner": None
-    }
-
-    dialogue_queue.put({
-        "type": "phase",
-        "phase": "night"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": f"馃寵 绗瑊day_num}澶?
-    })
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": f"绗瑊day_num}澶?,
-        "content": "馃寵 澶╅粦璇烽棴鐪?..",
-        "panel": "werewolf"
-    })
-
-    time.sleep(1)
-
-    # 1. 鐙间汉琛屽姩
-    wolves_target = None
-    werewolves = [p for p in PLAYERS if p['role'] in ['鐙间汉', '鐙肩帇'] and p['alive']]
-
-    if not werewolves:
-        return None  # 鐙间汉鍏ㄧ伃
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "馃惡 鐙间汉璇风潄鐪?
-    })
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": f"绗瑊day_num}澶?鐙间汉",
-        "content": "馃惡 鐙间汉璇风潄鐪硷紝璁よ瘑闃熷弸銆?,
-        "panel": "werewolf"
-    })
-
-    alive_non_wolves = [p for p in PLAYERS if p['alive'] and p['role'] not in ['鐙间汉', '鐙肩帇']]
-
-    if werewolves and alive_non_wolves:
-        # 鐙间汉璁ㄨ
-        for wolf in werewolves:
-            if not is_running:
-                break
-
-            # 鑾峰彇鎵€鏈夊瓨娲荤殑闈炵嫾浜虹帺瀹剁紪鍙凤紙鐙间汉鍙煡閬撶紪鍙凤紝涓嶇煡閬撹韩浠斤級
-            alive_target_ids = [p['id'] for p in alive_non_wolves]
-            wolf_team_ids = [w['id'] for w in werewolves if w['id'] != wolf['id']]
-
-            prompt = f"""鐙间汉鏉€娓告垙 - 绗瑊day_num}澶滐紝鐙间汉鍐呴儴璁ㄨ銆?
-浣犳槸Player {wolf['id']}锛岃鑹瞷wolf['role']}锛堢嫾浜洪樀钀ワ級銆?
-
-闃熷弸锛歿', '.join([f"Player {wid}" for wid in wolf_team_ids])}
-
-鍦轰笂瀛樻椿鐨勫叾浠栫帺瀹剁紪鍙凤細{', '.join([f"Player {pid}" for pid in alive_target_ids])}
-
-娉ㄦ剰锛氫綘鍙煡閬撶帺瀹剁紪鍙凤紝涓嶇煡閬撲粬浠槸浠€涔堣韩浠斤紙绁炶亴杩樻槸鏉戞皯锛夈€?
-
-璇风畝鐭缓璁紙1鍙ワ級鍑绘潃鍝釜鐜╁缂栧彿銆傜敤涓枃銆?""
-
-            response = call_llm(prompt, wolf['id'])
-
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": wolf['id'],
-                "phase": f"绗瑊day_num}澶?鐙间汉",
-                "content": response,
-                "panel": "werewolf"
-            })
-
-            time.sleep(1)
-
-        # 鐙间汉鍐冲畾鍑绘潃鐩爣
-        wolves_target = random.choice(alive_non_wolves)['id']
-        night_stats["night_actions"]["wolf_target"] = wolves_target
-
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": -1,
-            "phase": f"绗瑊day_num}澶?鐙间汉",
-            "content": f"馃惡 鐙间汉鍐冲畾鍒€ Player {wolves_target}",
-            "panel": "werewolf"
-        })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "鐙间汉璇烽棴鐪?
-    })
-
-    time.sleep(1.5)
-
-    # 2. 瀹堝崼琛屽姩
-    guard_target = None
-    if HAS_GUARD:
-        guard = next((p for p in PLAYERS if p['role'] == '瀹堝崼' and p['alive']), None)
-
-        if guard:
-            dialogue_queue.put({
-                "type": "status",
-                "message": "馃洝锔?瀹堝崼璇风潄鐪?
-            })
-
-            # 绗竴澶滃畧鍗┖瀹堬紙涓嶅畧鎶や换浣曚汉锛?
-            if day_num == 1:
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "馃洝锔?瀹堝崼璇风潄鐪笺€傜涓€澶滅┖瀹堬紝涓嶅畧鎶や换浣曚汉銆?,
-                    "panel": "god"
-                })
-
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": guard['id'],
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "[绌哄畧] 瀹堝崼绗竴澶滅┖瀹?,
-                    "panel": "god"
-                })
-            else:
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": -1,
-                    "phase": f"绗瑊day_num}澶?瀹堝崼",
-                    "content": "馃洝锔?瀹堝崼璇风潄鐪硷紝閫夋嫨涓€涓帺瀹跺畧鎶わ紙涓嶈兘杩炵画瀹堟姢鍚屼竴浜猴級銆?,
-                    "panel": "god"
-                })
-
-                # 瀹堝崼涓嶈兘杩炵画瀹堝悓涓€浜?
-                alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != guard['id']]
-                if guard_last_target is not None:
-                    alive_others = [p for p in alive_others if p['id'] != guard_last_target]
-
-                if alive_others:
-                    # 瀹堝崼鎬濊€冨苟鍐冲畾瀹堟姢鐩爣
-                    alive_list = ', '.join([f"Player {p['id']}" for p in alive_others])
-                    last_guard_info = f"锛堟槰鏅氬畧鎶や簡Player {guard_last_target}锛屼粖鏅氫笉鑳藉啀瀹堟姢浠栵級" if guard_last_target is not None else ""
-
-                    guard_prompt = f"""鐙间汉鏉€娓告垙 - 瀹堝崼瀹堟姢
-浣犳槸Player {guard['id']}锛岃鑹诧細瀹堝崼锛堢鑱岋級銆?
-绗瑊day_num}澶滐紝浣犲彲浠ュ畧鎶や竴涓帺瀹跺厤鍙楃嫾浜哄嚮鏉€銆?
-{last_guard_info}
-
-褰撳墠鍙畧鎶ょ帺瀹讹細{alive_list}
-
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾瀹堟姢璋侊細
-1. 浼樺厛瀹堟姢棰勮█瀹躲€佸コ宸瓑鍏抽敭绁炶亴
-2. 鑰冭檻鐧藉ぉ鍙戣█鏆撮湶韬唤鐨勭帺瀹?
-3. 棰勬祴鐙间汉鍙兘鍒€鐨勭洰鏍?
-
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
-
-OUTPUT: 鎴戝喅瀹氬畧鎶?Player X锛屽洜涓篬绠€鐭悊鐢盷
-END"""
-
-                    guard_decision = call_llm(guard_prompt, guard['id'])
-
-                    # 瑙ｆ瀽瀹堟姢鐩爣
-                    import re
-                    match = re.search(r'Player (\d+)', guard_decision)
-                    if match:
-                        target_id = int(match.group(1))
-                        # 楠岃瘉鐩爣鏄惁鍙畧鎶?
-                        if target_id in [p['id'] for p in alive_others]:
-                            target = PLAYERS[target_id]
-                            guard_target = target['id']
-                        else:
-                            # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
-                            target = random.choice(alive_others)
-                            guard_target = target['id']
-                            print(f"[WARN] Guard target {target_id} invalid, random choice: {guard_target}")
-                    else:
-                        # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
-                        target = random.choice(alive_others)
-                        guard_target = target['id']
-                        print(f"[WARN] Cannot parse guard target, random choice: {guard_target}")
-
-                    guard_last_target = guard_target
-                    night_stats["night_actions"]["guard_target"] = guard_target
-
-                    dialogue_queue.put({
-                        "type": "dialogue",
-                        "player_id": guard['id'],
-                        "phase": f"绗瑊day_num}澶?瀹堝崼",
-                        "content": f"[鍐崇瓥] {guard_decision}\n\n[瀹堟姢] 瀹堟姢 Player {guard_target}",
-                        "panel": "god"
-                    })
-
-            dialogue_queue.put({
-                "type": "status",
-                "message": "瀹堝崼璇烽棴鐪?
-            })
-
-            time.sleep(1.5)
-
-    # 3. 棰勮█瀹惰鍔?
-    seer = next((p for p in PLAYERS if p['role'] == '棰勮█瀹? and p['alive']), None)
-
-    if seer:
-        dialogue_queue.put({
-            "type": "status",
-            "message": "馃憗锔?棰勮█瀹惰鐫佺溂"
-        })
-
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": -1,
-            "phase": f"绗瑊day_num}澶?棰勮█瀹?,
-            "content": "馃憗锔?棰勮█瀹惰鐫佺溂锛岄€夋嫨涓€涓帺瀹舵煡楠屻€?,
-            "panel": "god"
-        })
-
-        alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != seer['id']]
-        if alive_others:
-            # 棰勮█瀹舵€濊€冨苟鍐冲畾楠屼汉鐩爣
-            alive_list = ', '.join([f"Player {p['id']}" for p in alive_others])
-
-            seer_prompt = f"""鐙间汉鏉€娓告垙 - 棰勮█瀹堕獙浜?
-浣犳槸Player {seer['id']}锛岃鑹诧細棰勮█瀹讹紙绁炶亴锛夈€?
-绗瑊day_num}澶滐紝浣犲彲浠ラ獙璇佷竴涓帺瀹剁殑韬唤銆?
-
-褰撳墠瀛樻椿鐜╁锛堥櫎浣犱箣澶栵級锛歿alive_list}
-
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾楠岃皝锛?
-1. 浼樺厛楠岃瘉鍙戣█鍙枒鎴栬涓哄紓甯哥殑鐜╁
-2. 鑰冭檻璀︿笂鍙戣█銆佹姇绁ㄨ涓?
-3. 楠岃瘉鍏抽敭浣嶇疆鐨勭帺瀹朵互甯姪濂戒汉鎵惧嚭鐙间汉
-
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
-
-OUTPUT: 鎴戝喅瀹氶獙璇?Player X锛屽洜涓篬绠€鐭悊鐢盷
-END"""
-
-            seer_decision = call_llm(seer_prompt, seer['id'])
-
-            # 瑙ｆ瀽楠屼汉鐩爣
-            import re
-            match = re.search(r'Player (\d+)', seer_decision)
-            if match:
-                target_id = int(match.group(1))
-                # 楠岃瘉鐩爣鏄惁瀛樻椿
-                if target_id in [p['id'] for p in alive_others]:
-                    target = PLAYERS[target_id]
-                else:
-                    # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
-                    target = random.choice(alive_others)
-                    print(f"[WARN] Seer target {target_id} invalid, random choice: {target['id']}")
-            else:
-                # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
-                target = random.choice(alive_others)
-                print(f"[WARN] Cannot parse seer target, random choice: {target['id']}")
-
-            is_wolf = target['role'] in ['鐙间汉', '鐙肩帇']
-            night_stats["night_actions"]["seer_check"] = {"target": target['id'], "result": "鐙间汉" if is_wolf else "濂戒汉"}
-
-            # 棰勮█瀹惰幏寰楅獙浜虹粨鏋滃悗鐨勬€濊€?
-            result_prompt = f"浣犳槸棰勮█瀹讹紝楠屼簡Player {target['id']}锛屼粬鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆傜畝鐭€濊€冿紙1鍙ワ級鐧藉ぉ濡備綍鍒╃敤杩欎釜淇℃伅銆傜敤涓枃銆?
-            result_thought = call_llm(result_prompt, seer['id'])
-
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": seer['id'],
-                "phase": f"绗瑊day_num}澶?棰勮█瀹?,
-                "content": f"[鍐崇瓥] {seer_decision}\n\n[楠屼汉缁撴灉] Player {target['id']} 鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆俓n\n[鎬濊€僝 {result_thought}",
-                "panel": "god"
-            })
-
-        dialogue_queue.put({
-            "type": "status",
-            "message": "棰勮█瀹惰闂溂"
-        })
-
-        time.sleep(1.5)
-
-    # 4. 濂冲帆琛屽姩
-    witch_save = False
-    witch_poison_target = None
-    witch = next((p for p in PLAYERS if p['role'] == '濂冲帆' and p['alive']), None)
-
-    if witch:
-        dialogue_queue.put({
-            "type": "status",
-            "message": "馃И 濂冲帆璇风潄鐪?
-        })
-
-        # 鍛婄煡濂冲帆鏈灏嗘鑰?
-        if wolves_target is not None:
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": -1,
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": f"馃И 濂冲帆璇风潄鐪笺€備粖鏅?Player {wolves_target} 琚嫾浜哄嚮鏉€銆?,
-                "panel": "god"
-            })
-        else:
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": -1,
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": "馃И 濂冲帆璇风潄鐪笺€備粖鏅氬钩瀹夊锛屾棤浜鸿鍑绘潃銆?,
-                "panel": "god"
-            })
-
-        time.sleep(1)
-
-        # 濂冲帆鍐崇瓥
-        used_medicine_this_night = False
-
-        # 鍏堥棶瑙ｈ嵂
-        if witch_save_available and wolves_target is not None:
-            save_prompt = f"浣犳槸濂冲帆锛孭layer {wolves_target}琚嫾浜哄嚮鏉€銆備綘鏈夎В鑽紝鏄惁浣跨敤瑙ｈ嵂鏁戜粬锛燂紙鏄?鍚︼級銆傜敤涓枃鍥炵瓟銆?
-            response = call_llm(save_prompt, witch['id'])
-
-            if "鏄? in response or "瑙ｈ嵂" in response or "鏁? in response:
-                witch_save = True
-                witch_save_available = False
-                used_medicine_this_night = True
-                night_stats["night_actions"]["witch_save"] = wolves_target
-
-                dialogue_queue.put({
-                    "type": "dialogue",
-                    "player_id": witch['id'],
-                    "phase": f"绗瑊day_num}澶?濂冲帆",
-                    "content": f"[浣跨敤瑙ｈ嵂] 鏁戜簡 Player {wolves_target}",
-                    "panel": "god"
-                })
-
-        # 鍐嶉棶姣掕嵂锛堝鏋淲ITCH_DOUBLE_USE=False涓斿凡鐢ㄨВ鑽紝鍒欎笉鑳界敤姣掞級
-        can_use_poison = WITCH_DOUBLE_USE or not used_medicine_this_night
-
-        # 绗竴澶滃コ宸笉鑳戒娇鐢ㄦ瘨鑽紙鏍囧噯瑙勫垯锛?
-        if witch_poison_available and can_use_poison and day_num > 1:
-            alive_others = [p for p in PLAYERS if p['alive'] and p['id'] != witch['id']]
-            if wolves_target is not None:
-                alive_others = [p for p in alive_others if p['id'] != wolves_target]
-
-            if alive_others:
-                # 瑕佹眰濂冲帆缁欏嚭姣掕嵂鐞嗙敱锛屽繀椤绘槑纭涓哄鏂规瀬澶ф鐜囨槸鐙?
-                other_players_info = ', '.join([f"Player {p['id']}" for p in alive_others])
-                poison_prompt = f"""浣犳槸濂冲帆锛屾槸鍚︿娇鐢ㄦ瘨鑽紵
-鍦轰笂鍏朵粬瀛樻椿鐜╁锛歿other_players_info}
-
-閲嶈瑙勫垯锛氭瘨鑽潪甯哥弽璐碉紝鍙湁褰撲綘鏋佸害纭俊鏌愪汉鏄嫾浜烘椂鎵嶈兘浣跨敤锛?
-
-璇峰洖绛旓細
-1. 鏄惁浣跨敤姣掕嵂锛燂紙鏄?鍚︼級
-2. 濡傛灉浣跨敤锛屾瘨鏉€鍝釜鐜╁缂栧彿锛?
-3. 鐞嗙敱鏄粈涔堬紵涓轰粈涔堣涓轰粬鏋佸ぇ姒傜巼鏄嫾浜猴紵
-
-鐢ㄤ腑鏂囩畝鐭洖绛旓紙1-2鍙ワ級銆?""
-
-                response = call_llm(poison_prompt, witch['id'])
-
-                # 妫€鏌ュ洖澶嶄腑鏄惁鍖呭惈"鏄?銆?姣?锛屼互鍙?鐙?鎴?鏋?绛夊叧閿瘝
-                # 瑕佹眰濂冲帆蹇呴』鏄庣‘琛ㄨ揪璁や负鐩爣鏄嫾浜?
-                has_poison_intent = ("鏄? in response or "姣? in response)
-                has_werewolf_reason = ("鐙? in response or "鏋? in response or "涓€瀹? in response or "鑲畾" in response)
-
-                if has_poison_intent and has_werewolf_reason:
-                    # 灏濊瘯浠庡洖澶嶄腑鎻愬彇鐜╁缂栧彿
-                    import re
-                    player_match = re.search(r'Player\s*(\d+)', response)
-                    if not player_match:
-                        player_match = re.search(r'[鍙穄?\s*(\d+)', response)
-
-                    if player_match:
-                        target_id = int(player_match.group(1))
-                        # 楠岃瘉鐩爣鏄惁鍦ㄦ湁鏁堝垪琛ㄤ腑
-                        if any(p['id'] == target_id for p in alive_others):
-                            witch_poison_target = target_id
-                            witch_poison_available = False
-                            night_stats["night_actions"]["witch_poison"] = witch_poison_target
-
-                            dialogue_queue.put({
-                                "type": "dialogue",
-                                "player_id": witch['id'],
-                                "phase": f"绗瑊day_num}澶?濂冲帆",
-                                "content": f"[浣跨敤姣掕嵂] 姣掓潃 Player {witch_poison_target}銆傜悊鐢憋細{response[:50]}...",
-                                "panel": "god"
-                            })
-
-        if not witch_save and witch_poison_target is None:
-            dialogue_queue.put({
-                "type": "dialogue",
-                "player_id": witch['id'],
-                "phase": f"绗瑊day_num}澶?濂冲帆",
-                "content": "[涓嶄娇鐢ㄨ嵂] 濂冲帆閫夋嫨鏈洖鍚堜笉浣跨敤鑽?,
-                "panel": "god"
-            })
-
-        dialogue_queue.put({
-            "type": "status",
-            "message": "濂冲帆璇烽棴鐪?
-        })
-
-        time.sleep(1.5)
-
-    # 5. 澶滈棿缁撶畻姝讳骸
-    night_deaths = []
-
-    # 鍏堢粨绠楃嫾鍒€锛堣€冭檻瀹堝崼鍜岃В鑽級
-    if wolves_target is not None:
-        if HAS_GUARD and guard_target == wolves_target:
-            # 琚畧浣?
-            pass
-        elif witch_save and wolves_target:
-            # 琚В鑽晳娲?
-            pass
-        else:
-            night_deaths.append(wolves_target)
-
-    # 鍐嶇粨绠楁瘨鑽?
-    if witch_poison_target is not None:
-        night_deaths.append(witch_poison_target)
-
-    # 璁板綍澶滄鍚嶅崟
-    night_stats["night_deaths"] = night_deaths
-
-    # 灏嗘湰澶滅粺璁′繚瀛樺埌鍏ㄥ眬(鍚庣画浼氬湪dawn_phase鍜宒ay_discussion_and_voting涓洿鏂?
-    daily_statistics.append(night_stats)
-
-    # 澶滄櫄闃舵缁撴潫锛屾洿鏂颁竴娆″疄鏃剁粺璁?
-    update_realtime_statistics()
-
-    # 杩斿洖澶滄鍚嶅崟锛岀敱Dawn闃舵澶勭悊
-    return night_deaths
-
-def dawn_phase(night_deaths, day_num):
-    """
-    榛庢槑闃舵锛氬叕甯冨姝诲苟澶勭悊璀﹀窘銆佺寧浜哄紑鏋?
-    澶滄鏃犻仐瑷€
-    娉ㄦ剰锛氫笉鍏竷姝昏€呰韩浠斤紙鍙叕甯冨彿鐮侊級
-    """
-    global sheriff_player_id
-    sync_game_state(phase="dawn", round_num=day_num)
-    print(f"\n[DAWN {day_num}] Processing night deaths...")
-
-    dialogue_queue.put({
-        "type": "phase",
-        "phase": "day"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": f"鈽€锔?绗瑊day_num}澶╅粠鏄?
-    })
-
-    # 鍏堝鐞嗚闀垮姝伙紙濡傛灉鏈夛級
-    sheriff_died = False
-    if night_deaths:
-        for player_id in night_deaths:
-            player = PLAYERS[player_id]
-            if player.get('is_sheriff'):
-                sheriff_died = True
-                if NIGHT_BADGE_BREAKS:
-                    # 璀﹀窘鐮寸
-                    sheriff_player_id = None
-                    player['is_sheriff'] = False
-
-                    dialogue_queue.put({
-                        "type": "dialogue",
-                        "player_id": -1,
-                        "phase": f"绗瑊day_num}澶╅粠鏄?,
-                        "content": "馃帠锔?璀﹂暱澶滄锛岃寰界牬纰庛€?,
-                        "panel": "day"
-                    })
-                else:
-                    # 灏戞暟鎴胯锛氬彲浠ョЩ浜よ寰?
-                    alive_players = [p for p in PLAYERS if p['alive'] and p['id'] != player_id]
-                    if alive_players:
-                        new_sheriff = random.choice(alive_players)
-                        sheriff_player_id = new_sheriff['id']
-                        player['is_sheriff'] = False
-                        new_sheriff['is_sheriff'] = True
-
-                        dialogue_queue.put({
-                            "type": "dialogue",
-                            "player_id": -1,
-                            "phase": f"绗瑊day_num}澶╅粠鏄?,
-                            "content": f"馃帠锔?璀﹂暱绉讳氦璀﹀窘缁?Player {new_sheriff['id']}",
-                            "panel": "day"
-                        })
-
-    # 鍏竷姝昏锛堝彧鍏竷鍙风爜锛屼笉鍏竷韬唤锛?
-    if not night_deaths:
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": -1,
-            "phase": f"绗瑊day_num}澶╅粠鏄?,
-            "content": "馃帀 鏄ㄦ櫄鏄钩瀹夊锛屾棤浜烘浜°€?,
-            "panel": "day"
-        })
-        time.sleep(2)
-
-        # 绗?澶╀笖鏈彁鍓嶄笂璀︼紝鍒欑幇鍦ㄤ笂璀?
-        if day_num == 1 and not ELECTION_BEFORE_N1:
-            sheriff_election()
-
-        return
-
-    # 鍏竷姝昏锛堝彧鍏竷鍙风爜锛屼笉鍏竷韬唤锛?
-    death_list = ', '.join([f"Player {p}" for p in night_deaths])
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": f"绗瑊day_num}澶╅粠鏄?,
-        "content": f"馃拃 鏄ㄦ櫄姝讳骸锛歿death_list}锛堝姝绘棤閬楄█锛?,
-        "panel": "day"
-    })
-
-    # 鏍囪鐜╁姝讳骸
-    for player_id in night_deaths:
-        PLAYERS[player_id]['alive'] = False
-
-        dialogue_queue.put({
-            "type": "death",
-            "player_id": player_id
-        })
-
-    time.sleep(2)
-
-    # 澶勭悊鐚庝汉澶滄寮€鏋紙鍙栧喅浜嶩UNTER_NIGHT_SHOOT閰嶇疆锛?
-    hunter_shot_targets = []
-
-    for player_id in night_deaths:
-        player = PLAYERS[player_id]
-
-        if player['role'] == '鐚庝汉':
-            if HUNTER_NIGHT_SHOOT:
-                # TODO: 闇€瑕佸垽鏂槸鍚﹁姣掞紙琚瘨閫氬父涓嶈兘寮€鏋級
-                # 绠€鍖栫増锛氬姝诲彲浠ュ紑鏋?
-                alive_players = [p for p in PLAYERS if p['alive']]
-                if alive_players:
-                    # 鐚庝汉鎬濊€冨苟鍐冲畾灏勬潃鐩爣
-                    alive_list = ', '.join([f"Player {p['id']}" for p in alive_players])
-
-                    hunter_shoot_prompt = f"""鐙间汉鏉€娓告垙 - 鐚庝汉寮€鏋妧鑳?
-浣犳槸Player {player_id}锛岃鑹诧細鐚庝汉銆?
-浣犲湪澶滄櫄琚嚮鏉€浜嗭紝鐜板湪鍙互鍙戝姩鐚庝汉鎶€鑳姐€愬紑鏋甫璧颁竴涓帺瀹躲€戙€?
-
-褰撳墠瀛樻椿鐜╁锛歿alive_list}
-
-璇锋牴鎹箣鍓嶇殑娓告垙淇℃伅锛屽垎鏋愬苟鍐冲畾灏勬潃璋侊細
-1. 濡傛灉浣犺涓烘煇涓帺瀹舵槸鐙间汉锛屽簲璇ヤ紭鍏堝皠鏉€
-2. 鑰冭檻涔嬪墠鐨勫彂瑷€銆佹姇绁ㄨ涓恒€侀瑷€瀹堕獙浜虹瓑淇℃伅
-3. 鍋氬嚭瀵瑰ソ浜洪樀钀ユ渶鏈夊埄鐨勯€夋嫨
-
-璇锋寜浠ヤ笅鏍煎紡鍥炵瓟锛?
-鎬濊€冿細[浣犵殑鍒嗘瀽杩囩▼]
-
-OUTPUT: 鎴戝喅瀹氬皠鏉€ Player X锛屽洜涓篬绠€鐭悊鐢盷
-END"""
-
-                    hunter_response = call_llm(hunter_shoot_prompt, player_id)
-
-                    # 瑙ｆ瀽灏勬潃鐩爣
-                    import re
-                    match = re.search(r'Player (\d+)', hunter_response)
-                    if match:
-                        target_id = int(match.group(1))
-                        # 楠岃瘉鐩爣鏄惁瀛樻椿
-                        if target_id in [p['id'] for p in alive_players]:
-                            target = PLAYERS[target_id]
-                        else:
-                            # 濡傛灉鐩爣鏃犳晥锛岄殢鏈洪€夋嫨
-                            target = random.choice(alive_players)
-                            print(f"[WARN] Hunter (night) target {target_id} invalid, random choice: {target['id']}")
-                    else:
-                        # 濡傛灉鏃犳硶瑙ｆ瀽锛岄殢鏈洪€夋嫨
-                        target = random.choice(alive_players)
-                        print(f"[WARN] Cannot parse hunter (night) target, random choice: {target['id']}")
-
-                    hunter_shot_targets.append(target['id'])
-
-                    dialogue_queue.put({
-                        "type": "dialogue",
-                        "player_id": player_id,
-                        "phase": f"绗瑊day_num}澶╅粠鏄?鐚庝汉",
-                        "content": f"馃徆 鐚庝汉鎶€鑳藉彂鍔紒{hunter_response}\n\n鐚庝汉寮€鏋甫璧?Player {target['id']}",
-                        "panel": "day"
-                    })
-
-    # 澶勭悊鐚庝汉寮€鏋繛閿佹浜?
-    if hunter_shot_targets:
-        for target_id in hunter_shot_targets:
-            PLAYERS[target_id]['alive'] = False
-
-            dialogue_queue.put({
-                "type": "death",
-                "player_id": target_id
-            })
-
-        time.sleep(1.5)
-
-    # 绗?澶╀笖鏈彁鍓嶄笂璀︼紝鍒欑幇鍦ㄤ笂璀?
-    if day_num == 1 and not ELECTION_BEFORE_N1:
-        sheriff_election()
-
-def sheriff_election_before_n1():
-    """寮€灞€鐧藉ぉ璀﹂暱绔為€夛紙ELECTION_BEFORE_N1=True鏃朵娇鐢級"""
-    global sheriff_player_id, seer_claims, sheriff_candidates
-    print("\n[SHERIFF ELECTION BEFORE N1] Starting...")
-
-    dialogue_queue.put({
-        "type": "phase",
-        "phase": "day"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "馃帠锔?寮€灞€璀﹂暱绔為€?
-    })
-
-    # 闅忔満閫夋嫨3-5涓帺瀹朵笂璀?
-    num_candidates = random.randint(3, 5)
-    sheriff_candidates = random.sample(range(len(PLAYERS)), num_candidates)
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?绔為€夎闀跨殑鐜╁: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
-        "panel": "day"
-    })
-
-    time.sleep(2)
-
-    # 鍊欓€変汉渚濇鍙戣█
-    for candidate_id in sheriff_candidates:
-        if not is_running:
-            break
-
-        player = PLAYERS[candidate_id]
-
-        prompt = f"""鐙间汉鏉€ - 寮€灞€璀﹂暱绔為€夈€?
-浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆?
-
-璇峰彂琛ㄧ珵閫夋紨璇达紝璇存槑浣犱负浠€涔堥€傚悎褰撹闀裤€?
-閲嶈锛氫笉瑕佹毚闇蹭綘鐨勭湡瀹炶韩浠斤紒
-
-璇风敤2-3鍙ヨ瘽绔為€夈€傜敤涓枃銆?""
-
-        response = call_llm(prompt, player['id'])
-
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": player['id'],
-            "phase": "璀﹂暱绔為€?,
-            "content": response,
-            "panel": "day"
-        })
-
-        time.sleep(1.5)
-
-    # 閫変妇璀﹂暱
-    sheriff_id = random.choice(sheriff_candidates)
-    sheriff_player_id = sheriff_id
-    PLAYERS[sheriff_id]['is_sheriff'] = True
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?Player {sheriff_id} 褰撻€夎闀匡紒",
-        "panel": "day"
-    })
-
-    time.sleep(2)
-    print(f"[SHERIFF] Player {sheriff_id} elected.")
-
-def sheriff_election():
-    """璀﹂暱绔為€夛紙绗竴澶滃悗杩涜锛屽€欓€変汉闅忔満浜х敓锛?""
-    global sheriff_player_id, seer_claims, sheriff_candidates
-    print("\n[SHERIFF ELECTION] Starting...")
-
-    dialogue_queue.put({
-        "type": "phase",
-        "phase": "day"
-    })
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": "馃帠锔?璀﹂暱绔為€?
-    })
-
-    # 鐢熸垚鍊欓€変汉鍒楄〃锛?-5涓帺瀹讹紝鍖呮嫭鐙间汉鍜屽ソ浜猴級
-    alive_players = [p for p in PLAYERS if p['alive']]
-    num_candidates = min(random.randint(3, 5), len(alive_players))
-    sheriff_candidates = random.sample([p['id'] for p in alive_players], num_candidates)
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?绔為€夎闀跨殑鐜╁: {', '.join(['Player ' + str(c) for c in sheriff_candidates])}",
-        "panel": "day"
-    })
-
-    time.sleep(2)
-
-    # 鍊欓€変汉渚濇鍙戣█ - 蹇呴』璺抽瑷€瀹?
-    for candidate_id in sheriff_candidates:
-        if not is_running:
-            break
-
-        player = PLAYERS[candidate_id]
-
-        # 闅忔満楠屼汉鐩爣
-        other_players = [p for p in range(len(PLAYERS)) if p != player['id']]
-        checked_player = random.choice(other_players)
-        checked_role = PLAYERS[checked_player]['role']
-        is_werewolf = checked_role in ['鐙间汉', '鐙肩帇']
-
-        if uls_mode:
-            # ULS++ L0妯″紡锛氳闀跨珵閫夊彂瑷€
-            seat = player['id'] + 1
-            checked_seat = checked_player + 1
-
-            if player['role'] == '棰勮█瀹?:
-                # 鐪熼瑷€瀹讹細鎶ュ憡鐪熷疄楠屼汉缁撴灉
-                result = "W" if is_werewolf else "V"
-                instruction = f"You are real seer. Last night checked seat {checked_seat}: {result}. Claim seer role."
-            elif player['role'] in ['鐙间汉', '鐙肩帇']:
-                # 鐙间汉锛氬亣璺抽瑷€瀹?
-                fake_result = "W" if random.random() > 0.6 else "V"
-                instruction = f"You are wolf. Fake claim seer. Pretend you checked seat {checked_seat}: {fake_result}."
-            else:
-                # 鍏朵粬瑙掕壊锛氬亣璺抽瑷€瀹?
-                fake_result = "W" if random.random() > 0.6 else "V"
-                instruction = f"Fake claim seer. Pretend you checked seat {checked_seat}: {fake_result}."
-
-            prompt = f"""Werewolf ULS++ L0 ELECTION Phase - Sheriff Campaign Speech
-You are seat {seat}, role: {player['role']}.
-
-{instruction}
-
-**CRITICAL: L0 Mode - ONE line header ONLY, NO free text:**
-
-Format: CL:S+<strength>@N1[|CHK:<seat>:<W|V>]
-
-**L0 Constraints:**
-- CL:S = Claim Seer role
-- strength: 3-5 (your confidence level)
-- CHK:<seat>:<result> = Report check result (W=werewolf, V=villager)
-
-Example: CL:S+4@N1|CHK:{checked_seat}:V
-
-NO text. NO explanation. ONLY the header line."""
-        else:
-            # 姝ｅ父妯″紡
-            if player['role'] == '棰勮█瀹?:
-                instruction = f"浣犳槸鐪熼瑷€瀹躲€傛槰鏅氶獙浜哖layer {checked_player}锛屼粬鏄瘂'鐙间汉' if is_werewolf else '濂戒汉'}銆傚繀椤昏'鎴戞槸棰勮█瀹?骞舵姤鍛婇獙浜恒€?
-            elif player['role'] in ['鐙间汉', '鐙肩帇']:
-                fake_result = "鐙间汉" if random.random() > 0.6 else "濂戒汉"
-                instruction = f"浣犳槸鐙间汉闃佃惀锛屽繀椤昏烦棰勮█瀹讹紙璇?鎴戞槸棰勮█瀹?锛夊苟缂栭€犻獙浜猴紝渚嬪'鏄ㄦ櫄楠屼簡Player {checked_player}锛屼粬鏄瘂fake_result}'銆傜粷瀵逛笉鑳借浣犳槸鐙间汉銆?
-            else:
-                fake_result = "鐙间汉" if random.random() > 0.6 else "濂戒汉"
-                instruction = f"浣犲繀椤昏烦棰勮█瀹讹紙璇?鎴戞槸棰勮█瀹?锛夊苟缂栭€犻獙浜猴紝渚嬪'鏄ㄦ櫄楠屼簡Player {checked_player}锛屼粬鏄瘂fake_result}'銆?
-
-            prompt = f"""鐙间汉鏉€ - 璀﹂暱绔為€夈€?
-浣犳槸Player {player['id']}锛岃鑹诧細{player['role']}銆?
-
-{instruction}
-
-閲嶈锛氬鏋滀綘鏄嫾浜洪樀钀ワ紝缁濆涓嶈兘鍦ㄥ彂瑷€涓"鐙间汉"銆?鐙肩帇"绛夋毚闇茶韩浠界殑璇嶏紒
-
-璇风敤2-3鍙ヨ瘽绔為€夈€傜敤涓枃銆?""
-
-        response = call_llm(prompt, player['id'])
-
-        if "鎴戞槸棰勮█瀹? in response or "棰勮█瀹? in response or "CL:S" in response:
-            seer_claims.append(player['id'])
-
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": player['id'],
-            "phase": "璀﹂暱绔為€?,
-            "content": response,
-            "panel": "day"
-        })
-
-        time.sleep(1.5)
-
-    # 閫変妇璀﹂暱
-    sheriff_id = random.choice(sheriff_candidates)
-    sheriff_player_id = sheriff_id
-    PLAYERS[sheriff_id]['is_sheriff'] = True
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?Player {sheriff_id} 褰撻€夎闀匡紒",
-        "panel": "day"
-    })
-
-    time.sleep(2)
-    print(f"[SHERIFF] Player {sheriff_id} elected. Seer claims: {seer_claims}")
-
-def day_discussion_and_voting(round_num):
-    sync_game_state(phase="day", round_num=round_num)
-    """鐧藉ぉ璁ㄨ鍜屾姇绁紙澶滄宸茬粡鍦╠awn_phase澶勭悊杩囷紝杩欓噷鍙仛鐧藉ぉ鍙戣█鍜屾姇绁級"""
-    print(f"\n[DAY] Round {round_num} discussion and voting...")
-
-    dialogue_queue.put({
-        "type": "status",
-        "message": f"鈽€锔?绗瑊round_num}澶╄璁?
-    })
-
-    # 璀﹂暱鍐冲畾鍙戣█椤哄簭锛堢畝鍖栵細闅忔満椤哄簭锛?
-    alive_players = [p for p in PLAYERS if p['alive']]
-
-    if not alive_players:
-        return
-
-    random.shuffle(alive_players)
-
-    dialogue_queue.put({
-        "type": "dialogue",
-        "player_id": -1,
-        "phase": "璀﹂暱绔為€?,
-        "content": f"馃帠锔?璀﹂暱鍐冲畾鍙戣█椤哄簭锛歿', '.join([f"Player {p['id']}" for p in alive_players])}",
-        "panel": "day"
-    })
-
-    time.sleep(1)
-
-    # 渚濇鍙戣█
-    for player in alive_players:
-        if not is_running:
-            break
-
-        is_seer_claimer = player['id'] in seer_claims
-        sheriff_info = "浣犳槸璀﹂暱銆? if player.get('is_sheriff') else ""
-
-        if is_seer_claimer:
-            other_alive = [p for p in PLAYERS if p['alive'] and p['id'] != player['id']]
-            if other_alive:
-                checked = random.choice(other_alive)
-                is_wolf = checked['role'] in ['鐙间汉', '鐙肩帇']
-                instruction = f"浣犳槰鏅氶獙浜哖layer {checked['id']}锛屼粬鏄瘂'鐙间汉' if is_wolf else '濂戒汉'}銆傛姤鍛婇獙浜恒€?
-            else:
-                instruction = "鎶ュ憡浣犵殑楠屼汉銆?
-        elif player['role'] in ['濂冲帆', '鐚庝汉', '瀹堝崼']:
-            instruction = "浣犳槸绁炶亴锛屼笉瑕佹毚闇茶韩浠斤紝浠ユ潙姘戣韩浠藉垎鏋愬眬鍔裤€?
-        elif player['role'] in ['鐙间汉', '鐙肩帇']:
-            instruction = "浣犳槸鐙间汉闃佃惀锛岃鎴愭潙姘戞垨缁х画璺抽瑷€瀹讹紝璇濂戒汉銆傜粷瀵逛笉鑳借'鐙间汉'銆?鐙肩帇'绛夎瘝鏆撮湶韬唤锛?
-        else:
-            instruction = "浣犳槸鏉戞皯锛岃瘹瀹炲垎鏋愬眬鍔匡紝甯姪濂戒汉闃佃惀鎵惧嚭鐙间汉銆?
-
-        # 鏋勫缓鍘嗗彶鍙戣█涓婁笅鏂囷紙浣跨敤螖-digest浼樺寲锛屼粎鍖呭惈鑷笂娆″彂瑷€鍚庣殑鏂颁俊鎭級
-        delta_digest = public_memory_pool.build_digest(player['id'], round_num, max_tokens=400)
-        history_context = ""
-        if delta_digest:
-            history_context = f"\n\n銆愬閲忔憳瑕?(螖-digest)銆慭n{delta_digest}\n\n鍒嗘瀽浠ヤ笂淇℃伅锛屽熀浜庢帹鐞嗚繘琛屽彂瑷€銆?
-
-        if uls_mode:
-            # ULS++ L0妯″紡锛氫粎鏍囬锛屼弗鏍奸檺鍒?
-            seat = player['id'] + 1  # 杞崲涓?-12鐨剆eat缂栧彿
-            prompt = f"""Werewolf ULS++ L0 (Header-Only Mode) - Day {round_num} SPEECH
-You are seat {seat}, role: {player['role']}. {sheriff_info}
-
-{instruction}
-
-**CRITICAL: L0 Mode - ONE line header ONLY, NO free text:**
-
-Format:
-PV:<seat>[|ALT:<seat>][|TIE:<seat>,<seat>]
-[|SUS:<seat@score>,<seat@score>,<seat@score>]
-[|EV:<卤id>,<卤id>]
-[|CL:<role><卤><str>@N{round_num}]
-[|CF:<0..5>][|RK:<0..5>]
-
-**L0 Constraints:**
-- SUS: max 3 entries (top-k=3)
-- EV: max 2 event references per turn
-- Omit ST (defaults to A=aggressive)
-- Omit K (fixed at {LLM_CONFIG['max_tokens']})
-- Omit CF/RK if using defaults (CF=4.0, RK=3.0)
-- Scores: 0.0-5.0
-- Seats: 1-12 only
-- Roles: S|W|Gd|H|WK
-
-Example: PV:3|SUS:3@4.6,5@3.7,7@2.1|EV:+205,-118|CL:S+4@N2
-
-NO text. NO explanation. ONLY the header line."""
+        # 閲嶈锛氭鏌rompt鏄惁宸茬粡鏄疷LS++妯″紡锛堝寘鍚?L0 Mode"鎴?Header-Only Mode"锛?
+        # ULS++妯″紡涓嬩笉搴旇娣诲姞OUTPUT_FORMAT_INSTRUCTION锛屽洜涓轰細閫犳垚鍐茬獊
+        if "L0 Mode" in prompt or "Header-Only Mode" in prompt or "CRITICAL: L0 Mode" in prompt:
+            # ULS++妯″紡锛氫笉娣诲姞OUTPUT_FORMAT_INSTRUCTION
+            full_prompt = prompt
+            print(f"[LLM] [ULS++ Mode Detected] 涓嶆坊鍔燨UTPUT鏍煎紡鎸囧紩锛屼娇鐢ㄥ師濮婾LS++prompt")
         else:
             # Normal mode: natural language speech with reasoning context
             prompt = f"""Werewolf Day {round_num} Discussion
 You are Player {player['id']} ({player['role']}). {sheriff_info}
 
-{instruction}{history_context}{additional_guidance}
+{instruction}{history_context}
+{additional_guidance}
 
 Requirements:
 1. Analyse previous speeches and identify contradictions or vote-pattern signals.
 2. Link your role to an explicit reasoning chain and describe information gain.
 3. State your alignment judgement and intended vote target.
 4. Keep it within 2-3 sentences; concise bilingual (CN/EN) keywords are welcome."""
-        response = call_llm(prompt, player['id'])
 
-        # 灏嗗彂瑷€瀛樺叆鍏叡璁板繂姹?(浣跨敤鏂扮殑MemoryPool API)
-        event_id = public_memory_pool.add_speech(round_num, player['id'], response)
-        # 鏍囪璇ョ帺瀹跺凡鐪嬪埌褰撳墠鎵€鏈変簨浠?
-        public_memory_pool.mark_player_read(player['id'])
+        # 鏍规嵁鏄惁涓篣LS++妯″紡閫夋嫨涓嶅悓鐨勮皟鐢ㄦ柟寮?
+        # 鏍规嵁鏄惁涓篣LS++妯″紡閫夋嫨涓嶅悓鐨勮皟鐢ㄦ柟寮?
+        if uls_mode:
+            # ULS++妯″紡锛氱畝鍖栬緭鍑?- 鐩存帴鏄剧ずLLM鍘熷鍝嶅簲锛屼笉鍋氱紪鐮?
+            # 浣跨敤姝ｅ父鐨刾rompt锛堜笉寮哄埗ULS鏍煎紡锛夛紝璁㎜LM鑷敱鍙戣█
+            normal_prompt = f"""Werewolf Day {round_num} Discussion
+You are Player {player['id']} ({player['role']}). {sheriff_info}
 
-        dialogue_queue.put({
-            "type": "dialogue",
-            "player_id": player['id'],
-            "phase": f"绗瑊round_num}澶╄璁?,
-            "content": response,
-            "panel": "day"
-        })
+{instruction}{history_context}
+{additional_guidance}
+
+Requirements:
+1. Analyse previous speeches and identify contradictions or vote-pattern signals.
+2. Link your role to an explicit reasoning chain and describe information gain.
+3. State your alignment judgement and intended vote target.
+4. Keep it within 2-3 sentences; concise bilingual (CN/EN) keywords are welcome."""
+
+            # 鐩存帴璋冪敤LLM锛岃幏鍙栧師濮嬪搷搴?
+            # 鐩存帴璋冪敤LLM锛岃幏鍙栧師濮嬪搷搴?
+            response = call_llm(normal_prompt, player['id'])
+
+            # 灏嗗彂瑷€瀛樺叆鍏叡璁板繂姹?
+            event_id = public_memory_pool.add_speech(round_num, player['id'], response)
+            public_memory_pool.mark_player_read(player['id'])
+
+            # 鍙戦€佸埌UI锛堢洿鎺ユ樉绀篖LM鍘熷杈撳嚭锛?
+            dialogue_queue.put({
+                "type": "dialogue",
+                "player_id": player['id'],
+                "phase": f"绗瑊round_num}澶╄璁?,
+                "content": response,  # 鐩存帴鏄剧ず鍘熷鍝嶅簲
+                "panel": "day"
+            })
+        else:
+            # 姝ｅ父妯″紡锛氬崟闃舵璋冪敤
+            response = call_llm(prompt, player['id'])
+
+            # 灏嗗彂瑷€瀛樺叆鍏叡璁板繂姹?
+            event_id = public_memory_pool.add_speech(round_num, player['id'], response)
+            public_memory_pool.mark_player_read(player['id'])
+
+            dialogue_queue.put({
+                "type": "dialogue",
+                "player_id": player['id'],
+                "phase": f"绗瑊round_num}澶╄璁?,
+                "content": response,
+                "panel": "day"
+            })
 
         time.sleep(1)
 
@@ -3028,7 +2205,8 @@ Requirements:
             elif voter['role'] in ['濂冲帆', '鐚庝汉', '瀹堝崼']:
                 vote_instruction = "浣犳槸绁炶亴锛屾姇绁ㄧ粰鍙戣█鏈€鍙枒銆侀€昏緫鏈夋紡娲炵殑鐜╁銆?
             else:
-                vote_instruction = "你是村民，投票给发言最可疑、逻辑有漏洞的玩家。"
+                vote_instruction = "浣犳槸鏉戞皯锛屾姇绁ㄧ粰鍙戣█鏈€鍙枒銆侀€昏緫鏈夋紡娲炵殑鐜╁銆?
+
             if voter['id'] == TEST_SUBJECT_ID:
                 vote_instruction += build_bilingual_vote_guidance()
 
@@ -3599,6 +2777,7 @@ def game_loop():
     # 绗竴澶?
     if is_running:
         # 鎵ц绗竴澶滐紙鍖呭惈瀹屾暣鐨勫鏅氶樁娈碉級
+        sync_game_state(phase="night", round_num=1)
         night_deaths = night_phase(1)
 
         if night_deaths is None:  # 鐙间汉鍏ㄧ伃
@@ -3618,6 +2797,7 @@ def game_loop():
             return
 
         # 榛庢槑闃舵
+        sync_game_state(phase="dawn", round_num=1)
         dawn_phase(night_deaths, 1)
 
         # 璀﹂暱绔為€夛紙濡傛灉娌℃湁鎻愬墠涓婅锛?
@@ -3660,6 +2840,7 @@ def game_loop():
             break
 
         # 鐧藉ぉ璁ㄨ鎶曠エ
+        sync_game_state(phase="day", round_num=day_num)
         day_discussion_and_voting(day_num)
 
         # 鍐嶆妫€鏌ヨ儨鍒?
@@ -3699,6 +2880,7 @@ def game_loop():
         day_num += 1
 
         # 鎵ц瀹屾暣鐨勫鏅氶樁娈?
+        sync_game_state(phase="night", round_num=day_num)
         night_deaths = night_phase(day_num)
 
         if night_deaths is None:  # 鐙间汉鍏ㄧ伃
@@ -3718,6 +2900,7 @@ def game_loop():
             break
 
         # 榛庢槑闃舵
+        sync_game_state(phase="dawn", round_num=day_num)
         dawn_phase(night_deaths, day_num)
 
         time.sleep(2)
@@ -3792,6 +2975,7 @@ def start():
             dialogue_queue.get()
 
         clear_dialogue_history()
+
         sync_game_state(phase="night", round_num=0)
 
         print("[DEBUG /api/start] Creating game thread...")
@@ -4079,20 +3263,48 @@ def test_evaluation():
 
 @app.route('/api/get_evaluation', methods=['GET'])
 def get_evaluation():
-    """鑾峰彇璇勪及缁撴灉"""
+    """鑾峰彇璇勪及缁撴灉
+
+    鏀寔鏌ヨ鍙傛暟:
+    - player_id: 瑕佽瘎浼扮殑鐜╁ID (榛樿=7)
+    """
     global game_evaluator, game_state, dialogue_queue
 
+    # 妫€鏌ヨ瘎浼板櫒鏄惁鍚敤
     if not EVALUATOR_ENABLED:
-        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍚敤"}, 400
+        error_msg = f"璇勪及鍣ㄦ湭鍚敤銆傚鍏ラ敊璇? {EVALUATOR_IMPORT_ERROR}" if EVALUATOR_IMPORT_ERROR else "璇勪及鍣ㄦ湭鍚敤"
+        print(f"[ERROR] {error_msg}")
+        return {
+            "status": "error",
+            "message": error_msg,
+            "debug_info": {
+                "evaluator_enabled": EVALUATOR_ENABLED,
+                "import_error": EVALUATOR_IMPORT_ERROR
+            }
+        }, 400
 
+    # 妫€鏌ヨ瘎浼板櫒鏄惁鍒濆鍖?
     if game_evaluator is None:
-        return {"status": "error", "message": "璇勪及鍣ㄦ湭鍒濆鍖栵紝璇峰厛寮€濮嬫父鎴?}, 400
+        print(f"[ERROR] 璇勪及鍣ㄦ湭鍒濆鍖?)
+        return {
+            "status": "error",
+            "message": "璇勪及鍣ㄦ湭鍒濆鍖栥€傝鍏堝紑濮嬫父鎴?,
+            "debug_info": {
+                "game_evaluator": None,
+                "game_state": game_state
+            }
+        }, 400
 
     try:
+        # 鑾峰彇鐩爣鐜╁ID (鏀寔鏌ヨ鍙傛暟)
+        target_player_id = request.args.get('player_id', default=7, type=int)
+
         # 杞崲瀵硅瘽鍘嗗彶涓哄垪琛ㄦ牸寮?
         dialogue_history = get_dialogue_history_snapshot()
 
-        print(f"[DEBUG get_evaluation] dialogue_history length: {len(dialogue_history)} (queue_size={dialogue_queue.qsize()})")
+        print(f"[DEBUG get_evaluation] 鐩爣鐜╁: Player {target_player_id}")
+        print(f"[DEBUG get_evaluation] dialogue_history length: {len(dialogue_history)}")
+        print(f"[DEBUG get_evaluation] queue_size={dialogue_queue.qsize()}")
         print(f"[DEBUG get_evaluation] game_state: {game_state}")
 
         # 娓呯┖璇勪及鍣ㄤ箣鍓嶇殑鏁版嵁锛岄伩鍏嶉噸澶嶆坊鍔?
@@ -4101,12 +3313,17 @@ def get_evaluation():
         game_evaluator.events = []
         game_evaluator.side_changes = []
 
-        # 鍚屾瀵硅瘽鍘嗗彶涓殑Player 7浜嬩欢鍒拌瘎浼板櫒
-        player_7_count = 0
+        # 鍚屾瀵硅瘽鍘嗗彶涓殑鐩爣鐜╁浜嬩欢鍒拌瘎浼板櫒
+        target_player_count = 0
+        all_player_ids = set()
+
         for dialogue in dialogue_history:
             player_id = dialogue.get('player_id')
-            if player_id == 7:  # Only track Player 7
-                player_7_count += 1
+            if player_id is not None and player_id >= 0:
+                all_player_ids.add(player_id)
+
+            if player_id == target_player_id:  # Track target player
+                target_player_count += 1
                 event_type = dialogue.get('type', 'dialogue')
                 content = dialogue.get('content', '')
                 phase = dialogue.get('phase', '')
@@ -4114,7 +3331,7 @@ def get_evaluation():
 
                 # Use ASCII encoding to avoid console encoding issues with emojis
                 content_safe = content[:50].encode('ascii', 'replace').decode('ascii')
-                print(f"[DEBUG] Player 7 event #{player_7_count}: phase={phase}, content_preview={content_safe}...")
+                print(f"[DEBUG] Player {target_player_id} event #{target_player_count}: phase={phase}, content_preview={content_safe}...")
 
                 # Determine if this is a vote or speech based on phase and content
                 is_vote = '鎶曠エ' in phase or content.startswith('馃棾锔?鎶曠エ缁?)
@@ -4130,14 +3347,21 @@ def get_evaluation():
                     game_evaluator.add_event('speech', player_id, content, round_num)
                     print(f"[DEBUG] Added speech event")
 
-        print(f"[DEBUG get_evaluation] Player 7 events found: {player_7_count}")
-        print(f"[DEBUG get_evaluation] Player 7 speeches: {len(game_evaluator.speeches)}, votes: {len(game_evaluator.votes)}")
+        print(f"[DEBUG get_evaluation] Player {target_player_id} events found: {target_player_count}")
+        print(f"[DEBUG get_evaluation] 鎵€鏈夊嚭鐜拌繃鐨勭帺瀹禝D: {sorted(all_player_ids)}")
+        print(f"[DEBUG get_evaluation] Player {target_player_id} speeches: {len(game_evaluator.speeches)}, votes: {len(game_evaluator.votes)}")
 
-        # 濡傛灉娌℃湁鎵惧埌浠讳綍Player 7鐨勬暟鎹?杩斿洖鎻愮ず
-        if player_7_count == 0:
+        # 濡傛灉娌℃湁鎵惧埌浠讳綍鐩爣鐜╁鐨勬暟鎹?杩斿洖鏈夌敤鐨勬彁绀?
+        if target_player_count == 0:
+            available_players = ', '.join(map(str, sorted(all_player_ids))) if all_player_ids else "鏃?
             return {
                 "status": "error",
-                "message": f"dialogue_queue涓病鏈夋壘鍒癙layer 7鐨勬暟鎹甛n\n瀵硅瘽闃熷垪鎬绘暟: {len(dialogue_history)}\n\n璇峰厛:\n1. 鐐瑰嚮'馃И 娴嬭瘯璇勪及鍔熻兘'娉ㄥ叆娴嬭瘯鏁版嵁\n2. 鎴栬€呭紑濮嬫父鎴忓苟绛夊緟Player 7鍙戣█"
+                "message": f"鏈壘鍒癙layer {target_player_id}鐨勬暟鎹€俓n\n瀵硅瘽闃熷垪鎬绘暟: {len(dialogue_history)}\n鍙敤鐜╁: {available_players}\n\n璇?\n1. 纭繚娓告垙宸插惎鍔ㄥ苟鑷冲皯涓€涓洖鍚堝凡瀹屾垚\n2. 灏濊瘯浣跨敤鍏朵粬鐜╁ID: ?player_id=<ID>\n3. 鎴栫偣鍑?馃И 娴嬭瘯璇勪及鍔熻兘'娉ㄥ叆娴嬭瘯鏁版嵁",
+                "debug_info": {
+                    "target_player_id": target_player_id,
+                    "available_players": list(all_player_ids),
+                    "dialogue_total": len(dialogue_history)
+                }
             }, 400
 
         # 璁剧疆娓告垙涓婁笅鏂囦互鍚敤娣卞害鎺ㄧ悊璇勪及
@@ -4149,19 +3373,31 @@ def get_evaluation():
         # 娣诲姞缁熻鏁版嵁鍜屾椂闂存埑
         import time
         eval_result['stats'] = {
+            'target_player_id': target_player_id,
             'speeches': len(game_evaluator.speeches),
             'votes': len(game_evaluator.votes),
             'side_changes': len(game_evaluator.side_changes),
             'dialogue_queue_size': len(dialogue_history),
-            'player_7_events': player_7_count,
+            'target_player_events': target_player_count,
+            'all_players': list(all_player_ids),
             'evaluation_timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
         }
 
+        print(f"[SUCCESS] 璇勪及瀹屾垚: Player {target_player_id}, 寰楀垎: {eval_result.get('comprehensive_score', {}).get('overall_score', 'N/A')}")
         return {"status": "ok", "evaluation": eval_result}
     except Exception as e:
         import traceback
-        traceback.print_exc()
-        return {"status": "error", "message": str(e)}, 500
+        error_trace = traceback.format_exc()
+        print(f"[ERROR] 璇勪及澶辫触: {str(e)}")
+        print(error_trace)
+        return {
+            "status": "error",
+            "message": f"璇勪及澶辫触: {str(e)}\n\n璇︾粏閿欒璇锋煡鐪嬫湇鍔″櫒鏃ュ織",
+            "debug_info": {
+                "error_type": type(e).__name__,
+                "error_msg": str(e)
+            }
+        }, 500
 
 @app.route('/api/export_evaluation', methods=['GET'])
 def export_evaluation():

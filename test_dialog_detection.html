@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dialog Detection Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Dialog Detection Test</h1>
+
+    <div class="test-section">
+        <h3>Test 1: Pattern Matching</h3>
+        <div id="test1"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Event Processing</h3>
+        <div id="test2"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Game State</h3>
+        <div id="test3"></div>
+    </div>
+
+    <script>
+        // Test data structures (same as in main UI)
+        let gameStateData = {
+            players: {},
+            currentRound: 1,
+            phase: 'day',
+            timelineEvents: [],
+            playerDialogs: [],
+            roleActions: {
+                werewolf: [],
+                seer: [],
+                witch: [],
+                hunter: []
+            }
+        };
+
+        // Initialize some players
+        for (let i = 0; i < 13; i++) {
+            gameStateData.players[i] = {
+                id: i,
+                name: `Player ${i}`,
+                status: 'alive',
+                role: i < 3 ? 'werewolf' : (i < 6 ? 'villager' : 'seer'),
+                isSheriff: false,
+                statements: 0
+            };
+        }
+
+        // Test cases
+        const testEvents = [
+            {
+                type: 'player_statement',
+                data: 'I think Player 3 is suspicious',
+                player_id: '1',
+                statement: 'I think Player 3 is suspicious',
+                round: 1
+            },
+            {
+                type: 'game_event',
+                data: '  🗣️ Player 2: We should trust the seer',
+            },
+            {
+                type: 'game_event',
+                data: '  [SPEECH] Player 4: I am innocent!',
+            },
+            {
+                type: 'player_action',
+                data: 'Player 5: This is my statement about the game',
+            }
+        ];
+
+        // Copy the addPlayerDialog function from main UI
+        function addPlayerDialog(eventData, eventType) {
+            try {
+                console.log('[TEST] addPlayerDialog called:', { eventData, eventType });
+
+                let playerId = null;
+                let statement = '';
+                let round = gameStateData.currentRound;
+
+                if (typeof eventData === 'object' && eventData !== null) {
+                    if (eventData.player_id !== undefined) {
+                        playerId = String(eventData.player_id);
+                    }
+                    if (eventData.statement !== undefined) {
+                        statement = eventData.statement;
+                    } else if (eventData.data !== undefined) {
+                        statement = eventData.data;
+                    }
+                    if (eventData.round !== undefined) {
+                        round = eventData.round;
+                    }
+                } else if (typeof eventData === 'string') {
+                    const playerMatch = eventData.match(/Player ([0-9]+):\s*(.*)/);
+                    if (playerMatch) {
+                        playerId = playerMatch[1];
+                        statement = playerMatch[2];
+                    } else {
+                        const idMatch = eventData.match(/Player ([0-9]+)/);
+                        if (idMatch) {
+                            playerId = idMatch[1];
+                            statement = eventData;
+                        }
+                    }
+                }
+
+                if (statement) {
+                    statement = statement.replace(/^🗣️\s*/, '').replace(/^\[SPEECH\]\s*/, '').trim();
+                }
+
+                if (!playerId || !statement || statement.length < 5) {
+                    console.log('[TEST] Dialog rejected:', { playerId, statement, statementLength: statement?.length });
+                    return false;
+                }
+
+                console.log('[TEST] Dialog accepted:', { playerId, statement: statement.substring(0, 50), round });
+
+                const dialog = {
+                    playerId: playerId,
+                    playerRole: gameStateData.players[playerId]?.role || 'unknown',
+                    round: round,
+                    timestamp: new Date().toLocaleTimeString(),
+                    content: statement,
+                    type: gameStateData.players[playerId]?.role === 'werewolf' ? 'werewolf' :
+                          gameStateData.players[playerId]?.role === 'villager' ? 'villager' : 'special'
+                };
+
+                gameStateData.playerDialogs.push(dialog);
+                return true;
+
+            } catch (e) {
+                console.error('[TEST] Dialog processing error:', e);
+                return false;
+            }
+        }
+
+        // Run tests
+        function runTests() {
+            const test1Output = document.getElementById('test1');
+            const test2Output = document.getElementById('test2');
+            const test3Output = document.getElementById('test3');
+
+            // Test 1: Pattern matching
+            test1Output.innerHTML = '<h4>Testing regex patterns:</h4>';
+
+            const patterns = [
+                '  🗣️ Player 2: Test statement',
+                '  [SPEECH] Player 3: Another test',
+                'Player 4: Direct statement',
+                'Random text without player'
+            ];
+
+            patterns.forEach(pattern => {
+                const match = pattern.match(/Player ([0-9]+):\s*(.*)/);
+                if (match) {
+                    test1Output.innerHTML += `<div class="success">✓ Matched: "${pattern}" → Player ${match[1]}: ${match[2]}</div>`;
+                } else {
+                    test1Output.innerHTML += `<div class="error">✗ No match: "${pattern}"</div>`;
+                }
+            });
+
+            // Test 2: Event processing
+            test2Output.innerHTML = '<h4>Testing event processing:</h4>';
+
+            testEvents.forEach((event, index) => {
+                const result = addPlayerDialog(event.data || event, event.type);
+                if (result) {
+                    test2Output.innerHTML += `<div class="success">✓ Test ${index + 1}: Dialog accepted</div>`;
+                } else {
+                    test2Output.innerHTML += `<div class="error">✗ Test ${index + 1}: Dialog rejected</div>`;
+                }
+            });
+
+            // Test 3: Game state
+            test3Output.innerHTML = '<h4>Game state after tests:</h4>';
+            test3Output.innerHTML += `<div class="info">Total players: ${Object.keys(gameStateData.players).length}</div>`;
+            test3Output.innerHTML += `<div class="info">Total dialogs captured: ${gameStateData.playerDialogs.length}</div>`;
+            test3Output.innerHTML += '<br><strong>Captured dialogs:</strong><br>';
+
+            gameStateData.playerDialogs.forEach((dialog, index) => {
+                test3Output.innerHTML += `<div class="info">${index + 1}. Player ${dialog.playerId} (${dialog.playerRole}): "${dialog.content.substring(0, 50)}..."</div>`;
+            });
+        }
+
+        // Run tests on load
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

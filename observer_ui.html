@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf Game - Real-time Observer 狼人杀实时观战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Panel - Game Events */
+        .game-panel {
+            flex: 2;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a90e2;
+        }
+
+        .event-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            animation: slideIn 0.3s ease;
+            transition: all 0.3s;
+        }
+
+        .event-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .event-type {
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .event-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .event-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Middle Panel - Players */
+        .players-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .player-card.dead {
+            opacity: 0.5;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .player-card.werewolf {
+            border: 2px solid #ff4444;
+        }
+
+        .player-card.werewolf-king {
+            border: 2px solid #ff9900;
+            box-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
+        }
+
+        .player-card.seer {
+            border: 2px solid #4169e1;
+        }
+
+        .player-card.witch {
+            border: 2px solid #9370db;
+        }
+
+        .player-card.hunter {
+            border: 2px solid #ff8c00;
+        }
+
+        .player-card.guard {
+            border: 2px solid #32cd32;
+        }
+
+        .player-card.judge {
+            border: 2px solid #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .player-role {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+        }
+
+        .hallucination-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Right Panel - Hallucination Marks */
+        .hallucination-panel {
+            flex: 1.5;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hallucination-item {
+            background: rgba(255, 100, 100, 0.1);
+            border-left: 4px solid #ff4444;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+        }
+
+        .hallucination-player {
+            font-weight: bold;
+            color: #ff9999;
+            margin-bottom: 5px;
+        }
+
+        .hallucination-type {
+            display: inline-block;
+            background: #ff4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        .hallucination-description {
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .severity {
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .severity-star {
+            color: #ff9900;
+            margin-right: 2px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        .mark-button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .mark-button:hover {
+            background: #ff6666;
+            transform: scale(1.05);
+        }
+
+        /* Hallucination Form */
+        .hallucination-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 40, 0.98);
+            padding: 25px;
+            border-radius: 10px;
+            z-index: 200;
+            min-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .hallucination-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #666;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #5ba0f2;
+        }
+
+        .btn-cancel:hover {
+            background: #777;
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .connection-status.connected {
+            background: #4caf50;
+        }
+
+        .connection-status.disconnected {
+            background: #ff4444;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">
+        ⚠ Disconnected
+    </div>
+
+    <div class="container">
+        <!-- Left Panel - Game Events -->
+        <div class="game-panel">
+            <div class="panel-header">🎮 Game Events 游戏事件</div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="roundNumber">0</div>
+                    <div class="stat-label">Round 回合</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="aliveCount">13</div>
+                    <div class="stat-label">Alive 存活</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="hallucinationCount">0</div>
+                    <div class="stat-label">Hallucinations 幻觉</div>
+                </div>
+            </div>
+            <div id="eventsList"></div>
+        </div>
+
+        <!-- Middle Panel - Players -->
+        <div class="players-panel">
+            <div class="panel-header">👥 Players 玩家</div>
+            <div id="playersList"></div>
+        </div>
+
+        <!-- Right Panel - Hallucination Marks -->
+        <div class="hallucination-panel">
+            <div class="panel-header">🚨 Hallucination Marks 幻觉标记</div>
+            <div id="hallucinationsList"></div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <button class="mark-button" onclick="showHallucinationForm()">
+            🚨 Mark Hallucination 标记幻觉
+        </button>
+        <button class="mark-button" onclick="testULSUnderstanding()" style="background: #4a90e2; margin-top: 10px;">
+            🧪 Test ULS++ Understanding 测试ULS++理解
+        </button>
+    </div>
+
+    <!-- ULS Test Result Popup -->
+    <div class="hallucination-form" id="ulsTestResult">
+        <h3>🧪 ULS++ Understanding Test 测试结果</h3>
+        <div id="ulsTestContent" style="max-height: 400px; overflow-y: auto; margin: 15px 0;"></div>
+        <div class="form-buttons">
+            <button class="btn-cancel" onclick="hideULSTestResult()">Close 关闭</button>
+        </div>
+    </div>
+
+    <!-- Hallucination Form -->
+    <div class="hallucination-form" id="hallucinationForm">
+        <h3>Mark Hallucination 标记幻觉</h3>
+        <div class="form-group">
+            <label>Player ID 玩家ID:</label>
+            <input type="number" id="playerId" min="0" max="12" required>
+        </div>
+        <div class="form-group">
+            <label>Type 类型:</label>
+            <select id="hallucinationType" required>
+                <option value="factual_error">Factual Error 事实错误</option>
+                <option value="timeline_confusion">Timeline Confusion 时间线混乱</option>
+                <option value="role_confusion">Role Confusion 角色混淆</option>
+                <option value="false_memory">False Memory 虚假记忆</option>
+                <option value="logic_contradiction">Logic Contradiction 逻辑矛盾</option>
+                <option value="info_fabrication">Information Fabrication 信息编造</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Severity 严重程度 (1-5):</label>
+            <input type="number" id="severity" min="1" max="5" value="3" required>
+        </div>
+        <div class="form-group">
+            <label>Description 描述:</label>
+            <textarea id="description" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Statement 相关陈述 (Optional):</label>
+            <textarea id="statement"></textarea>
+        </div>
+        <div class="form-buttons">
+            <button class="btn-cancel" onclick="hideHallucinationForm()">Cancel</button>
+            <button class="btn-submit" onclick="submitHallucination()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let gameState = {
+            round: 0,
+            phase: 'night',
+            players: {},
+            events: [],
+            hallucinations: []
+        };
+
+        // Connect to WebSocket server
+        function connect() {
+            ws = new WebSocket('ws://localhost:8765');
+
+            ws.onopen = () => {
+                console.log('Connected to observer server');
+                document.getElementById('connectionStatus').className = 'connection-status connected';
+                document.getElementById('connectionStatus').innerHTML = '✓ Connected';
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected from server');
+                document.getElementById('connectionStatus').className = 'connection-status disconnected';
+                document.getElementById('connectionStatus').innerHTML = '⚠ Disconnected';
+                setTimeout(connect, 3000); // Reconnect after 3 seconds
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleMessage(data);
+            };
+        }
+
+        function handleMessage(data) {
+            switch(data.type) {
+                case 'initial_state':
+                    initializeState(data);
+                    break;
+                case 'game_event':
+                    handleGameEvent(data.data);
+                    break;
+                case 'hallucination_mark':
+                    handleHallucinationMark(data.data);
+                    break;
+            }
+        }
+
+        function initializeState(data) {
+            gameState.events = data.events || [];
+            gameState.hallucinations = data.hallucinations || [];
+
+            // Render initial state
+            renderEvents();
+            renderHallucinations();
+            updateStats();
+        }
+
+        function handleGameEvent(event) {
+            gameState.events.push(event);
+            gameState.round = event.round;
+            gameState.phase = event.phase;
+
+            // Add event to UI
+            addEventToUI(event);
+            updateStats();
+
+            // Update player states based on event
+            updatePlayerStates(event);
+        }
+
+        function handleHallucinationMark(mark) {
+            gameState.hallucinations.push(mark);
+            addHallucinationToUI(mark);
+            updateStats();
+
+            // Update player card to show hallucination badge
+            updatePlayerHallucination(mark.player_id);
+        }
+
+        function addEventToUI(event) {
+            const eventsList = document.getElementById('eventsList');
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'event-item';
+
+            const eventIcons = {
+                'game_start': '🎮',
+                'sheriff_elected': '👮',
+                'night_deaths': '💀',
+                'day_elimination': '☀️',
+                'player_statement': '💬',
+                'werewolf_action': '🐺',
+                'seer_check': '🔮',
+                'witch_action': '🧙',
+                'hunter_revenge': '🎯'
+            };
+
+            const icon = eventIcons[event.event_type] || '📌';
+
+            eventDiv.innerHTML = `
+                <div class="event-header">
+                    <span class="event-type">${icon} ${event.event_type}</span>
+                    <span class="event-time">${new Date(event.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div class="event-content">
+                    Round ${event.round} - ${event.phase}<br>
+                    ${JSON.stringify(event.data).substring(0, 200)}
+                </div>
+            `;
+
+            eventsList.insertBefore(eventDiv, eventsList.firstChild);
+
+            // Keep only last 50 events
+            while (eventsList.children.length > 50) {
+                eventsList.removeChild(eventsList.lastChild);
+            }
+        }
+
+        function addHallucinationToUI(mark) {
+            const list = document.getElementById('hallucinationsList');
+            const div = document.createElement('div');
+            div.className = 'hallucination-item';
+
+            const stars = '⭐'.repeat(mark.severity);
+
+            div.innerHTML = `
+                <div class="hallucination-player">Player ${mark.player_id}</div>
+                <span class="hallucination-type">${mark.type}</span>
+                <span class="event-time">Round ${mark.round} - ${mark.phase}</span>
+                <div class="hallucination-description">${mark.description}</div>
+                <div class="severity">${stars}</div>
+            `;
+
+            list.insertBefore(div, list.firstChild);
+        }
+
+        function updatePlayerStates(event) {
+            // Initialize players on game start
+            if (event.event_type === 'game_start') {
+                const playersList = document.getElementById('playersList');
+                playersList.innerHTML = '';
+
+                event.data.players.forEach(player => {
+                    gameState.players[player.id] = {
+                        id: player.id,
+                        role: player.role,
+                        alive: true,
+                        hallucinations: 0
+                    };
+
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = `player-card ${player.role.replace('_', '-')}`;
+                    playerDiv.id = `player-${player.id}`;
+                    playerDiv.innerHTML = `
+                        <div class="player-name">Player ${player.id}</div>
+                        <span class="player-role">${player.role}</span>
+                    `;
+                    playersList.appendChild(playerDiv);
+                });
+            }
+
+            // Update on deaths
+            if (event.event_type === 'night_deaths' || event.event_type === 'day_elimination') {
+                const victims = event.data.player_ids || [event.data.player_id];
+                victims.forEach(id => {
+                    if (gameState.players[id]) {
+                        gameState.players[id].alive = false;
+                        const card = document.getElementById(`player-${id}`);
+                        if (card) card.classList.add('dead');
+                    }
+                });
+            }
+        }
+
+        function updatePlayerHallucination(playerId) {
+            const playerCard = document.getElementById(`player-${playerId}`);
+            if (!playerCard) return;
+
+            // Check if badge already exists
+            let badge = playerCard.querySelector('.hallucination-badge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'hallucination-badge';
+                playerCard.appendChild(badge);
+            }
+
+            // Count hallucinations for this player
+            const count = gameState.hallucinations.filter(h => h.player_id == playerId).length;
+            badge.textContent = `${count} 🚨`;
+        }
+
+        function updateStats() {
+            document.getElementById('roundNumber').textContent = gameState.round;
+
+            const aliveCount = Object.values(gameState.players).filter(p => p.alive).length;
+            document.getElementById('aliveCount').textContent = aliveCount || 13;
+
+            document.getElementById('hallucinationCount').textContent = gameState.hallucinations.length;
+        }
+
+        function renderEvents() {
+            const eventsList = document.getElementById('eventsList');
+            eventsList.innerHTML = '';
+            gameState.events.slice(-50).reverse().forEach(event => {
+                addEventToUI(event);
+            });
+        }
+
+        function renderHallucinations() {
+            const list = document.getElementById('hallucinationsList');
+            list.innerHTML = '';
+            gameState.hallucinations.forEach(mark => {
+                addHallucinationToUI(mark);
+            });
+        }
+
+        // Hallucination form functions
+        function showHallucinationForm() {
+            document.getElementById('hallucinationForm').classList.add('show');
+        }
+
+        function hideHallucinationForm() {
+            document.getElementById('hallucinationForm').classList.remove('show');
+            // Clear form
+            document.getElementById('playerId').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('statement').value = '';
+            document.getElementById('severity').value = '3';
+        }
+
+        function submitHallucination() {
+            const playerId = document.getElementById('playerId').value;
+            const type = document.getElementById('hallucinationType').value;
+            const severity = document.getElementById('severity').value;
+            const description = document.getElementById('description').value;
+            const statement = document.getElementById('statement').value;
+
+            if (!playerId || !description) {
+                alert('Please fill in required fields');
+                return;
+            }
+
+            const mark = {
+                type: 'mark_hallucination',
+                player_id: parseInt(playerId),
+                round: gameState.round,
+                phase: gameState.phase,
+                hallucination_type: type,
+                severity: parseInt(severity),
+                description: description,
+                statement: statement
+            };
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(mark));
+                hideHallucinationForm();
+            } else {
+                alert('Not connected to server');
+            }
+        }
+
+        // Test ULS++ Understanding
+        async function testULSUnderstanding() {
+            const contentDiv = document.getElementById('ulsTestContent');
+            contentDiv.innerHTML = '<div style="text-align: center; padding: 20px;"><div style="font-size: 16px;">⏳ Testing LLM understanding...</div></div>';
+            document.getElementById('ulsTestResult').classList.add('show');
+
+            try {
+                const response = await fetch('http://localhost:5005/api/test_uls_understanding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (data.status === 'ok') {
+                        contentDiv.innerHTML = `
+                            <div style="background: rgba(74, 144, 226, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">✅ Test Completed 测试完成</h4>
+                            </div>
+
+                            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                <h4 style="color: #4a90e2; margin-bottom: 10px;">🤖 LLM's Answer LLM回答：</h4>
+                                <div style="white-space: pre-wrap; line-height: 1.6; background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 3px;">${data.llm_answer}</div>
+                            </div>
+
+                            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 5px; border-left: 4px solid #4caf50;">
+                                <h4 style="color: #4caf50; margin-bottom: 10px;">✓ Correct Answers 正确答案：</h4>
+                                <div style="line-height: 1.8;">
+                                    <div><strong>问题1:</strong> ${data.correct_answers.q1}</div>
+                                    <div><strong>问题2:</strong> ${data.correct_answers.q2}</div>
+                                    <div><strong>问题3:</strong> ${data.correct_answers.q3}</div>
+                                </div>
+                            </div>
+
+                            <details style="margin-top: 15px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 5px;">
+                                <summary style="cursor: pointer; font-weight: bold; color: #888;">查看测试用的Prompt</summary>
+                                <div style="white-space: pre-wrap; margin-top: 10px; line-height: 1.4; font-size: 13px; color: #aaa;">${data.test_prompt}</div>
+                            </details>
+                        `;
+                    } else {
+                        contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Error: ${data.message}</div>`;
+                    }
+                } else {
+                    contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Server error: ${response.status}</div>`;
+                }
+            } catch (error) {
+                contentDiv.innerHTML = `<div style="color: #ff4444; padding: 20px;">❌ Network error: ${error.message}</div>`;
+            }
+        }
+
+        function hideULSTestResult() {
+            document.getElementById('ulsTestResult').classList.remove('show');
+        }
+
+        // Initialize connection
+        connect();
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Circular Layout Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .circular-container {
+            position: relative;
+            width: 100%;
+            height: 800px;
+            background: #fafafa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            border: 8px solid #654321;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        .player {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .player:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .player-emoji {
+            font-size: 32px;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Simple Circular Layout - This MUST Work!</h1>
+
+        <div class="controls">
+            <button onclick="createPlayers()">Create 13 Players</button>
+            <button onclick="clearPlayers()">Clear All</button>
+        </div>
+
+        <div class="circular-container" id="circular-container">
+            <div class="center-circle">
+                🐺<br>Game
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createPlayers() {
+            const container = document.getElementById('circular-container');
+            const numPlayers = 13;
+            const radius = 300; // Distance from center
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+
+            // Clear existing players
+            const existingPlayers = container.querySelectorAll('.player');
+            existingPlayers.forEach(p => p.remove());
+
+            // Create players
+            for (let i = 0; i < numPlayers; i++) {
+                // Calculate angle (starting from top, going clockwise)
+                const angle = (i / numPlayers) * 2 * Math.PI - Math.PI / 2;
+
+                // Calculate position
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                // Create player element
+                const player = document.createElement('div');
+                player.className = 'player';
+                player.style.left = (x - 60) + 'px'; // 60 = half of width
+                player.style.top = (y - 50) + 'px';  // 50 = half of height
+
+                player.innerHTML = `
+                    <div class="player-name">Player ${i}</div>
+                    <div class="player-emoji">${i % 3 === 0 ? '🐺' : '👨‍🌾'}</div>
+                `;
+
+                player.onclick = () => alert('Player ' + i + ' clicked!');
+
+                container.appendChild(player);
+            }
+
+            console.log('Created 13 players in a circle!');
+            console.log('Container size:', container.offsetWidth, 'x', container.offsetHeight);
+        }
+
+        function clearPlayers() {
+            const container = document.getElementById('circular-container');
+            const players = container.querySelectorAll('.player');
+            players.forEach(p => p.remove());
+            console.log('Cleared all players');
+        }
+
+        // Auto-create on load
+        window.addEventListener('load', () => {
+            console.log('Page loaded!');
+            console.log('Click "Create 13 Players" button to see circular layout');
+        });
+    </script>
+</body>
+</html>

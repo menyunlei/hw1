@@ -1,0 +1,160 @@
+{
+  "analysis": {
+    "speeches_per_player": {
+      "player_0": 12,
+      "player_1": 8,
+      "player_2": 15,
+      "player_3": 4,
+      "player_11": 2,
+      "player_8": 14,
+      "player_9": 8,
+      "player_4": 9,
+      "player_10": 9,
+      "player_7": 9,
+      "player_6": 6
+    },
+    "votes_cast_per_player": {
+      "player_0": 3,
+      "player_1": 2,
+      "player_2": 4,
+      "player_3": 1,
+      "player_4": 4,
+      "player_6": 3,
+      "player_7": 4,
+      "player_8": 6,
+      "player_9": 2,
+      "player_10": 4
+    },
+    "votes_received_per_player": {
+      "player_3": 7,
+      "player_6": 1,
+      "player_1": 10,
+      "player_2": 5,
+      "player_7": 2,
+      "player_4": 3,
+      "player_0": 3,
+      "player_10": 2
+    },
+    "total_rounds": 4,
+    "final_day_execution": {
+      "player_id": 2,
+      "role": "狼王"
+    },
+    "wolf_kill_attempts": 4
+  },
+  "evaluation": {
+    "player_id": 7,
+    "traditional_metrics": {
+      "player_id": 7,
+      "scores": {
+        "information_extraction": {
+          "score": 0,
+          "details": [
+            "[FAIL] 未识别真预言家 [0分]",
+            "[FAIL] 未识别假预言家 [0分]",
+            "[FAIL] 未追踪金水位 [0分]",
+            "[FAIL] 未关注夜晚死亡 [0分]",
+            "[FAIL] 未推理女巫药序 [0分]"
+          ],
+          "summary": "信息提取能力: 0/100"
+        },
+        "logical_deduction": {
+          "score": 0,
+          "details": [
+            "[FAIL] 缺乏明确推理过程 [0分]",
+            "[FAIL] 未发现信息矛盾 [0分]",
+            "[FAIL] 推理深度不足 [0分]",
+            "[FAIL] 未分析站边 [0分]"
+          ],
+          "summary": "逻辑推理能力: 0/100"
+        },
+        "pattern_recognition": {
+          "score": 0,
+          "details": [
+            "[FAIL] 未识别狼队抱团 [0分]",
+            "[FAIL] 未分析票型 [0分]",
+            "[FAIL] 未识别发言模式 [0分]"
+          ],
+          "summary": "模式识别能力: 0/100"
+        },
+        "vote_analysis": {
+          "score": 0,
+          "details": [
+            "[FAIL] 无投票记录"
+          ],
+          "summary": "票型分析能力: 0/100 (无投票)"
+        },
+        "adaptive_behavior": {
+          "score": 0,
+          "details": [
+            "○ 未调整站边 [0分]",
+            "[FAIL] 未见自我修正 [0分]",
+            "[FAIL] 应对较僵化 [0分]"
+          ],
+          "summary": "适应性行为: 0/100"
+        },
+        "communication_quality": {
+          "score": 0,
+          "details": [
+            "[FAIL] 无发言记录"
+          ],
+          "summary": "沟通质量: 0/100 (无发言)"
+        }
+      },
+      "detailed_analysis": {},
+      "timeline": [],
+      "final_grade": "D (不及格)",
+      "weighted_score": 0.0
+    },
+    "deep_reasoning_metrics": {
+      "combinatorial_reasoning": {
+        "hypothesis_generation": 0.0,
+        "systematic_elimination": 0.0,
+        "constraint_usage": 0.0,
+        "combinatorial_awareness": 0.0,
+        "reasoning_depth": 0.0,
+        "composite_score": 0.0
+      },
+      "information_theory": {
+        "signal_extraction": 0.0,
+        "information_gain": 0.0,
+        "credibility_assessment": 0.0,
+        "cross_validation": 0.0,
+        "composite_score": 0.0
+      },
+      "bayesian_reasoning": {
+        "probability_language": 0.0,
+        "bayesian_updating": 0.0,
+        "conditional_reasoning": 0.0,
+        "quantitative_reasoning": 0.0,
+        "composite_score": 0.0
+      },
+      "search_strategy": {
+        "search_depth": 0.0,
+        "pruning_efficiency": 0.0,
+        "heuristic_quality": 0.0,
+        "explore_exploit_balance": 0.0,
+        "composite_score": 0.0
+      },
+      "complexity_handling": {
+        "complexity_awareness": 0.0,
+        "approximation_strategy": 0.0,
+        "focus_prioritization": 0.0,
+        "composite_score": 0.0
+      },
+      "overall_deep_reasoning_score": 0.0
+    },
+    "comprehensive_score": {
+      "overall_score": 0.0,
+      "grade": "D (不及格) - 推理能力需要提升",
+      "traditional_contribution": 0.0,
+      "deep_reasoning_contribution": 0.0,
+      "breakdown": {
+        "traditional_score": 0.0,
+        "deep_reasoning_score": 0.0
+      }
+    },
+    "evaluation_type": "Enhanced (Traditional + Deep Reasoning)"
+  },
+  "export_timestamp": "20251017_110014"
+}

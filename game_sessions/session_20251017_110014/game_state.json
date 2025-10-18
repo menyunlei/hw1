@@ -1,0 +1,129 @@
+{
+  "winner": "villagers",
+  "reason": "所有狼人已被消灭",
+  "details": "\n\n存活好人: Player 7 (村民), Player 8 (预言家), Player 10 (猎人)",
+  "difficulty": "地狱",
+  "activated_modules": [
+    {
+      "name": "A_双预对跳",
+      "status": "activated",
+      "difficulty": "地狱难度"
+    },
+    {
+      "name": "B_女巫守卫冲突",
+      "status": "activated",
+      "difficulty": "地狱难度"
+    },
+    {
+      "name": "C_票型搅动",
+      "status": "activated",
+      "difficulty": "地狱难度"
+    },
+    {
+      "name": "D_狼王猎人博弈",
+      "status": "activated",
+      "difficulty": "地狱难度"
+    }
+  ],
+  "difficulty_plan_summary": [
+    "A模块：真预P8 VS 悍跳P3，金水P7，查杀P5",
+    "B模块：夜刀P5，守卫守P7，女巫毒P11",
+    "C模块：首日制造P8 vs P3平票，票型=P7,P8 | P0,P1",
+    "D模块：狼王目标P8，猎人倒钩瞄准P9"
+  ],
+  "game_state": {
+    "phase": "night",
+    "round": 0,
+    "dead_players": [],
+    "night_actions": {}
+  },
+  "daily_statistics": [
+    {
+      "day": 1,
+      "night_actions": {
+        "wolf_target": 5,
+        "guard_target": 7,
+        "seer_check": {
+          "target": 5,
+          "result": "狼人"
+        },
+        "witch_poison": 11
+      },
+      "night_deaths": [
+        5,
+        11
+      ],
+      "day_execution": {
+        "player_id": 3,
+        "role": "狼人"
+      },
+      "alive_werewolves": 3,
+      "alive_villagers": 6,
+      "game_ended": false,
+      "winner": null
+    },
+    {
+      "day": 2,
+      "night_actions": {
+        "wolf_target": 7,
+        "seer_check": {
+          "target": 1,
+          "result": "狼人"
+        },
+        "witch_save": 7
+      },
+      "night_deaths": [],
+      "day_execution": {
+        "player_id": 1,
+        "role": "狼人"
+      },
+      "alive_werewolves": 2,
+      "alive_villagers": 6,
+      "game_ended": false,
+      "winner": null
+    },
+    {
+      "day": 3,
+      "night_actions": {
+        "wolf_target": 9,
+        "seer_check": {
+          "target": 2,
+          "result": "狼人"
+        }
+      },
+      "night_deaths": [
+        9
+      ],
+      "day_execution": {
+        "player_id": 0,
+        "role": "狼人"
+      },
+      "alive_werewolves": 1,
+      "alive_villagers": 5,
+      "game_ended": false,
+      "winner": null
+    },
+    {
+      "day": 4,
+      "night_actions": {
+        "wolf_target": 6,
+        "seer_check": {
+          "target": 2,
+          "result": "狼人"
+        }
+      },
+      "night_deaths": [
+        6
+      ],
+      "day_execution": {
+        "player_id": 2,
+        "role": "狼王"
+      },
+      "alive_werewolves": 0,
+      "alive_villagers": 3,
+      "game_ended": true,
+      "winner": "villagers"
+    }
+  ],
+  "dialogue_history_length": 317
+}

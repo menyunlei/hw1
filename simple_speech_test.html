@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>简单发言测试 - 12 Players Sequential Speech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .info {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        .dialogue-output {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .dialogue-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .player-0, .player-1, .player-2 { color: #f44336; } /* 狼人 */
+        .player-3, .player-4, .player-5, .player-6, .player-7, .player-8 { color: #4CAF50; } /* 村民 */
+        .player-9 { color: #2196F3; } /* 预言家 */
+        .player-10 { color: #9C27B0; } /* 女巫 */
+        .player-11 { color: #FF9800; } /* 猎人 */
+
+        .speech-content {
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .meta {
+            color: #999;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 12 玩家依次发言测试</h1>
+
+        <div class="info">
+            <div><strong>规则：</strong>第n轮，每个玩家发言n次</div>
+            <div>第1轮 → 每人发言1次 | 第2轮 → 每人发言2次 | 第3轮 → 每人发言3次</div>
+        </div>
+
+        <div class="controls">
+            <button onclick="startSpeech()" id="btn-start">▶️ 开始发言</button>
+            <button onclick="stopSpeech()" id="btn-stop" disabled>⏹️ 停止</button>
+            <button onclick="clearDialogues()">🗑️ 清空</button>
+            <div style="margin-top: 15px;">
+                <label>发言速度 (毫秒/字):</label>
+                <input type="number" id="speed-input" value="50" min="10" max="500" style="width: 80px; padding: 5px;">
+            </div>
+        </div>
+
+        <div class="info" id="status-info">
+            当前状态: 等待开始
+        </div>
+
+        <div class="dialogue-output" id="dialogue-output">
+            <div style="color: #999; text-align: center;">等待玩家发言...</div>
+        </div>
+    </div>
+
+    <script>
+        // 12 players configuration
+        const players = [
+            { id: 0, role: '狼人', emoji: '🐺' },
+            { id: 1, role: '狼人', emoji: '🐺' },
+            { id: 2, role: '狼人', emoji: '🐺' },
+            { id: 3, role: '村民', emoji: '👨‍🌾' },
+            { id: 4, role: '村民', emoji: '👨‍🌾' },
+            { id: 5, role: '村民', emoji: '👨‍🌾' },
+            { id: 6, role: '村民', emoji: '👨‍🌾' },
+            { id: 7, role: '村民', emoji: '👨‍🌾' },
+            { id: 8, role: '村民', emoji: '👨‍🌾' },
+            { id: 9, role: '预言家', emoji: '👁️' },
+            { id: 10, role: '女巫', emoji: '🧪' },
+            { id: 11, role: '猎人', emoji: '🏹' }
+        ];
+
+        // Sample statements
+        const sampleStatements = [
+            "我认为这个回合需要仔细观察每个人的发言",
+            "从昨晚的情况来看，我们需要更多的信息",
+            "我觉得有些玩家的行为比较可疑",
+            "让我们一起分析一下目前的局势",
+            "我想分享一下我的观察和推理",
+            "根据前面的发言，我有一些想法",
+            "我们需要团结起来找出真相",
+            "这一轮的投票非常关键",
+            "我建议大家关注某些细节",
+            "从逻辑上分析，情况是这样的"
+        ];
+
+        let isRunning = false;
+        let currentRound = 1;
+        let currentPlayer = 0;
+        let speechCount = 0;
+        let animationTimer = null;
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('status-info');
+            if (isRunning) {
+                statusDiv.innerHTML = `
+                    <strong>第 ${currentRound} 轮</strong> |
+                    Player ${currentPlayer} 发言中 (${speechCount + 1}/${currentRound}) |
+                    总共需要发言 ${currentRound} 次
+                `;
+            } else {
+                statusDiv.innerHTML = '当前状态: 已停止';
+            }
+        }
+
+        function getRandomStatement() {
+            return sampleStatements[Math.floor(Math.random() * sampleStatements.length)];
+        }
+
+        function addDialogue(playerId, statement, round, speechNum) {
+            const container = document.getElementById('dialogue-output');
+
+            // Clear "waiting" message on first dialogue
+            if (container.innerHTML.includes('等待玩家发言')) {
+                container.innerHTML = '';
+            }
+
+            const player = players[playerId];
+
+            const dialogueDiv = document.createElement('div');
+            dialogueDiv.className = 'dialogue-item';
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = `player-name player-${playerId}`;
+            nameDiv.textContent = `${player.emoji} Player ${playerId} (${player.role})`;
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'meta';
+            metaDiv.textContent = `第 ${round} 轮 | 第 ${speechNum} 次发言 | ${new Date().toLocaleTimeString()}`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'speech-content';
+
+            dialogueDiv.appendChild(nameDiv);
+            dialogueDiv.appendChild(metaDiv);
+            dialogueDiv.appendChild(contentDiv);
+
+            // Insert at top (newest first)
+            container.insertBefore(dialogueDiv, container.firstChild);
+
+            // Typewriter effect
+            const speed = parseInt(document.getElementById('speed-input').value) || 50;
+            let charIndex = 0;
+
+            function showNextChar() {
+                if (charIndex < statement.length && isRunning) {
+                    contentDiv.textContent += statement[charIndex];
+                    charIndex++;
+                    animationTimer = setTimeout(showNextChar, speed);
+                } else if (charIndex >= statement.length) {
+                    // Finished this speech, move to next
+                    setTimeout(nextSpeech, 300);
+                }
+            }
+
+            showNextChar();
+        }
+
+        function nextSpeech() {
+            if (!isRunning) return;
+
+            speechCount++;
+
+            // Check if current player finished all speeches for this round
+            if (speechCount >= currentRound) {
+                speechCount = 0;
+                currentPlayer++;
+
+                // Check if all players finished this round
+                if (currentPlayer >= players.length) {
+                    currentPlayer = 0;
+                    currentRound++;
+
+                    // Optional: stop after 3 rounds for demo
+                    if (currentRound > 3) {
+                        stopSpeech();
+                        alert('演示完成！已完成3轮发言。');
+                        return;
+                    }
+                }
+            }
+
+            updateStatus();
+
+            // Generate next speech
+            const statement = getRandomStatement();
+            addDialogue(currentPlayer, statement, currentRound, speechCount + 1);
+        }
+
+        function startSpeech() {
+            if (isRunning) return;
+
+            isRunning = true;
+            currentRound = 1;
+            currentPlayer = 0;
+            speechCount = 0;
+
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('btn-stop').disabled = false;
+
+            updateStatus();
+
+            // Start first speech
+            const statement = getRandomStatement();
+            addDialogue(currentPlayer, statement, currentRound, speechCount + 1);
+        }
+
+        function stopSpeech() {
+            isRunning = false;
+
+            if (animationTimer) {
+                clearTimeout(animationTimer);
+                animationTimer = null;
+            }
+
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-stop').disabled = true;
+
+            updateStatus();
+        }
+
+        function clearDialogues() {
+            const container = document.getElementById('dialogue-output');
+            container.innerHTML = '<div style="color: #999; text-align: center;">等待玩家发言...</div>';
+
+            stopSpeech();
+            currentRound = 1;
+            currentPlayer = 0;
+            speechCount = 0;
+        }
+
+        // Initialize
+        console.log('✅ 12玩家依次发言系统已就绪');
+        console.log('规则: 第n轮每人发言n次');
+        console.log('Player 0-2: 狼人');
+        console.log('Player 3-8: 村民');
+        console.log('Player 9: 预言家');
+        console.log('Player 10: 女巫');
+        console.log('Player 11: 猎人');
+    </script>
+</body>
+</html>

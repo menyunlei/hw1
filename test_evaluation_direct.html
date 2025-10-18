@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>评估功能诊断页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-test {
+            background: #E91E63;
+        }
+        .btn-eval {
+            background: #9C27B0;
+        }
+        .btn-clear {
+            background: #607D8B;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .info {
+            color: #2196F3;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 评估功能诊断页面</h1>
+
+    <div class="section">
+        <h2>步骤 1: 注入测试数据</h2>
+        <p>点击此按钮向dialogue_queue注入6条Player 7的测试数据</p>
+        <button class="btn-test" onclick="injectTestData()">🧪 注入测试数据</button>
+        <div id="inject-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>步骤 2: 获取评估结果</h2>
+        <p>注入数据后,点击此按钮获取评估报告</p>
+        <button class="btn-eval" onclick="getEvaluation()">📊 获取评估</button>
+        <div id="eval-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>步骤 3: 清空数据(可选)</h2>
+        <button class="btn-clear" onclick="clearOutput()">🗑️ 清空输出</button>
+    </div>
+
+    <script>
+        async function injectTestData() {
+            const resultDiv = document.getElementById('inject-result');
+            resultDiv.innerHTML = '<p class="info">⏳ 正在注入测试数据...</p>';
+
+            try {
+                const response = await fetch('http://localhost:5006/api/test_evaluation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 测试数据注入成功!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p class="info">👉 现在点击"获取评估"按钮查看评估结果</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ 注入失败</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ 网络错误: ${error.message}</p>
+                    <p>请确保服务器正在运行在 http://localhost:5006</p>
+                `;
+            }
+        }
+
+        async function getEvaluation() {
+            const resultDiv = document.getElementById('eval-result');
+            resultDiv.innerHTML = '<p class="info">⏳ 正在获取评估结果...</p>';
+
+            try {
+                const response = await fetch('http://localhost:5006/api/get_evaluation');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    const eval_data = data.evaluation;
+                    const stats = eval_data.stats || {};
+
+                    // 提取关键信息
+                    let summary = `
+                        <h3 class="success">✅ 评估成功!</h3>
+                        <h4>📊 基本统计:</h4>
+                        <ul>
+                            <li>发言次数: ${stats.speeches || 0}</li>
+                            <li>投票次数: ${stats.votes || 0}</li>
+                            <li>站边变化: ${stats.side_changes || 0}</li>
+                            <li>对话队列大小: ${stats.dialogue_queue_size || 0}</li>
+                            <li>Player 7事件: ${stats.player_7_events || 0}</li>
+                            <li>评估时间: ${stats.evaluation_timestamp || 'N/A'}</li>
+                        </ul>
+                    `;
+
+                    // 检查是否是增强评估
+                    if (eval_data.comprehensive_score) {
+                        summary += `
+                            <h4>🎯 综合得分:</h4>
+                            <ul>
+                                <li><strong>总分: ${eval_data.comprehensive_score.overall_score}/100</strong></li>
+                                <li>等级: ${eval_data.comprehensive_score.grade}</li>
+                                <li>传统指标贡献: ${eval_data.comprehensive_score.traditional_contribution}</li>
+                                <li>深度推理贡献: ${eval_data.comprehensive_score.deep_reasoning_contribution}</li>
+                            </ul>
+                        `;
+                    } else {
+                        // 传统评估
+                        summary += `
+                            <h4>🎯 评估得分:</h4>
+                            <ul>
+                                <li><strong>总分: ${eval_data.weighted_score}/100</strong></li>
+                                <li>等级: ${eval_data.final_grade}</li>
+                            </ul>
+                        `;
+                    }
+
+                    resultDiv.innerHTML = summary + `
+                        <h4>📋 完整JSON数据:</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ 评估失败</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ 网络错误: ${error.message}</p>
+                    <p>请确保服务器正在运行在 http://localhost:5006</p>
+                `;
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('inject-result').innerHTML = '';
+            document.getElementById('eval-result').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

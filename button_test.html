@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>按钮测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>按钮功能测试</h1>
+
+    <h2>本地函数测试</h2>
+    <button onclick="testAlert()">测试Alert</button>
+    <button onclick="testLog()">测试Console.log</button>
+
+    <h2>API调用测试</h2>
+    <button onclick="testStartAPI()">测试 /api/start</button>
+    <button onclick="testVersionAPI()">测试 /api/switch_version</button>
+
+    <div class="result" id="result">
+        等待测试结果...
+    </div>
+
+    <script>
+        function testAlert() {
+            alert('Alert功能正常！');
+            document.getElementById('result').innerHTML = '✅ Alert测试通过';
+        }
+
+        function testLog() {
+            console.log('Console.log功能正常！');
+            document.getElementById('result').innerHTML = '✅ Console.log测试通过（查看浏览器控制台）';
+        }
+
+        async function testStartAPI() {
+            document.getElementById('result').innerHTML = '⏳ 正在测试 /api/start...';
+            try {
+                const response = await fetch('http://localhost:5004/api/start', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '✅ /api/start 测试通过<br>' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').innerHTML = '❌ /api/start 测试失败<br>' + error.message;
+            }
+        }
+
+        async function testVersionAPI() {
+            document.getElementById('result').innerHTML = '⏳ 正在测试 /api/switch_version...';
+            try {
+                const response = await fetch('http://localhost:5004/api/switch_version', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ version: 'T1' })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '✅ /api/switch_version 测试通过<br>' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').innerHTML = '❌ /api/switch_version 测试失败<br>' + error.message;
+            }
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            console.log('页面加载完成');
+            document.getElementById('result').innerHTML = '✅ 页面加载完成，所有JavaScript已就绪';
+        };
+    </script>
+</body>
+</html>

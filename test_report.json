@@ -1,0 +1,17 @@
+{
+  "game_id": "test_20251010_142459",
+  "total_rounds": 5,
+  "winner": "villagers",
+  "sheriff_campaigns": {
+    "mandatory": 5,
+    "voluntary": 0,
+    "total": 5
+  },
+  "quantified_metrics": {
+    "avg_deception_rate": 0.35,
+    "avg_consistency_score": 0.78,
+    "avg_optimal_vote_ratio": 0.62,
+    "total_contradictions": 12,
+    "total_statements": 65
+  }
+}

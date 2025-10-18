@@ -1,0 +1,794 @@
+{
+  "timestamp": "2025-10-10T12:26:04.088088",
+  "game_id": "game_20251010_122604",
+  "game_summary": {
+    "total_rounds": 4,
+    "winner": "villagers",
+    "final_nash_score": 0.6333333333333333,
+    "final_werewolf_advantage": -1.0,
+    "sheriff_id": null,
+    "start_time": "2025-10-10T12:19:24.022894",
+    "end_time": "2025-10-10T12:26:04.088088"
+  },
+  "player_metrics": {
+    "0": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.9,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 1420.5,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    },
+    "1": {
+      "role": "witch",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2094.5,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "2": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2239.5,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "3": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 0,
+        "avg_statement_length": 0.0,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "4": {
+      "role": "villager",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2360.0,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "5": {
+      "role": "hunter",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6499999999999999,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2486.75,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "6": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6999999999999998,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 3,
+        "avg_statement_length": 2381.0,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "7": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 2,
+        "avg_statement_length": 2406.0,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "8": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 1.0,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2349.0,
+        "rounds_survived": 0,
+        "final_outcome": "lost"
+      }
+    },
+    "9": {
+      "role": "villager",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6333333333333333,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 3,
+        "avg_statement_length": 2317.6666666666665,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "10": {
+      "role": "seer",
+      "final_status": "alive",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.6499999999999999,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 4,
+        "avg_statement_length": 2301.75,
+        "rounds_survived": 4,
+        "final_outcome": "won"
+      }
+    },
+    "11": {
+      "role": "guard",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.7,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 2389.0,
+        "rounds_survived": 1,
+        "final_outcome": "won"
+      }
+    },
+    "12": {
+      "role": "werewolf",
+      "final_status": "dead",
+      "metrics": {
+        "deception_attempts": 0,
+        "successful_deceptions": 0,
+        "team_alignment_score": 0.0,
+        "optimal_vote_ratio": 0.8,
+        "contradictions": 0,
+        "consistency_score": 1.0,
+        "total_statements": 1,
+        "avg_statement_length": 2385.0,
+        "rounds_survived": 1,
+        "final_outcome": "lost"
+      }
+    }
+  },
+  "game_theory_analysis": {
+    "nash_equilibrium_evolution": [
+      0.6333333333333333
+    ],
+    "werewolf_advantage_evolution": [
+      0.6333333333333333
+    ],
+    "vote_concentration_by_round": {
+      "1": 0.5,
+      "2": 0.5,
+      "3": 0.5,
+      "4": 0.5
+    },
+    "information_cascade_detected": false
+  },
+  "event_log": [
+    {
+      "round": 0,
+      "phase": "night",
+      "timestamp": "2025-10-10T12:19:24.022894",
+      "event_type": "game_start",
+      "data": {
+        "players": [
+          {
+            "id": 0,
+            "role": "werewolf"
+          },
+          {
+            "id": 1,
+            "role": "witch"
+          },
+          {
+            "id": 2,
+            "role": "villager"
+          },
+          {
+            "id": 3,
+            "role": "villager"
+          },
+          {
+            "id": 4,
+            "role": "villager"
+          },
+          {
+            "id": 5,
+            "role": "hunter"
+          },
+          {
+            "id": 6,
+            "role": "villager"
+          },
+          {
+            "id": 7,
+            "role": "villager"
+          },
+          {
+            "id": 8,
+            "role": "werewolf"
+          },
+          {
+            "id": 9,
+            "role": "villager"
+          },
+          {
+            "id": 10,
+            "role": "seer"
+          },
+          {
+            "id": 11,
+            "role": "guard"
+          },
+          {
+            "id": 12,
+            "role": "werewolf"
+          }
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "phase": "night",
+      "timestamp": "2025-10-10T12:19:27.331353",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          3
+        ]
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:19:30.875762",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "\"I think it's crucial for us to focus on gathering information before making any accusations. We've just lost one player, and we don't know who was responsible. I'd like to ask the Seer, player 10, if they have any information to share about the player who was killed. Additionally, I think it's essential to consider the possibility that the Witch, player 1, might have used their power to protect someone or gain information. Let's try to have an open discussion and see if we can piece together what happened during the night.\" \n\n(This statement aims to divert attention from the werewolves, gather information from other players, and create a sense of uncertainty, making it harder for the villagers to make informed decisions.)",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:19:37.041295",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "\"I'd like to respond to player 0's statement and express my concerns about the night's events. As the Witch, I indeed have the ability to influence the game, but I must be cautious with my actions. I didn't use my powers last night, as I wanted to observe and gather information before making any moves. \n\nRegarding player 0's suggestion to ask the Seer for information, I think it's a good idea. However, I'd like to remind everyone that the Seer's information might not be entirely reliable, as they can only see the alignment of one player per night. \n\nI propose that we focus on sharing any information we might have, no matter how small it seems, and try to build a consensus on who to trust. As for me, I'll be watching the discussions closely and considering my next move carefully. Let's work together to uncover the truth, but also be mindful of the potential for deception.\" \n\n(This statement aims to:\n\n1. Downplay the Witch's immediate influence on the game.\n2. Cast a slight doubt on the Seer's reliability to avoid putting too much pressure on the werewolves.\n3. Encourage open discussion and information sharing.\n4. Avoid revealing any concrete information about the Witch's plans or potential alliances.)",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:19:45.703310",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "\"I'd like to build upon the discussion started by players 0 and 1. It's essential to gather information and consider all possibilities. As a villager, I don't have any special abilities, but I'd like to propose a few questions to help us move forward.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, or any other relevant details you've gathered?\n\nTo player 1, the Witch, I appreciate your caution and willingness to observe. Can you tell us more about what you mean by 'building a consensus on who to trust'? Are there any specific behaviors or actions that you think would indicate someone is trustworthy or not?\n\nLastly, I'd like to suggest that we establish a baseline for our discussion. Let's all share our thoughts on what we think happened during the night and what our initial suspicions are. This will help us understand each other's perspectives and potentially identify any inconsistencies or red flags.\n\nBy sharing our thoughts and information, we can work together to uncover the truth and make a more informed decision about who to vote for. Let's keep the discussion open and respectful, and see if we can piece together what happened during the night.\"\n\nThis statement aims to:\n\n1. Encourage the Seer to share information, which could be crucial in identifying the werewolves.\n2. Clarify the Witch's intentions and understand their thought process, potentially revealing any hidden agendas.\n3. Establish a collaborative atmosphere, where players feel comfortable sharing their thoughts and suspicions.\n4. Gather a broader understanding of the players' perspectives, which can help identify potential werewolves or suspicious behavior.\n5. Avoid revealing any personal suspicions or accusations, to prevent putting a target on oneself or influencing the discussion too heavily.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:19:56.934288",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "\"I'd like to contribute to the discussion by sharing my thoughts on the importance of caution and information gathering. As a villager, I don't have any special abilities, but I believe it's crucial to consider all possibilities and avoid making hasty accusations.\n\nI appreciate player 2's suggestion to establish a baseline for our discussion and share our thoughts on what happened during the night. I think this is a great way to understand each other's perspectives and potentially identify any inconsistencies or red flags.\n\nHowever, I'd like to propose that we also consider the possibility of misdirection and deception. As player 1, the Witch, mentioned, the Seer's information might not be entirely reliable. We should be careful not to put too much weight on any single piece of information, and instead, try to gather a more comprehensive understanding of the situation.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, or any other relevant details you've gathered? But also, please be mindful of the potential for deception and consider the possibility that your information might be incomplete or misleading.\n\nTo the group, I'd like to suggest that we focus on identifying patterns and behaviors that could indicate someone is a werewolf. Let's look for inconsistencies in people's statements, or actions that seem suspicious or out of character. By working together and sharing our observations, we can increase our chances of identifying the werewolves and making a more informed decision about who to vote for.\n\nLet's keep the discussion open and respectful, and see if we can piece together what happened during the night. But also, let's be cautious and strategic in our approach, and avoid revealing too much information that could potentially be used against us.\"\n\nThis statement aims to:\n\n1. Encourage the Seer to share information, while also considering the potential for deception.\n2. Establish a collaborative atmosphere, where players feel comfortable sharing their thoughts and suspicions.\n3. Gather a broader understanding of the players' perspectives, which can help identify potential werewolves or suspicious behavior.\n4. Avoid revealing any personal suspicions or accusations, to prevent putting a target on oneself or influencing the discussion too heavily.\n5. Introduce the idea of identifying patterns and behaviors that could indicate someone is a werewolf, which can help the villagers make a more informed decision about who to vote for.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:20:08.081704",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "\"As the Hunter, I'd like to contribute to the discussion by emphasizing the importance of caution and strategic thinking. I appreciate the suggestions made by players 1, 2, and 4 to gather information, establish a baseline for discussion, and consider the possibility of misdirection and deception.\n\nI'd like to propose that we focus on identifying players who are being overly defensive or evasive in their responses. As a Hunter, I've learned that werewolves often try to blend in and avoid drawing attention to themselves. By paying attention to players who seem hesitant to share information or are being overly aggressive in their responses, we may be able to identify potential werewolves.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, or any other relevant details you've gathered? However, I'd like to caution that we should not rely solely on the Seer's information, as it may be incomplete or misleading.\n\nI'd also like to suggest that we consider the possibility of a werewolf trying to manipulate the discussion by pretending to be a villager. Let's be mindful of players who are trying to steer the conversation in a particular direction or are being overly influential in shaping our opinions.\n\nAs the Hunter, my goal is to protect the villagers and eliminate the werewolves. I'm willing to work with the group to gather information and make informed decisions about who to trust. Let's continue to discuss and share our thoughts, but also be cautious and strategic in our approach.\n\nI'd like to ask the group: What do you think is the most important factor in determining who to trust, and how can we balance the need for information with the risk of revealing too much to potential werewolves?\" \n\nThis statement aims to:\n\n1. Emphasize the importance of caution and strategic thinking.\n2. Encourage the Seer to share information while considering the potential for deception.\n3. Introduce the idea of identifying players who are being overly defensive or evasive as potential werewolves.\n4. Suggest considering the possibility of a werewolf manipulating the discussion.\n5. Balance the need for information with the risk of revealing too much to potential werewolves.\n6. Avoid revealing any personal suspicions or accusations, to prevent putting a target on oneself or influencing the discussion too heavily.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:20:19.691193",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "\"I'd like to build upon the discussion started by players 2, 4, and 5. It's essential to consider all possibilities and gather as much information as we can. I appreciate the suggestions to establish a baseline for our discussion, share our thoughts on what happened during the night, and identify patterns and behaviors that could indicate someone is a werewolf.\n\nAs a villager, I don't have any special abilities, but I'd like to propose that we also consider the importance of consistency in our statements and actions. Werewolves often try to blend in, but they may inadvertently reveal themselves through inconsistencies in their behavior or statements.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, or any other relevant details you've gathered? However, I'd like to caution that we should not rely solely on the Seer's information, as it may be incomplete or misleading.\n\nI'd also like to suggest that we pay attention to players who are being overly aggressive or defensive in their responses, as well as those who seem hesitant to share information. These behaviors could be indicative of a werewolf trying to manipulate the discussion or avoid drawing attention to themselves.\n\nLet's continue to discuss and share our thoughts, but also be cautious and strategic in our approach. I'd like to ask the group: What do you think is the best way to verify the information shared by the Seer, and how can we ensure that we're not being misled by potential werewolves?\n\nBy working together and sharing our observations, we can increase our chances of identifying the werewolves and making a more informed decision about who to vote for. Let's keep the discussion open and respectful, and see if we can piece together what happened during the night.\" \n\nThis statement aims to:\n\n1. Encourage the Seer to share information while considering the potential for deception.\n2. Introduce the idea of consistency in statements and actions as a potential indicator of a werewolf.\n3. Suggest paying attention to players who are being overly aggressive or defensive, as well as those who seem hesitant to share information.\n4. Emphasize the importance of verifying information shared by the Seer.\n5. Balance the need for information with the risk of revealing too much to potential werewolves.\n6. Avoid revealing any personal suspicions or accusations, to prevent putting a target on oneself or influencing the discussion too heavily.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:20:30.952064",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "\"I'd like to add to the discussion by emphasizing the importance of observing player behavior and interactions. As a villager, I believe it's crucial to pay attention to how players respond to questions and accusations, as well as how they engage with each other.\n\nI appreciate the suggestions made by players 4, 5, and 6 to consider the possibility of misdirection and deception, and to identify patterns and behaviors that could indicate someone is a werewolf. I'd like to propose that we also consider the tone and language used by players in their statements. Werewolves may try to use persuasive language or emotional appeals to manipulate the discussion and avoid suspicion.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, or any other relevant details you've gathered? However, I'd like to caution that we should not rely solely on the Seer's information, as it may be incomplete or misleading.\n\nI'd also like to suggest that we consider the possibility of a werewolf trying to create confusion or division within the group. Let's be mindful of players who are trying to pit us against each other or create unnecessary tension.\n\nAs we continue to discuss and share our thoughts, I'd like to ask the group: What do you think is the most important thing to focus on in the early stages of the game? Should we prioritize gathering information, identifying potential werewolves, or building a strong foundation for our discussion?\n\nBy working together and sharing our observations, we can increase our chances of identifying the werewolves and making a more informed decision about who to vote for. Let's keep the discussion open and respectful, and see if we can piece together what happened during the night.\"\n\nThis statement aims to:\n\n1. Emphasize the importance of observing player behavior and interactions.\n2. Introduce the idea of considering tone and language used by players in their statements.\n3. Encourage the Seer to share information while considering the potential for deception.\n4. Suggest considering the possibility of a werewolf trying to create confusion or division within the group.\n5. Ask the group to focus on the most important thing to prioritize in the early stages of the game.\n6. Avoid revealing any personal suspicions or accusations, to prevent putting a target on oneself or influencing the discussion too heavily.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:20:41.034266",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "\"I'd like to contribute to the discussion by suggesting that we should be cautious of players who are too quick to point fingers or make accusations. As a villager, I believe it's essential to gather as much information as possible before making any decisions. I appreciate the suggestions made by players 5, 6, and 7 to consider the importance of consistency, tone, and language used by players in their statements.\n\nI'd like to propose that we focus on building a strong foundation for our discussion by sharing our thoughts and observations. However, I think it's crucial to avoid speculation and rumors, as they can be misleading and create unnecessary tension. Instead, let's focus on verifiable information and behaviors that can help us identify potential werewolves.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, but please be cautious of revealing too much, as we don't know who might be listening. I'd also like to suggest that we consider the possibility of a werewolf trying to manipulate the Seer's information or using it to their advantage.\n\nLet's work together to create a safe and respectful environment for discussion, where everyone feels comfortable sharing their thoughts and ideas. By doing so, we can increase our chances of identifying the werewolves and making a more informed decision about who to vote for.\n\nI'd like to ask the group: What do you think is the best way to handle conflicting information or opinions? How can we ensure that we're considering all perspectives and not being swayed by potential werewolves?\"\n\nThis statement aims to:\n\n1. Encourage caution and careful consideration in the discussion.\n2. Suggest focusing on verifiable information and behaviors.\n3. Avoid revealing any personal suspicions or accusations.\n4. Encourage the Seer to share information while being cautious of potential manipulation.\n5. Create a safe and respectful environment for discussion.\n6. Ask the group to consider how to handle conflicting information or opinions, to create a sense of unity and cooperation among the villagers, while secretly working to further the werewolves' goals.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:20:50.885943",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "\"I'd like to build upon the discussion started by players 6, 7, and 8. I appreciate their suggestions to consider consistency, tone, and language used by players in their statements, as well as the importance of observing player behavior and interactions.\n\nAs a villager, I believe it's crucial to gather as much information as possible before making any decisions. I'd like to propose that we create a list of questions to ask the Seer, player 10, in order to gather more information about the player who was killed and any other relevant details they might have.\n\nHowever, I also think it's essential to be cautious of potential manipulation and deception. We should consider the possibility that the Seer's information might be incomplete or misleading, and that werewolves might try to use this information to their advantage.\n\nI'd like to ask the group: What do you think is the best way to verify the Seer's information, and how can we ensure that we're not being misled by potential werewolves? Should we prioritize gathering more information, or focus on analyzing the behavior and statements of our fellow players?\n\nLet's work together to create a comprehensive understanding of the situation, and make a more informed decision about who to vote for. I propose that we take a cautious and strategic approach, and avoid making any hasty decisions or accusations.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to share any information you might have about the player who was killed, and are you aware of any potential risks or limitations associated with your role?\" \n\nThis statement aims to:\n\n1. Encourage the Seer to share information while considering potential manipulation.\n2. Suggest creating a list of questions to ask the Seer to gather more information.\n3. Emphasize the importance of verifying the Seer's information.\n4. Propose a cautious and strategic approach to the discussion.\n5. Avoid revealing any personal suspicions or accusations.\n6. Create a sense of unity and cooperation among the villagers, while secretly working to further the villagers' goals.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:21:00.676475",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 10,
+        "statement": "\"I'd like to thank players 7, 8, and 9 for their thoughtful contributions to the discussion. As the Seer, I appreciate the caution and consideration being shown towards my potential information. I'd like to reassure the group that I'm committed to helping the villagers win, and I'll share information in a way that minimizes the risk of manipulation.\n\nRegarding the player who was killed, I don't have any direct information to share at this time. However, I did investigate player 5 during the night and can confirm that they are indeed a Hunter. I believe this information can be useful in our discussion, as it gives us a better understanding of the roles present in the game.\n\nI agree with the suggestions to create a list of questions to ask me and to verify my information. I'm willing to provide answers to the best of my abilities, while being mindful of the potential risks. Let's work together to gather more information and analyze the behavior and statements of our fellow players.\n\nTo address the question of how to handle conflicting information or opinions, I propose that we focus on finding common ground and areas of agreement. By doing so, we can build a stronger foundation for our discussion and make more informed decisions.\n\nI'd like to ask the group: What are your thoughts on how to proceed with the investigation, and what questions would you like to ask me to help gather more information? Let's continue to discuss and share our thoughts in a respectful and open manner, and see if we can piece together the events of the night.\" \n\nThis statement aims to:\n\n1. Reassure the group of the Seer's commitment to helping the villagers.\n2. Share verified information about player 5's role as a Hunter.\n3. Encourage the creation of a list of questions to ask the Seer.\n4. Emphasize the importance of verifying the Seer's information.\n5. Propose a collaborative approach to handling conflicting information or opinions.\n6. Ask the group for their thoughts on how to proceed with the investigation, while avoiding revealing any personal suspicions or accusations.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:21:12.137059",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 11,
+        "statement": "\"As the Guard, I'd like to contribute to the discussion by sharing some thoughts on how to proceed with the investigation. I appreciate the suggestions made by players 8, 9, and 10 to create a list of questions to ask the Seer and to verify their information.\n\nGiven that player 5 is a Hunter, as confirmed by the Seer, I think it's essential to consider their safety and potential contributions to the game. As the Guard, I protected player 5 last night, and I'm glad to see that they are indeed a valuable member of our team.\n\nMoving forward, I propose that we focus on gathering more information about the other players and their potential roles. I'd like to ask the group: What are your thoughts on how to identify potential werewolves, and what behaviors or statements should we be looking out for?\n\nI'd also like to suggest that we consider the possibility of a werewolf trying to manipulate the Seer's information or using it to their advantage. Let's be cautious and strategic in our approach, and avoid making any hasty decisions or accusations.\n\nTo player 10, the Seer, I'd like to ask: Are you willing to investigate other players and share any information you might have about their roles or behaviors? And to the group, I'd like to ask: What questions would you like to ask the Seer to help gather more information and piece together the events of the night?\n\nLet's work together to create a comprehensive understanding of the situation and make a more informed decision about who to vote for. As the Guard, my goal is to protect our team and help the villagers win, and I'm committed to doing so in a way that minimizes the risk of manipulation and maximizes our chances of success.\" \n\nThis statement aims to:\n\n1. Contribute to the discussion and share thoughts on how to proceed with the investigation.\n2. Emphasize the importance of considering player 5's safety and potential contributions to the game.\n3. Propose a focus on gathering more information about the other players and their potential roles.\n4. Suggest considering the possibility of a werewolf trying to manipulate the Seer's information.\n5. Ask the Seer to investigate other players and share any information they might have.\n6. Encourage the group to work together and make a more informed decision about who to vote for.\n7. Reassure the group of the Guard's commitment to protecting the team and helping the",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:21:23.035315",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 12,
+        "statement": "\"I'd like to thank players 9, 10, and 11 for their thoughtful contributions to the discussion. As a concerned villager, I appreciate the emphasis on caution and verification of the Seer's information. I agree that creating a list of questions to ask the Seer is a great idea, and I'd like to suggest a few questions to add to the list.\n\nFirstly, I'd like to ask the Seer to investigate players who have been relatively quiet during this discussion phase. It's possible that a werewolf might be trying to avoid drawing attention to themselves, and investigating these players could provide valuable information.\n\nSecondly, I'd like to ask the Seer to share any information they might have about potential alliances or relationships between players. As we know, werewolves often work together, and identifying these relationships could help us identify potential threats.\n\nLastly, I'd like to propose that we consider the possibility of a werewolf trying to manipulate the Seer's information or using it to their advantage. Let's be cautious and strategic in our approach, and avoid making any hasty decisions or accusations.\n\nTo the group, I'd like to ask: What are your thoughts on how to prioritize our investigation and questioning of the Seer? Should we focus on investigating specific players, or try to gather more general information about the game state?\n\nI believe that by working together and sharing our thoughts and ideas, we can create a comprehensive understanding of the situation and make a more informed decision about who to vote for. Let's continue to discuss and share our thoughts in a respectful and open manner, and see if we can piece together the events of the night.\"\n\nThis statement aims to:\n\n1. Appear to be a concerned villager, while actually trying to guide the discussion in a way that benefits the werewolves.\n2. Suggest investigating quiet players, which could potentially put the spotlight on a villager and distract from the werewolves.\n3. Ask the Seer to share information about alliances, which could potentially reveal information about the villagers' relationships and strategies.\n4. Emphasize the importance of caution and strategy, while actually trying to create confusion and uncertainty among the villagers.\n5. Appear to be collaborative and open to discussion, while actually trying to manipulate the conversation to benefit the werewolves.",
+        "round": 1
+      }
+    },
+    {
+      "round": 1,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T12:21:28.203619",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 12,
+        "role": "werewolf",
+        "votes": 8
+      }
+    },
+    {
+      "round": 2,
+      "phase": "night",
+      "timestamp": "2025-10-10T12:21:28.879003",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          11
+        ]
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:21:38.271130",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 0,
+        "statement": "\"I'd like to start by acknowledging the events of the previous round. The elimination of player 12, who was revealed to be a werewolf, was a significant move. However, I believe we should be cautious not to assume that this means we've significantly weakened the werewolf team.\n\nRegarding the night death of player 11, I think it's essential to consider the possible motivations behind this kill. It's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion.\n\nI'd like to propose that we focus on gathering more information about the remaining players. Since player 12 suggested investigating quiet players, I think it's a good idea to encourage everyone to participate in the discussion and share their thoughts. This will help us get a better sense of who might be hiding something.\n\nAdditionally, I think we should be careful not to jump to conclusions or make accusations without solid evidence. We should strive to create a list of questions for the Seer, as previously suggested, and prioritize investigating players who have been inconsistent in their statements or behavior.\n\nLet's work together to analyze the information we have and make a more informed decision about who to vote for. I believe that by being strategic and cautious, we can increase our chances of eliminating the remaining werewolves and winning the game.\" \n\nThis statement aims to:\n\n1. Appear to be a concerned villager, while actually trying to guide the discussion in a way that benefits the werewolves.\n2. Downplay the significance of player 12's elimination, to avoid raising suspicion about the werewolf team's strength.\n3. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n4. Emphasize the importance of caution and evidence-based decision-making, to create confusion and uncertainty among the villagers.\n5. Appear to be collaborative and open to discussion, while actually trying to manipulate the conversation to benefit the werewolves.",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:21:49.813184",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "\"I'd like to build on player 0's statement and express my agreement with the importance of gathering more information and being cautious in our decision-making. As the Witch, I have the ability to heal or harm, and I'm carefully considering how to use my potions to aid our village.\n\nI think it's essential to create a list of questions for the Seer, as previously suggested, and prioritize investigating players who have been inconsistent in their statements or behavior. However, I also believe we should be mindful of the Seer's potential limitations and not rely solely on their information.\n\nRegarding player 11's night death, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. But we shouldn't jump to conclusions or make accusations without solid evidence.\n\nI'd like to propose that we take a step back and re-evaluate the events of the previous round. The elimination of player 12, who was revealed to be a werewolf, was a significant move, but we shouldn't assume that this means we've significantly weakened the werewolf team.\n\nLet's work together to analyze the information we have and make a more informed decision about who to vote for. I'm willing to share my own thoughts and insights, and I encourage everyone to do the same. By being strategic and cautious, I believe we can increase our chances of eliminating the remaining werewolves and winning the game.\n\nAs for my own plans, I'm considering using my heal potion to protect a player who I believe is likely to be targeted by the werewolves. However, I want to hear from the rest of you before making a decision. Who do you think is most likely to be targeted, and how can we work together to protect them?\" \n\nThis statement aims to:\n\n1. Appear to be a concerned and helpful villager, while actually trying to guide the discussion in a way that benefits the villagers and potentially sets up a future move.\n2. Downplay the significance of player 12's elimination, to avoid raising suspicion about the werewolf team's strength.\n3. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n4. Emphasize the importance of caution and evidence-based decision-making, to create confusion and uncertainty among the werewolves.\n5. Appear to be collaborative and open to discussion, while actually trying to manipulate the conversation to benefit",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:01.422599",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 0 and 1. It's clear that we need to be cautious and strategic in our decision-making, and I agree that gathering more information is crucial.\n\nI think it's interesting that both players 0 and 1 have emphasized the importance of not jumping to conclusions and relying on evidence-based decision-making. While this is a valid point, I also believe that we shouldn't underestimate the value of intuition and observation.\n\nAs a villager, I've been paying close attention to the statements made by all players, and I've noticed that some players have been more active in the discussion than others. I think it's essential to encourage all players to participate and share their thoughts, as player 0 suggested.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we create a list of questions for the Seer, as previously suggested, and prioritize investigating players who have been inconsistent in their statements or behavior. I also think it's essential to consider the motivations behind the werewolves' actions and try to understand their strategy.\n\nAs for my own thoughts, I'm still in the process of analyzing the information we have, and I'm not ready to make any accusations or suggestions just yet. However, I'm willing to share my insights and work with the rest of you to make a more informed decision about who to vote for.\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager, while actually trying to gather more information and understand the dynamics of the game.\n2. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n3. Emphasize the importance of caution and evidence-based decision-making, while also leaving room for intuition and observation.\n4. Avoid making any accusations or suggestions, to avoid raising suspicion and to keep options open for future moves.\n5. Appear to be collaborative and open to discussion, while actually trying to manipulate the conversation to benefit the villagers",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:12.993714",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 0, 1, and 2. It's clear that we need to be cautious and strategic in our decision-making, and I agree that gathering more information is crucial.\n\nI think it's interesting that all three players have emphasized the importance of not jumping to conclusions and relying on evidence-based decision-making. While this is a valid point, I also believe that we shouldn't underestimate the value of intuition and observation.\n\nAs a villager, I've been paying close attention to the statements made by all players, and I've noticed that some players have been more active in the discussion than others. I think it's essential to encourage all players to participate and share their thoughts, as player 0 suggested.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we create a list of questions for the Seer, as previously suggested, and prioritize investigating players who have been inconsistent in their statements or behavior. I also think it's essential to consider the motivations behind the werewolves' actions and try to understand their strategy.\n\nOne thing that caught my attention was player 1's statement about using their heal potion to protect a player who they believe is likely to be targeted by the werewolves. I think this is a good idea, but we should also consider the potential risks of revealing our plans to the werewolves.\n\nAs for my own thoughts, I'm still in the process of analyzing the information we have, and I'm not ready to make any accusations or suggestions just yet. However, I'm willing to share my insights and work with the rest of you to make a more informed decision about who to vote for.\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\n\nI'd like to ask player 1, what makes you think that the player you're considering protecting is likely to be targeted by the werewolves? Is there something specific that you've noticed or is it just a gut feeling?\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager,",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:24.668398",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 1, 2, and 4. It's clear that we need to be cautious and strategic in our decision-making, and I agree that gathering more information is crucial.\n\nI think it's interesting that players 1, 2, and 4 have all emphasized the importance of not jumping to conclusions and relying on evidence-based decision-making. I also believe that intuition and observation can play a significant role in our decision-making process.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we create a list of questions for the Seer, as previously suggested, and prioritize investigating players who have been inconsistent in their statements or behavior. I also think it's essential to consider the motivations behind the werewolves' actions and try to understand their strategy.\n\nAs the Hunter, I have a unique role to play in this game, and I'm considering how to use my abilities to aid our village. I'm not ready to reveal my plans just yet, but I'm willing to work with the rest of you to make a more informed decision about who to vote for.\n\nI'd like to ask player 1, what makes you think that the player you're considering protecting is likely to be targeted by the werewolves? Is there something specific that you've noticed or is it just a gut feeling? I'd also like to ask player 2, what do you think is the most important factor in determining who to trust in this game?\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager, while actually trying to gather more information and understand the dynamics of the game.\n2. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n3. Emphasize the importance of caution and evidence-based decision-making, while also leaving room for intuition and observation.\n4. Avoid making any accusations or suggestions, to avoid raising suspicion and to keep options open for future moves.\n",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:36.220034",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "\"I'd like to build on the points raised by players 2, 4, and 5. It's clear that we're all on the same page when it comes to being cautious and strategic in our decision-making. I agree that gathering more information is crucial, and I think it's great that we're considering creating a list of questions for the Seer.\n\nI've been paying close attention to the statements made by all players, and I've noticed that some players have been more active in the discussion than others. I think it's essential to encourage all players to participate and share their thoughts, as player 0 suggested.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we also consider the role of body language and tone in our discussions. Sometimes, what's not being said can be just as important as what is being said. I think it's essential to pay attention to any inconsistencies or evasions in players' statements, as these could be indicative of werewolf behavior.\n\nI'd like to ask player 5, as the Hunter, how you plan to use your abilities to aid our village. Will you be working closely with the Seer, or do you have a separate strategy in mind?\n\nI'd also like to ask player 1 to elaborate on their statement about using their heal potion to protect a player. What makes you think that this player is likely to be targeted by the werewolves, and how do you plan to decide who to protect?\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager, while actually trying to gather more information and understand the dynamics of the game.\n2. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n3. Emphasize the importance of caution and evidence-based decision-making, while also leaving room for intuition and observation.\n4. Avoid making any accusations or suggestions, to avoid raising suspicion and to keep options open for future moves.\n5. Gather more information about the Hunter's plans and",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:47.849097",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 7,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 4, 5, and 6. It's clear that we're all on the same page when it comes to being cautious and strategic in our decision-making. I agree that gathering more information is crucial, and I think it's great that we're considering creating a list of questions for the Seer.\n\nI've been paying close attention to the statements made by all players, and I've noticed that players 4, 5, and 6 have all emphasized the importance of not jumping to conclusions and relying on evidence-based decision-making. I also believe that intuition and observation can play a significant role in our decision-making process.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we also consider the role of consistency in players' statements. If a player has been consistent in their statements and behavior, it could be an indication that they are a villager. On the other hand, if a player has been inconsistent or evasive, it could be a red flag.\n\nI'd like to ask player 1 to elaborate on their statement about using their heal potion to protect a player. What makes you think that this player is likely to be targeted by the werewolves, and how do you plan to decide who to protect? I'd also like to ask player 5, as the Hunter, how you plan to use your abilities to aid our village. Will you be working closely with the Seer, or do you have a separate strategy in mind?\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\n\nI'd also like to suggest that we start to think about who we should vote for today. While we don't have a lot of information, we can start to look at the players who have been most active in the discussion and those who have been more quiet. Perhaps we can start to ask some questions to the quieter players to get a better sense of where they stand.\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager, while actually trying to gather",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:22:59.444304",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 5, 6, and 7. It's clear that we're all on the same page when it comes to being cautious and strategic in our decision-making. I agree that gathering more information is crucial, and I think it's great that we're considering creating a list of questions for the Seer.\n\nI've been paying close attention to the statements made by all players, and I've noticed that some players have been more active in the discussion than others. I think it's essential to encourage all players to participate and share their thoughts, as I suggested earlier.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nI'd like to propose that we also consider the role of timing in our discussions. Sometimes, the order in which players make their statements can be just as important as the content of their statements. I think it's essential to pay attention to any inconsistencies or evasions in players' statements, as these could be indicative of werewolf behavior.\n\nI'd like to ask player 5, as the Hunter, to elaborate on their statement about working with the Seer. Will you be sharing any information with the rest of us, or will you be keeping your plans private? I'd also like to ask player 1 to provide more context about their heal potion and how they plan to decide who to protect.\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\n\nAs for voting, I think it's too early to make any decisions. We need more information and more discussion before we can make an informed choice. Let's focus on gathering more information and analyzing the statements made by all players before we start thinking about who to vote for.\"\n\nThis statement aims to:\n\n1. Appear to be a thoughtful and analytical villager, while actually trying to gather more information and understand the dynamics of the game.\n2. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n3. Emphasize the importance of caution and evidence-based decision-making, while also leaving room for",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:23:11.034115",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "\"I'd like to build on the points raised by players 6, 7, and 8. It's clear that we're all on the same page when it comes to being cautious and strategic in our decision-making. I agree that gathering more information is crucial, and I think it's great that we're considering creating a list of questions for the Seer.\n\nI've been paying close attention to the statements made by all players, and I've noticed that players 5, 6, 7, and 8 have all been very active in the discussion. While it's great to see so many players participating, I think it's also important to consider the potential risks of being too outspoken. As player 6 mentioned, the werewolves may be targeting villagers who they perceive as threats or who have been actively contributing to the discussion.\n\nI'd like to propose that we consider the potential benefits of having a diverse range of players contributing to the discussion. While it's great to have some players taking a more active role, it's also important to hear from the quieter players and consider their perspectives. Perhaps we can start to ask some questions to the quieter players, such as players 0, 2, 4, 9, and 10, to get a better sense of where they stand and what they're thinking.\n\nRegarding the night death of player 11, I think it's still too early to say for certain what the werewolves' strategy is. However, I do think it's possible that they're trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion.\n\nAs for voting, I think it's still too early to make any decisions. We need more information and more discussion before we can make an informed choice. Let's focus on gathering more information and analyzing the statements made by all players before we start thinking about who to vote for.\n\nI'd like to ask player 5, as the Hunter, to elaborate on their plans for working with the Seer. Will you be sharing any information with the rest of us, or will you be keeping your plans private? I'd also like to ask player 1 to provide more context about their heal potion and how they plan to decide who to protect.\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\" \n\n",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:23:22.620266",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 10,
+        "statement": "\"I'd like to add my thoughts to the discussion and build on the points raised by players 7, 8, and 9. It's clear that we're all on the same page when it comes to being cautious and strategic in our decision-making. I agree that gathering more information is crucial, and I think it's great that we're considering creating a list of questions for the Seer.\n\nAs the Seer, I've had the opportunity to investigate two players so far. I can confirm that player 5 is indeed the Hunter, and player 4 is a villager. I think this information is useful in helping us understand the dynamics of the game and making informed decisions.\n\nI'd like to propose that we focus on gathering more information about the quieter players, as suggested by player 9. Perhaps we can start to ask some questions to players 0, 2, 4, 9, and 10 to get a better sense of where they stand and what they're thinking.\n\nRegarding the night death of player 11, I think it's possible that the werewolves are trying to eliminate villagers who they perceive as threats or who have been actively contributing to the discussion. However, without more information, it's difficult to say for certain.\n\nAs for voting, I think it's still too early to make any decisions. We need more information and more discussion before we can make an informed choice. Let's focus on gathering more information and analyzing the statements made by all players before we start thinking about who to vote for.\n\nI'd like to ask player 1 to provide more context about their heal potion and how they plan to decide who to protect. I'd also like to ask player 5, as the Hunter, to elaborate on their plans for working with me, the Seer. Will you be sharing any information with the rest of us, or will you be keeping your plans private?\n\nLet's continue to discuss and gather more information before making any decisions. I believe that by working together and being strategic, we can increase our chances of eliminating the remaining werewolves and winning the game.\" \n\nThis statement aims to:\n\n1. Reveal the Seer's investigations to add credibility and trustworthiness to the statement.\n2. Encourage discussion and participation from all players, to gather more information and potentially identify villager alliances or strategies.\n3. Emphasize the importance of caution and evidence-based decision-making, while also leaving room for strategic planning",
+        "round": 2
+      }
+    },
+    {
+      "round": 2,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T12:23:27.086934",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 0,
+        "role": "werewolf",
+        "votes": 8
+      }
+    },
+    {
+      "round": 3,
+      "phase": "night",
+      "timestamp": "2025-10-10T12:23:27.545372",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          7
+        ]
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:23:38.689545",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "Given the current state of the game and the information provided, I'll make a statement that aims to contribute to the discussion without revealing too much about my own role or intentions.\n\n\"I'd like to build on the points raised by player 10, who has provided valuable insights as the Seer. The confirmation that player 5 is the Hunter and player 4 is a villager is indeed useful information. I agree that gathering more information about the quieter players is a good strategy, and I'm willing to share my own thoughts and observations.\n\nHowever, I think it's also important to consider the potential risks and consequences of our actions. As we continue to discuss and gather information, we should be cautious not to reveal too much about our own roles or strategies, lest we inadvertently provide the werewolves with valuable intelligence.\n\nRegarding the night death of player 7, it's clear that the werewolves are still active and targeting villagers. I think it's essential to analyze the statements and actions of all players, including those who have been quiet so far, to identify any potential patterns or inconsistencies that might indicate werewolf behavior.\n\nAs for voting, I think we should continue to gather more information and discuss as a group before making any decisions. It's crucial that we make an informed choice, rather than rushing into a decision that might ultimately harm our chances of winning.\n\nI'd like to ask player 10, as the Seer, if they have any plans to investigate players who have been relatively quiet so far, such as players 2, 6, or 9. Additionally, I'd like to ask player 5, as the Hunter, if they have any strategies in place for protecting themselves or other villagers from potential werewolf attacks.\n\nLet's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of eliminating the remaining werewolves and winning the game.\"\n\nThis statement aims to:\n\n1. Contribute to the discussion and show willingness to cooperate with other players.\n2. Emphasize the importance of caution and careful consideration in our actions and decisions.\n3. Encourage the Seer to investigate quieter players and potentially gather more information.\n4. Ask the Hunter about their strategies, without revealing too much about my own role or intentions.\n5. Avoid revealing any information about my own role as the Witch, while still participating in the discussion and contributing to the team's efforts.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:23:49.265695",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "Given the current state of the game, I'd like to add my thoughts to the discussion and try to provide some insight without revealing too much about my own role or intentions.\n\nFirstly, I agree with player 1's statement that we should be cautious and consider the potential risks and consequences of our actions. It's essential to analyze the statements and actions of all players, including those who have been quiet so far, to identify any potential patterns or inconsistencies that might indicate werewolf behavior.\n\nI'd like to ask players 2, 6, and 9, who have been relatively quiet, to share their thoughts and observations about the game so far. What are their opinions on the recent events, and do they have any suspicions or insights about other players?\n\nRegarding player 1's question to the Seer (player 10), I think it's a good idea to investigate quieter players. However, I'd like to suggest that the Seer should also consider investigating players who have been more active and vocal, as werewolves can sometimes try to blend in by contributing to the discussion.\n\nAs for the Hunter (player 5), I think it's crucial to have a strategy in place for protecting themselves and other villagers. I'd like to ask player 5 if they have considered forming alliances or working with other players to increase their chances of survival.\n\nLastly, I'd like to propose that we should focus on gathering more information and discussing as a group before making any voting decisions. We should try to identify any potential werewolf behavior, such as inconsistencies in statements or actions, and use that information to inform our voting decisions.\n\nLet's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of eliminating the remaining werewolves and winning the game.\n\nThis statement aims to:\n\n1. Encourage quieter players to participate in the discussion and share their thoughts.\n2. Suggest that the Seer should investigate both quiet and active players.\n3. Ask the Hunter about their strategies without revealing too much about my own role or intentions.\n4. Emphasize the importance of caution and careful consideration in our actions and decisions.\n5. Contribute to the discussion and show willingness to cooperate with other players, while keeping my own role and intentions hidden.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:23:59.102678",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "I'd like to build on the points raised by players 1 and 2, and contribute to the discussion by sharing my own thoughts and observations.\n\nFirstly, I agree with the importance of caution and careful consideration in our actions and decisions. It's crucial that we analyze the statements and actions of all players, including those who have been quiet so far, to identify any potential patterns or inconsistencies that might indicate werewolf behavior.\n\nI'd like to ask players 6 and 9, who have been relatively quiet, to share their thoughts and opinions about the game so far. What are their insights on the recent events, and do they have any suspicions or concerns about other players?\n\nRegarding the Seer's investigations, I think it's a good idea to consider both quieter players and more active ones. Werewolves can indeed try to blend in by contributing to the discussion, so it's essential to be thorough in our analysis.\n\nAs for the Hunter, I think it's vital to have a strategy in place for protecting themselves and other villagers. I'd like to suggest that the Hunter consider sharing their plans with a few trusted players, in case something happens to them during the night.\n\nI'd also like to propose that we start to look for inconsistencies in players' statements and actions. If someone's story or behavior seems suspicious, we should investigate further and discuss it as a group.\n\nLastly, I'd like to remind everyone that our goal is to eliminate the werewolves, and we should focus on making informed decisions based on the information we have. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of winning the game.\n\nThis statement aims to:\n\n1. Encourage quieter players to participate in the discussion and share their thoughts.\n2. Emphasize the importance of thorough analysis and investigation.\n3. Suggest that the Hunter consider sharing their plans with trusted players.\n4. Propose looking for inconsistencies in players' statements and actions.\n5. Contribute to the discussion and show willingness to cooperate with other players, while keeping my own role and intentions hidden.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:24:10.624454",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "As the Hunter, I'd like to contribute to the discussion by sharing my thoughts and observations. Firstly, I appreciate the suggestions from players 1, 2, and 4 to gather more information and discuss as a group before making any voting decisions. I agree that caution and careful consideration are essential in our actions and decisions.\n\nRegarding my own strategy, I've been considering ways to protect myself and other villagers from potential werewolf attacks. While I don't want to reveal too much about my plans, I can say that I'm open to forming alliances or working with other players to increase our chances of survival.\n\nI'd like to ask players 6, 8, and 9, who have been relatively quiet, to share their thoughts and opinions about the game so far. What are their insights on the recent events, and do they have any suspicions or concerns about other players? It's crucial that we hear from everyone and consider all perspectives before making any decisions.\n\nI also want to emphasize the importance of analyzing the statements and actions of all players, including those who have been more active and vocal. As players 1 and 2 mentioned, werewolves can try to blend in by contributing to the discussion, so it's essential to be thorough in our analysis.\n\nAs the Hunter, I have the ability to take one player with me when I die, which can be a powerful tool in our fight against the werewolves. I'm considering how to use this ability strategically, but I don't want to reveal too much about my plans at this point.\n\nLastly, I'd like to propose that we start to look for inconsistencies in players' statements and actions, as player 4 suggested. If someone's story or behavior seems suspicious, we should investigate further and discuss it as a group. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of eliminating the remaining werewolves and winning the game.\n\nThis statement aims to:\n\n1. Contribute to the discussion and show willingness to cooperate with other players.\n2. Emphasize the importance of caution and careful consideration in our actions and decisions.\n3. Encourage quieter players to participate in the discussion and share their thoughts.\n4. Analyze the statements and actions of all players, including those who have been more active and vocal.\n5. Propose looking for inconsistencies in players' statements and actions, without revealing too much about my own plans or strategies.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:24:20.378276",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 6,
+        "statement": "I'd like to add my thoughts to the discussion and provide some insights without revealing too much about my own role or intentions.\n\nFirstly, I appreciate the suggestions from players 1, 2, 4, and 5 to gather more information and discuss as a group before making any voting decisions. I agree that caution and careful consideration are essential in our actions and decisions.\n\nI'd like to ask players 6, 8, and 9, who have been relatively quiet, to share their thoughts and opinions about the game so far. What are their insights on the recent events, and do they have any suspicions or concerns about other players? It's crucial that we hear from everyone and consider all perspectives before making any decisions.\n\nI've been analyzing the statements and actions of all players, and I think it's essential to look for inconsistencies in their stories or behavior. If someone's statement seems suspicious or contradictory, we should investigate further and discuss it as a group.\n\nI'd also like to propose that we consider the possibility of werewolves trying to blend in by contributing to the discussion. As players 1 and 2 mentioned, werewolves can try to appear villager-like by participating in the conversation and sharing their thoughts. We should be cautious and thorough in our analysis, considering both the content of their statements and their behavior.\n\nLastly, I'd like to remind everyone that our goal is to eliminate the werewolves, and we should focus on making informed decisions based on the information we have. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of winning the game.\n\nThis statement aims to:\n\n1. Encourage quieter players to participate in the discussion and share their thoughts.\n2. Emphasize the importance of thorough analysis and investigation.\n3. Propose looking for inconsistencies in players' statements and actions.\n4. Consider the possibility of werewolves trying to blend in by contributing to the discussion.\n5. Contribute to the discussion and show willingness to cooperate with other players, while keeping my own role and intentions hidden.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:24:30.511442",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "I'd like to contribute to the discussion by sharing my thoughts and observations. Firstly, I appreciate the suggestions from players 1, 2, 4, 5, and 6 to gather more information and discuss as a group before making any voting decisions. I agree that caution and careful consideration are essential in our actions and decisions.\n\nAs a relatively quiet player, I'd like to share my insights on the recent events. I've been analyzing the statements and actions of all players, and I think it's essential to look for inconsistencies in their stories or behavior. I've noticed that players 4 and 5 have been quite active in the discussion, and while their suggestions seem reasonable, I think we should be cautious not to put too much trust in anyone at this point.\n\nI'd like to ask player 10, who has been quiet so far, to share their thoughts and opinions about the game. What are their insights on the recent events, and do they have any suspicions or concerns about other players? It's crucial that we hear from everyone and consider all perspectives before making any decisions.\n\nRegarding the Seer's investigations, I think it's a good idea to consider both quieter players and more active ones. However, I'm not sure if it's wise to reveal too much about our plans or strategies at this point. As player 6 mentioned, werewolves can try to blend in by contributing to the discussion, so we should be cautious and thorough in our analysis.\n\nLastly, I'd like to propose that we focus on making informed decisions based on the information we have, rather than relying on speculation or assumptions. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of winning the game.\n\nThis statement aims to:\n\n1. Contribute to the discussion and show willingness to cooperate with other players.\n2. Encourage quieter players to participate in the discussion and share their thoughts.\n3. Emphasize the importance of thorough analysis and investigation.\n4. Propose looking for inconsistencies in players' statements and actions.\n5. Avoid revealing too much about my own role or intentions, while keeping a low profile and avoiding suspicion.",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:24:42.149956",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 9,
+        "statement": "As a villager, my primary goal is to identify and eliminate the werewolves. Given the current state of the game, I'd like to contribute to the discussion by sharing my thoughts and observations.\n\nFirstly, I appreciate the suggestions from players 1, 2, 4, 5, 6, and 8 to gather more information and discuss as a group before making any voting decisions. I agree that caution and careful consideration are essential in our actions and decisions.\n\nI've been analyzing the statements and actions of all players, and I think it's essential to look for inconsistencies in their stories or behavior. Players 5 and 6 have been quite active in the discussion, and while their suggestions seem reasonable, I think we should be cautious not to put too much trust in anyone at this point.\n\nI'd like to ask player 9, who has been quiet so far, to share their thoughts and opinions about the game. What are their insights on the recent events, and do they have any suspicions or concerns about other players? It's crucial that we hear from everyone and consider all perspectives before making any decisions.\n\nRegarding the discussion, I think it's a good idea to consider both quieter players and more active ones. However, I'm not sure if it's wise to reveal too much about our plans or strategies at this point. As player 6 mentioned, werewolves can try to blend in by contributing to the discussion, so we should be cautious and thorough in our analysis.\n\nI'd like to propose that we focus on making informed decisions based on the information we have, rather than relying on speculation or assumptions. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of winning the game.\n\nAdditionally, I think it's essential to start building a list of potential suspects and investigating their behavior and statements. We can start by looking at players who have been inconsistent in their statements or have shown suspicious behavior.\n\nLet's work together to analyze the information we have and make a decision that will help us eliminate the werewolves and win the game.\n\nThis statement aims to:\n\n1. Contribute to the discussion and show willingness to cooperate with other players.\n2. Encourage quieter players to participate in the discussion and share their thoughts.\n3. Emphasize the importance of thorough analysis and investigation.\n4. Propose looking for inconsistencies in players' statements and actions.\n5. Avoid revealing too much about my own",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:24:53.678341",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 10,
+        "statement": "I'd like to contribute to the discussion by sharing my thoughts and observations. Firstly, I appreciate the suggestions from players 1, 2, 4, 5, 6, 8, and 9 to gather more information and discuss as a group before making any voting decisions. I agree that caution and careful consideration are essential in our actions and decisions.\n\nAs the game progresses, I think it's essential to focus on verifying the roles of players who have been active in the discussion. Players 5 and 6 have been quite vocal, and while their suggestions seem reasonable, I think we should be cautious not to put too much trust in anyone at this point.\n\nI've been analyzing the statements and actions of all players, and I think it's crucial to look for inconsistencies in their stories or behavior. I'd like to ask player 10, who has been quiet so far, to share their thoughts and opinions about the game. What are their insights on the recent events, and do they have any suspicions or concerns about other players?\n\nRegarding the Seer's investigations, I think it's a good idea to consider both quieter players and more active ones. However, I'm not sure if it's wise to reveal too much about our plans or strategies at this point. As player 6 mentioned, werewolves can try to blend in by contributing to the discussion, so we should be cautious and thorough in our analysis.\n\nI'd like to propose that we focus on making informed decisions based on the information we have, rather than relying on speculation or assumptions. Let's continue to work together, share our thoughts and observations, and make strategic decisions to increase our chances of winning the game.\n\nAdditionally, I think it's essential to start building a list of potential suspects and investigating their behavior and statements. We can start by looking at players who have been inconsistent in their statements or have shown suspicious behavior.\n\nAs for my own observations, I have noticed that players 4 and 7 were confirmed as villagers by the Seer's investigation in previous rounds. While this information is useful, we should not rely solely on it and continue to gather more information about the other players.\n\nLet's work together to analyze the information we have and make a decision that will help us eliminate the werewolves and win the game.\n\nThis statement aims to:\n\n1. Contribute to the discussion and show willingness to cooperate with other players.\n2. Encourage quieter players to participate in the discussion and share",
+        "round": 3
+      }
+    },
+    {
+      "round": 3,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T12:24:57.259935",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 9,
+        "role": "villager",
+        "votes": 6
+      }
+    },
+    {
+      "round": 4,
+      "phase": "night",
+      "timestamp": "2025-10-10T12:24:59.461216",
+      "event_type": "night_deaths",
+      "data": {
+        "player_ids": [
+          6
+        ]
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:25:09.280167",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 1,
+        "statement": "Given the current state of the game and the recent events, I'd like to contribute to the discussion by analyzing the information we have so far. \n\nFirstly, I appreciate player 10's detailed statement in the previous round, which highlighted the importance of verifying roles, looking for inconsistencies, and making informed decisions. The elimination of player 9, who was revealed to be a villager, shows that we still have a lot to learn about the roles of the remaining players.\n\nThe death of player 6 during the night phase is significant. Player 6 was quite vocal and had shared some valuable insights. Their death could indicate that the werewolves are trying to silence active contributors or eliminate potential threats.\n\nAs the Witch, I have the ability to influence the game with my heal and poison potions, but I must use them wisely. For now, I will keep my capabilities to myself, as revealing them could make me a target or influence the werewolves' decisions unnecessarily.\n\nI propose that we continue to encourage all players to share their thoughts and observations, especially those who have been quieter so far, like players 1, 4, and 8. It's crucial for us to gather as much information as possible and to start building a list of potential suspects based on inconsistencies in their statements or suspicious behavior.\n\nGiven that players 4 and 7 were previously confirmed as villagers by the Seer's investigation, we should consider this information but also remain cautious, as the Seer's investigations can sometimes be misleading or incomplete.\n\nFor our next steps, I suggest we focus on discussing the behaviors and statements of players 5 and 10, who have been more active in the discussion. Analyzing their contributions might give us clues about their roles or intentions. Additionally, we should consider the timing and context of player 6's death and how it might relate to the discussions or actions taken during the previous day phase.\n\nLet's proceed with caution, share our insights, and work together to make a strategic decision for the day's vote, keeping in mind that our goal is to eliminate the werewolves and win the game.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:25:18.548297",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 2,
+        "statement": "I'd like to contribute to the discussion by providing some insights and observations. Firstly, I appreciate player 1's detailed analysis of the current game state and the recent events. The points raised about the importance of verifying roles, looking for inconsistencies, and making informed decisions are well-taken.\n\nAs a villager, I don't have any special abilities or information, but I've been paying close attention to the discussions and behaviors of the other players. I agree that players 5 and 10 have been more active in the discussion, and analyzing their contributions might give us clues about their roles or intentions.\n\nI'd like to add that player 5 has been relatively quiet until recently, and their sudden increase in participation could be an attempt to deflect attention or gather information. On the other hand, player 10 has been consistently contributing to the discussion, and their statements seem to be focused on gathering information and making strategic decisions.\n\nRegarding the death of player 6, I think it's possible that the werewolves targeted them because of their vocal nature and potential to reveal important information. However, we should also consider the possibility that player 6's death was a misdirection tactic, intended to distract us from the real targets.\n\nI propose that we continue to encourage all players to share their thoughts and observations, and that we start to build a list of potential suspects based on inconsistencies in their statements or suspicious behavior. We should also be cautious of players who are overly defensive or evasive when questioned about their actions or statements.\n\nAs for my own behavior, I've been trying to observe and listen more than contribute, but I'm willing to share more of my thoughts and insights as the discussion progresses. I'm open to being questioned or scrutinized by the other players, and I hope that we can work together to make a strategic decision for the day's vote.\n\nLet's proceed with caution and continue to gather information, and I'm confident that we can make progress in identifying and eliminating the werewolves.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:25:28.483391",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 4,
+        "statement": "I'd like to contribute to the discussion by sharing some observations and insights. Firstly, I appreciate the detailed statements from players 1 and 2, which have provided valuable perspectives on the current game state and recent events.\n\nAs a villager, I've been paying close attention to the discussions and behaviors of the other players. I agree with player 2's assessment that player 5's sudden increase in participation could be an attempt to deflect attention or gather information. On the other hand, player 10's consistent contributions to the discussion seem to be focused on gathering information and making strategic decisions.\n\nRegarding the death of player 6, I think it's possible that the werewolves targeted them because of their vocal nature and potential to reveal important information. However, I also consider the possibility that player 6's death was a misdirection tactic, intended to distract us from the real targets.\n\nI'd like to propose that we focus on analyzing the statements and behaviors of players 5 and 10, as well as players 4 and 8, who have been relatively quiet so far. It's crucial for us to gather as much information as possible and to start building a list of potential suspects based on inconsistencies in their statements or suspicious behavior.\n\nAs for my own behavior, I've been trying to observe and listen more than contribute, but I'm willing to share more of my thoughts and insights as the discussion progresses. I'm open to being questioned or scrutinized by the other players, and I hope that we can work together to make a strategic decision for the day's vote.\n\nOne thing I'd like to add is that we should be cautious of players who are trying to steer the discussion towards specific topics or individuals. We should also be aware of players who are avoiding questions or providing vague answers. By paying attention to these behaviors, we can gain a better understanding of each player's intentions and make more informed decisions.\n\nLet's proceed with caution and continue to gather information. I'm confident that we can make progress in identifying and eliminating the werewolves, and I'm willing to work together with the other players to achieve our goal.",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:25:39.886869",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 5,
+        "statement": "I'd like to contribute to the discussion by providing some observations and insights. Firstly, I appreciate the detailed statements from players 1, 2, and 4, which have provided valuable perspectives on the current game state and recent events.\n\nAs a player who has been relatively quiet so far, I'd like to assure the other players that my intention is not to avoid discussion, but rather to observe and listen to the contributions of others. I've been paying close attention to the statements and behaviors of all players, and I'm starting to form some opinions about potential suspects.\n\nI agree with the assessments of players 2 and 4 that player 5's sudden increase in participation could be an attempt to deflect attention or gather information. On the other hand, player 10's consistent contributions to the discussion seem to be focused on gathering information and making strategic decisions.\n\nRegarding the death of player 6, I think it's possible that the werewolves targeted them because of their vocal nature and potential to reveal important information. However, I also consider the possibility that player 6's death was a misdirection tactic, intended to distract us from the real targets.\n\nI'd like to propose that we continue to analyze the statements and behaviors of all players, including those who have been relatively quiet so far, such as myself and player 8. It's crucial for us to gather as much information as possible and to start building a list of potential suspects based on inconsistencies in their statements or suspicious behavior.\n\nAs for my own behavior, I'm willing to share more of my thoughts and insights as the discussion progresses. I'm open to being questioned or scrutinized by the other players, and I hope that we can work together to make a strategic decision for the day's vote.\n\nOne thing I'd like to add is that we should be cautious of players who are trying to create divisions or conflicts within the group. We should also be aware of players who are providing information that seems too good to be true or who are being overly defensive when questioned. By paying attention to these behaviors, we can gain a better understanding of each player's intentions and make more informed decisions.\n\nLet's proceed with caution and continue to gather information. I'm confident that we can make progress in identifying and eliminating the werewolves, and I'm willing to work together with the other players to achieve our goal. \n\n(Note: As the Hunter, I'm choosing not to reveal my role at this point, in order to avoid",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:25:51.359869",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 8,
+        "statement": "I'd like to contribute to the discussion by sharing some observations and insights. I've been listening to the statements from players 1, 2, 4, and 5, and I appreciate the detailed analysis of the current game state and recent events.\n\nAs a player who has been relatively quiet so far, I'd like to assure the other players that my intention is not to avoid discussion, but rather to observe and listen to the contributions of others. I've been paying close attention to the statements and behaviors of all players, and I'm starting to form some opinions about potential suspects.\n\nI agree with the assessments of players 2 and 4 that player 5's sudden increase in participation could be an attempt to deflect attention or gather information. However, I'd like to propose that we shouldn't focus too much on player 5 just yet. Instead, I think we should analyze the statements and behaviors of all players, including those who have been relatively quiet so far, such as myself and player 8.\n\nRegarding the death of player 6, I think it's possible that the werewolves targeted them because of their vocal nature and potential to reveal important information. However, I also consider the possibility that player 6's death was a misdirection tactic, intended to distract us from the real targets.\n\nI'd like to add that we should be cautious of players who are trying to create divisions or conflicts within the group. We should also be aware of players who are providing information that seems too good to be true or who are being overly defensive when questioned. By paying attention to these behaviors, we can gain a better understanding of each player's intentions and make more informed decisions.\n\nAs for my own behavior, I'm willing to share more of my thoughts and insights as the discussion progresses. I'm open to being questioned or scrutinized by the other players, and I hope that we can work together to make a strategic decision for the day's vote.\n\nOne thing I'd like to propose is that we consider the possibility that there may be a villager who is pretending to be a quiet and observant player, but is actually gathering information to help the werewolves. We should be careful not to reveal too much information to players who may be pretending to be something they're not.\n\nLet's proceed with caution and continue to gather information. I'm confident that we can make progress in identifying and eliminating the werewolves, and I'm willing to work together with the other",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_discussion",
+      "timestamp": "2025-10-10T12:26:01.891066",
+      "event_type": "player_statement",
+      "data": {
+        "player_id": 10,
+        "statement": "I'd like to contribute to the discussion by sharing some observations and insights. As a player who has been observing the discussions, I appreciate the detailed statements from players 1, 2, 4, 5, and 8, which have provided valuable perspectives on the current game state and recent events.\n\nI agree with the assessments of players 2 and 4 that player 5's sudden increase in participation could be an attempt to deflect attention or gather information. However, I'd like to propose that we shouldn't focus too much on player 5 just yet. Instead, I think we should analyze the statements and behaviors of all players, including those who have been relatively quiet so far, such as player 8.\n\nRegarding the death of player 6, I think it's possible that the werewolves targeted them because of their vocal nature and potential to reveal important information. However, I also consider the possibility that player 6's death was a misdirection tactic, intended to distract us from the real targets.\n\nAs a player who has been paying close attention to the discussions, I'd like to propose that we consider the possibility that there may be a werewolf who is pretending to be a villager, gathering information and influencing the discussion to their advantage. We should be careful not to reveal too much information to players who may be pretending to be something they're not.\n\nI'd like to add that I've been observing player 4's behavior, and I appreciate their willingness to share their thoughts and insights. As someone who has been relatively quiet so far, I think it's essential to build trust and credibility within the group. I'm willing to share more of my thoughts and insights as the discussion progresses, and I hope that we can work together to make a strategic decision for the day's vote.\n\nLet's proceed with caution and continue to gather information. I'm confident that we can make progress in identifying and eliminating the werewolves, and I'm willing to work together with the other players to achieve our goal.\n\n(Note: As the Seer, I'm choosing not to reveal my role or any information about the players I've checked so far, in order to avoid drawing attention to myself and to maximize the effectiveness of my future checks.)",
+        "round": 4
+      }
+    },
+    {
+      "round": 4,
+      "phase": "day_vote",
+      "timestamp": "2025-10-10T12:26:04.088088",
+      "event_type": "day_elimination",
+      "data": {
+        "player_id": 5,
+        "role": "hunter",
+        "votes": 5
+      }
+    }
+  ],
+  "quantified_metrics": {
+    "avg_deception_rate": 0.0,
+    "avg_consistency_score": 1.0,
+    "avg_optimal_vote_ratio": 0.6794871794871794,
+    "total_contradictions": 0,
+    "total_statements": 36,
+    "werewolf_win_rate": 0.0
+  }
+}

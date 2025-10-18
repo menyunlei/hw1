@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auto Test - CORS Diagnostic</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>狼人杀 CORS 自动测试</h1>
+    <div id="status">正在测试...</div>
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+
+    <script>
+        // Automatically test on page load
+        window.onload = async function() {
+            const statusEl = document.getElementById('status');
+            const resultEl = document.getElementById('result');
+
+            try {
+                console.log('[AUTO TEST] Attempting fetch to http://127.0.0.1:5005/api/start');
+                statusEl.textContent = '正在发送请求到 http://127.0.0.1:5005/api/start ...';
+                statusEl.style.color = 'blue';
+
+                const response = await fetch('http://127.0.0.1:5005/api/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    mode: 'cors'  // Explicitly request CORS
+                });
+
+                console.log('[AUTO TEST] Response status:', response.status);
+                const data = await response.json();
+
+                statusEl.textContent = '✅ 成功！CORS 已修复！';
+                statusEl.style.color = 'green';
+                statusEl.style.fontWeight = 'bold';
+
+                resultEl.innerHTML = `
+                    <h3>API 响应:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p style="color: green;">服务器成功接收请求并返回数据！</p>
+                `;
+
+                console.log('[AUTO TEST] Success! Data:', data);
+
+            } catch (error) {
+                statusEl.textContent = '❌ 失败：' + error.message;
+                statusEl.style.color = 'red';
+                statusEl.style.fontWeight = 'bold';
+
+                resultEl.innerHTML = `
+                    <h3>错误详情:</h3>
+                    <pre style="color: red;">${error}</pre>
+                    <p><strong>错误类型:</strong> ${error.name}</p>
+                    <p><strong>错误信息:</strong> ${error.message}</p>
+                `;
+
+                console.error('[AUTO TEST] Error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

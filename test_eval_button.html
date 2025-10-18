@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eval Button Test</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Testing Evaluation Button</h1>
+    <button onclick="showEvaluation()" id="btn-eval" style="background: #9C27B0; color: white; padding: 10px 20px;">📊 显示评估</button>
+
+    <script>
+        function showEvaluation() {
+            alert('Evaluation function called!');
+
+            // Try to fetch from server
+            fetch('/api/get_evaluation')
+                .then(r => {
+                    alert('Fetch succeeded');
+                    return r.json();
+                })
+                .then(data => {
+                    alert('Got data: ' + JSON.stringify(data));
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+        }
+
+        console.log('Script loaded successfully');
+    </script>
+</body>
+</html>

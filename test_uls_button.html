@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test ULS++ Understanding</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 ULS++ Understanding Test</h1>
+        <p>Click the button to test if the LLM can understand ULS++ encoding format.</p>
+
+        <button onclick="testUlsUnderstanding()">Test ULS++ Understanding</button>
+
+        <div id="result">Click the button to start test...</div>
+    </div>
+
+    <script>
+        async function testUlsUnderstanding() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '⏳ Testing... Please wait...';
+            resultDiv.style.borderLeftColor = '#FFC107';
+
+            try {
+                const response = await fetch('http://localhost:5004/api/test_uls_understanding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    resultDiv.style.borderLeftColor = '#4CAF50';
+                    resultDiv.innerHTML = `✅ Test Successful!
+
+Test Name: ${data.test_name}
+
+LLM Answer:
+${data.answer}
+
+Correct Answers:
+1. ${data.correct_answers.q1}
+2. ${data.correct_answers.q2}
+3. ${data.correct_answers.q3}`;
+                } else {
+                    resultDiv.style.borderLeftColor = '#f44336';
+                    resultDiv.innerHTML = `❌ Test Failed: ${data.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.style.borderLeftColor = '#f44336';
+                resultDiv.innerHTML = `❌ Error: ${error.message}
+
+Make sure the server is running on http://localhost:5004`;
+            }
+        }
+    </script>
+</body>
+</html>

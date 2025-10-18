@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test - No Cache</title>
+</head>
+<body>
+    <h1>Cache Test</h1>
+    <p>If you see this, the cache is bypassed!</p>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            try {
+                // Test /api/start
+                const response = await fetch('http://127.0.0.1:5005/api/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data);
+                console.log('[TEST] API Response:', data);
+            } catch (error) {
+                console.error('[TEST] Error:', error);
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
